@@ -6,6 +6,7 @@ import 'element-ui/lib/theme-default/index.css'
 import admin from '@/components/admin/admin'
 import adm from '@/components/admin/adm'
 import merchant from '@/components/admin/merchant'
+import adver from '@/components/admin/adver'
 
 Vue.use(Router)
 Vue.use(ElementUI)
@@ -25,6 +26,10 @@ export default new Router({
       path: '/admin/merchant',
       name: '商户管理',
       component: merchant
+    }, {
+      path: '/admin/adver',
+      name: '广告管理',
+      component: adver
     }]
     // children: [{
     //   path: '/admNews',

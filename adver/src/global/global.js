@@ -1,5 +1,5 @@
 export default{
-  baseUrl: 'http://123.56.220.72:8080/cyg/api/',
+  baseUrl: 'http://123.56.220.72:8080/',
   qiniuUrl: 'http://up-z2.qiniu.com/',
   success (obj, msg, url) {
     obj.$message({

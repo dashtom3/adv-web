@@ -14,7 +14,7 @@ export default {
       navbar: [
         { url: '/admin/merchant', className: 'el-icon-menu', name: '商户管理' },
         { url: '/admin/adver', className: 'el-icon-document', name: '广告管理' },
-        { url: '/admin/data', className: 'el-icon-message', name: '数据查看' }
+        { url: '/admin/dataview', className: 'el-icon-message', name: '数据查看' }
       ]
     }
   }
