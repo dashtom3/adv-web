@@ -3,12 +3,6 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
-<!-- 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" v-on:click="getUsers">查询frisco</el-button>
-				</el-form-item> -->
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">添加账号</el-button>
 				</el-form-item>
@@ -19,11 +13,11 @@
 		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column type="account" label="账号" width="160" sortable>
+			<el-table-column prop="account" label="账号" width="160" sortable>
 			</el-table-column>
 			<el-table-column prop="password" label="密码" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="姓名" width="100" :formatter="formatSex" sortable>
+			<el-table-column prop="name" label="姓名" width="100" sortable>
 			</el-table-column>
 			<el-table-column prop="contact" label="联系方式" min-width="180" sortable>
 			</el-table-column>
@@ -44,29 +38,23 @@
 
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+			<el-form :model="editForm" label-width="80px" :rules="addFormRules" ref="addForm">
+				<el-form-item label="账号" prop="account">
+					<el-input v-model="editForm.account" auto-complete="off"></el-input>
+				</el-form-item>
+				<el-form-item label="密码" prop="password">
+					<el-input type="password" v-model="editForm.password" auto-complete="off"></el-input>
+				</el-form-item>
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="性别">
-					<el-radio-group v-model="editForm.sex">
-						<el-radio class="radio" :label="1">男</el-radio>
-						<el-radio class="radio" :label="0">女</el-radio>
-					</el-radio-group>
-				</el-form-item>
-				<el-form-item label="年龄">
-					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
-				</el-form-item>
-				<el-form-item label="生日">
-					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="地址">
-					<el-input type="textarea" v-model="editForm.addr"></el-input>
+				<el-form-item label="联系方式" prop="contact">
+					<el-input v-model="editForm.contact" auto-complete="off"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
 			</div>
 		</el-dialog>
 
@@ -114,8 +102,17 @@
 				editFormVisible: false,//编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
+					account: [
+						{ required: true, message: '请输入账号', trigger: 'blur' }
+					],
+					password: [
+						{ required: true, message: '请输入密码', trigger: 'blur' }
+					],
 					name: [
 						{ required: true, message: '请输入姓名', trigger: 'blur' }
+					],
+					contact: [
+						{ required: true, message: '请输入联系方式', trigger: 'blur' }
 					]
 				},
 				//编辑界面数据
@@ -155,10 +152,6 @@
 			}
 		},
 		methods: {
-			//性别显示转换
-			formatSex: function (row, column) {
-				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
-			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();
