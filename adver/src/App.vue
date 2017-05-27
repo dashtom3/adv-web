@@ -21,6 +21,9 @@ export default {
   margin:0px;
   padding: 0;
 }
+a,a:hover{
+  text-decoration: none;
+}
 body{
   margin: 0px;
   padding: 0px;

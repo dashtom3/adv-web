@@ -106,21 +106,21 @@
         <el-form-item label="确认密码" prop="repassword">
           <el-input type="password" v-model="addmerchantMsg.repassword"></el-input>
         </el-form-item>
-        <el-form-item label="店铺名称" prop="realname">
+        <el-form-item label="店铺名称">
           <el-input v-model="addmerchantMsg.realname"></el-input>
         </el-form-item>
-        <el-form-item label="全称" prop="allname">
+        <el-form-item label="全称">
           <el-input v-model="addmerchantMsg.allname"></el-input>
         </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-radio-group v-model="addmerchantMsg.type">
-            <el-radio label="0">管理员</el-radio>
+            <!-- <el-radio label="0">管理员</el-radio> -->
             <el-radio label="1">有设备商铺</el-radio>
             <el-radio label="2">有设备商铺</el-radio>
-            <el-radio label="3">子账号</el-radio>
+            <!-- <el-radio label="3">子账号</el-radio> -->
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="上传照片" prop="logo">
+        <el-form-item label="上传照片">
             <el-upload
               class="upload-demo"
               ref="upload"
@@ -131,7 +131,7 @@
               <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
             </el-upload>
           </el-form-item>
-        <el-form-item label="行业编号" prop="industryId">
+        <el-form-item label="行业编号">
           <el-input v-model="addmerchantMsg.industryId"></el-input>
         </el-form-item>
         <el-form-item label="简介">
@@ -140,7 +140,7 @@
         <el-form-item label="需求内容">
           <el-input type="textarea" v-model="addmerchantMsg.content"></el-input>
         </el-form-item>
-        <el-form-item label="联系方式" prop="phone">
+        <el-form-item label="联系方式">
           <el-input v-model="addmerchantMsg.phone" :maxlength="11"></el-input>
         </el-form-item>
         <el-form-item>
@@ -176,15 +176,6 @@ export default {
         callback();
       }
     }
-    var phone = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请输入手机号'))
-      } else if (!(/^1[34578]\d{9}$/.test(value))) {
-        callback(new Error('请输入正确的手机号'))
-      } else {
-        callback()
-      }
-    }
     return {
       addmerchantAlert: false,
       equipment: '0',
@@ -218,12 +209,7 @@ export default {
         repassword: [
           { required: true, validator: validatePass2, trigger: 'blur' }
         ],
-        realname: [{ required: true, message: '请输入店铺名称', trigger: 'blur' }],
-        allname: [{ required: true, message: '请输入店铺全称', trigger: 'blur' }],
-        type: [{ required: true, message: '请选择类型', trigger: 'blur' }],
-        logo: [{ required: true, message: '请上传店铺logo', trigger: 'blur' }],
-        industryId: [{ required: true, message: '请输入行业编号', trigger: 'blur' }],
-        phone: [{ required: true, validator: phone, trigger: 'blur' }]
+        type: [{ required: true, message: '请选择类型', trigger: 'blur' }]
       },
       merchantLists: [
         { userid: '1', username: '测试', password: '123456', realname: '店铺名称', allname: '全称', parentid: '2', type: '管理员', logo: '1', industryId: '234', intro: '简介', content: '需求内容', phone: '电话', regtime: '注册时间' }
@@ -246,15 +232,15 @@ export default {
     addmerchantpost (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(123)
-          // var self = this
-          // axios.post(global.baseUrl + '', global.postHttpData(this.addmerchantMsg))
-          // .then((res) => {
-          //   if (res.data.callStatus === 'SUCCEED') {
-          //     global.success(self, '添加成功', '')
-          //     self.getmerchantList(self.merchantArgs)
-          //   }
-          // })
+          // console.log(123)
+          var self = this
+          axios.post(global.baseUrl + 'Advertisement/api/user/register', global.postHttpData(this.addmerchantMsg))
+          .then((res) => {
+            if (res.data.callStatus === 'SUCCEED') {
+              global.success(self, '添加成功', '')
+              self.getmerchantList(self.merchantArgs)
+            }
+          })
         } else {
           return false
         }

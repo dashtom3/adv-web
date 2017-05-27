@@ -3,7 +3,7 @@
     <div class="adminCon">
       <h3>管理员登录</h3>
       <div class="username">
-        <input type="text" name="" v-model="adminMsg.username" value="" placeholder="用户名">
+        <input type="text" name="" v-model="adminMsg.userName" value="" placeholder="用户名">
       </div>
       <div class="password">
         <input type="password" name="" v-model="adminMsg.password" value="" placeholder="密码" v-on:keyup.enter="adminLogin">
@@ -24,7 +24,7 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       adminMsg: {
-        username: null,
+        userName: null,
         password: null
       }
     }
@@ -32,18 +32,18 @@ export default {
   methods: {
     adminLogin () {
       var self = this
-      if (this.adminMsg.username && this.adminMsg.password) {
-        global.success(self, '登录成功', '/admin/merchant')
-        // axios.post(global.baseUrl + '', global.postHttpData(this.adminMsg))
-        // .then((res) => {
-        //   if (res.data.callStatus === 'SUCCEED') {
-        //     global.setToken(res.data.token)
-        //     global.setUser(res.data.data)
-        //     global.success(self, '登录成功', '')
-        //   } else {
-        //     global.error(self, '账号或者密码错误', '')
-        //   }
-        // })
+      if (this.adminMsg.userName && this.adminMsg.password) {
+        // global.success(self, '登录成功', '/admin/merchant')
+        axios.post(global.baseUrl + 'Advertisement/api/user/login', global.postHttpData(this.adminMsg))
+        .then((res) => {
+          if (res.data.callStatus === 'SUCCEED') {
+            global.setToken(res.data.token)
+            global.setUser(res.data.data)
+            global.success(self, '登录成功', '')
+          } else {
+            global.error(self, '账号或者密码错误', '')
+          }
+        })
       } else {
         global.error(self, '账号或者密码不能为空', '')
       }

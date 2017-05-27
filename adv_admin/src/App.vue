@@ -34,7 +34,10 @@ body {
 	bottom: 0px;
 	width: 100%;
 }
-
+.block{
+	text-align: right;
+	margin-top: 20px;
+}
 .el-submenu [class^=fa] {
 	vertical-align: baseline;
 	margin-right: 10px;
