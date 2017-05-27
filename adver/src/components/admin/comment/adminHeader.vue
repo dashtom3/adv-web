@@ -8,7 +8,7 @@
         <li class="user">
             <el-dropdown trigger="click">
                 <span class="el-dropdown-link">
-                {{userInfo.username}}<i class="el-icon-caret-bottom el-icon--right"></i>
+                {{userInfo.userName}}<i class="el-icon-caret-bottom el-icon--right"></i>
               </span>
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item v-on:click.native="exit">退出</el-dropdown-item>
@@ -23,7 +23,9 @@ import global from '../../../global/global'
 export default {
   data () {
     return {
-      userInfo: global.getUser()
+      userInfo: {
+        'userName': 'Admin'
+      }
     }
   },
   // mounted () {

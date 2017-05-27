@@ -33,17 +33,17 @@ export default {
     adminLogin () {
       var self = this
       if (this.adminMsg.userName && this.adminMsg.password) {
-        // global.success(self, '登录成功', '/admin/merchant')
-        axios.post(global.baseUrl + 'Advertisement/api/user/login', global.postHttpData(this.adminMsg))
-        .then((res) => {
-          if (res.data.callStatus === 'SUCCEED') {
-            global.setToken(res.data.token)
-            global.setUser(res.data.data)
-            global.success(self, '登录成功', '')
-          } else {
-            global.error(self, '账号或者密码错误', '')
-          }
-        })
+        global.success(self, '登录成功', '/admin/merchant')
+        // axios.post(global.baseUrl + 'Advertisement/api/user/login', global.postHttpData(this.adminMsg))
+        // .then((res) => {
+        //   if (res.data.callStatus === 'SUCCEED') {
+        //     global.setToken(res.data.token)
+        //     global.setUser(res.data.data)
+        //     global.success(self, '登录成功', '')
+        //   } else {
+        //     global.error(self, '账号或者密码错误', '')
+        //   }
+        // })
       } else {
         global.error(self, '账号或者密码不能为空', '')
       }

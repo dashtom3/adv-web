@@ -11,7 +11,7 @@
       <label for="mobilePhone">确认密码：</label><el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
     <el-form-item style="width:100%;">
-      <el-button type="primary" style="width:100%;" :loading="logining">注册</el-button>
+      <el-button type="primary" style="width:100%;" :loading="logining" v-on:click="regUser">注册</el-button>
     </el-form-item>
     <div class="alreadyHave" @click="login()">已有账号</div>
   </el-form>
@@ -45,28 +45,20 @@
       handleReset2() {
         this.$refs.ruleForm2.resetFields();
       },
-      handleSubmit2(ev) {
-        var _this = this;
+      regUser() {
+        var self = this;
         this.$refs.ruleForm2.validate((valid) => {
           if (valid) {
-            //_this.$router.replace('/table');
-            this.logining = true;
-            //NProgress.start();
-            var loginParams = { username: this.ruleForm2.userName, password: this.ruleForm2.password };
-            requestLogin(loginParams).then(data => {
-              this.logining = false;
-              //NProgress.done();
-              let { msg, code, user } = data;
-              if (code !== 200) {
-                this.$message({
-                  message: msg,
-                  type: 'error'
-                });
-              } else {
-                sessionStorage.setItem('user', JSON.stringify(user));
-                this.$router.push({ path: '/table' });
-              }
-            });
+            self.logining = true;
+            // axios.post(global.baseUrl + '', global.postHttpData(this.ruleForm2))
+            // .then((res) => {
+            //   // console.log(res)
+            //   if (res.data.callStatus === 'SUCCEED') {
+            //     global.success(self, '注册成功', '/login')
+            //   } else {
+            //     global.error(self, '注册失败', '')
+            //   }
+            // })
           } else {
             console.log('error submit!!');
             return false;
