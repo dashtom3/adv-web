@@ -234,7 +234,11 @@ export default {
         if (valid) {
           // console.log(123)
           var self = this
-          axios.post(global.baseUrl + 'Advertisement/api/user/register', global.postHttpData(this.addmerchantMsg))
+          axios({
+            method: 'post',
+            url: global.baseUrl + 'Advertisement/api/user/register',
+            data: this.addmerchantMsg
+          })
           .then((res) => {
             if (res.data.callStatus === 'SUCCEED') {
               global.success(self, '添加成功', '')

@@ -35,8 +35,8 @@ export default {
   // },
   methods: {
     exit () {
-      this.$router.push('/admin')
-      global.setToken('')
+      this.$router.push('/admin/login')
+      global.removeMsg()
     }
   }
 }

@@ -108,7 +108,7 @@ let routes = [
         redirect: { path: '/404' }
     },
     {
-    path: '/admin',
+    path: '/admin/login',
     name: 'admin',
     component: admin
   }, {

@@ -26,7 +26,7 @@ export default {
   postHttpData (data) {
     var formData = new FormData()
     for (let i in data) {
-      if (!data[i]) {
+      if (data[i]) {
         formData.append(i, data[i])
       }
     }
@@ -40,6 +40,10 @@ export default {
   },
   setToken (token) {
     localStorage.setItem('adverToken', token)
+  },
+  removeMsg () {
+    localStorage.removeItem('adverToken')
+    localStorage.removeItem('adverUser')
   },
   getToken () {
     return localStorage.getItem('adverToken')
