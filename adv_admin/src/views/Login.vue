@@ -53,13 +53,14 @@
         that.$refs.ruleForm.validate((valid) => {
           if (valid) {
             that.logining = true;
+            // console.log(global.postHttpData(that.ruleForm))
             axios({
               method: 'post',
               url: global.baseUrl + '/Advertisement/api/user/login',
-              data: `userName=${that.ruleForm.userName}&password=${that.ruleForm.password}`
+              data: global.postHttpData(that.ruleForm),
             }).then((res) => {
+              console.log(res);
               if (res.data.callStatus === 'SUCCEED') {
-                // console.log(res.data);
                 global.setToken(res.data.token)
                 global.setUser(res.data.data)
                 global.success(that, '登录成功', '/workdesktop')
