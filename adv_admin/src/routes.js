@@ -23,6 +23,12 @@ import Page5 from './views/nav2/Page5.vue'
 import WorkDesktop from './views/nav3/workDesktop.vue'
 import echarts from './views/charts/echarts.vue'
 
+// 高级管理员
+import admin from './views/admin/admin.vue'
+import adm from './views/admin/adm.vue'
+import merchant from './views/admin/merchant.vue'
+import adver from './views/admin/adver.vue'
+
 let routes = [
     {
         path: '/login',
@@ -100,7 +106,25 @@ let routes = [
         path: '*',
         hidden: true,
         redirect: { path: '/404' }
-    }
+    },
+    {
+    path: '/admin',
+    name: 'admin',
+    component: admin
+  }, {
+    path: '/adm',
+    name: 'adm',
+    component: adm,
+    children: [{
+      path: '/admin/merchant',
+      name: '商户管理',
+      component: merchant
+    }, {
+      path: '/admin/adver',
+      name: '广告管理',
+      component: adver
+    }]
+  }
 ];
 
 export default routes;

@@ -25,19 +25,19 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  //NProgress.start();
-  if (to.path == '/login') {
-  	let adverToken = global.getToken();
-    localStorage.removeItem('adverToken');
-  }
-  let adverToken = global.getToken();
-  if (!adverToken && to.path != '/login' && to.path != '/register') {
-    next({ path: '/login' })
-  } else {
-    next()
-  }
-})
+// router.beforeEach((to, from, next) => {
+//   //NProgress.start();
+//   if (to.path == '/login') {
+//   	let adverToken = global.getToken();
+//     localStorage.removeItem('adverToken');
+//   }
+//   let adverToken = global.getToken();
+//   if (!adverToken && to.path != '/login' && to.path != '/register') {
+//     next({ path: '/login' })
+//   } else {
+//     next()
+//   }
+// })
 
 //router.afterEach(transition => {
 //NProgress.done();
