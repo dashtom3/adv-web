@@ -13,6 +13,7 @@ import routes from './routes'
 // import Mock from './mock'
 // Mock.bootstrap();
 import 'font-awesome/css/font-awesome.min.css'
+import global from './views/global/global'
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)
@@ -27,10 +28,11 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   //NProgress.start();
   if (to.path == '/login') {
-    sessionStorage.removeItem('user');
+  	let adverToken = global.getToken();
+    localStorage.removeItem('adverToken');
   }
-  let user = JSON.parse(sessionStorage.getItem('user'));
-  if (!user && to.path != '/login' && to.path != '/register') {
+  let adverToken = global.getToken();
+  if (!adverToken && to.path != '/login' && to.path != '/register') {
     next({ path: '/login' })
   } else {
     next()

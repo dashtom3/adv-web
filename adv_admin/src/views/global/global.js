@@ -48,6 +48,6 @@ export default {
     localStorage.setItem('adverUser', JSON.stringify(data))
   },
   getUser () {
-    localStorage.getItem(JSON.parse('adverUser'))
+    return JSON.parse(localStorage.getItem('adverUser'))
   }
 }

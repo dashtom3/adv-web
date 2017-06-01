@@ -51,6 +51,8 @@
 </template>
 
 <script>
+  import axios from 'axios'
+  import global from '../global/global'
   export default {
     data() {
       return {
@@ -94,6 +96,11 @@
           return false;
         }
       }
+    },
+    created: function() {
+      var that = this;
+      let adverUser = global.getUser();
+      //console.log(adverUser);
     },
     methods: {
       addAdv() {
