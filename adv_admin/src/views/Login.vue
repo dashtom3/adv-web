@@ -13,7 +13,7 @@
       <!--<el-button @click.native.prevent="handleReset2">重置</el-button>-->
     </el-form-item>
     <el-form-item style="width:100%;">
-      <el-button type="primary" style="width:100%;" @click="register()" :loading="logining">注册</el-button>
+      <el-button type="primary" style="width:100%;" @click="register()">注册</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -27,10 +27,9 @@
       return {
         logining: false,
         ruleForm: {
-          // userName: 'dapan123',
-          // password: '123',
+          userName: 'dapan123',
+          password: '123',
         },
-        ruleFormm: `userName=${''}&password=${''}`,
         rules: {
           userName: [
             { required: true, message: '请输入账号', trigger: 'blur' },
