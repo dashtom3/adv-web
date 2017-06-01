@@ -1,51 +1,44 @@
 <template lang="html">
   <div class="advOrder">
-    <el-table
-      :data="orderLists"
-      border
-      style="width: 100%">
-      <el-table-column
-        prop="id"
-        label="订单编号">
+      <!--工具条-->
+    <el-col :span="24" class="toolbar">
+      <el-form class="form">
+          <el-form-item label="订单状态">
+            <el-select v-model="hah" placeholder="请选择广告类型">
+              <el-option label="未确认" value="scroll"></el-option>
+              <el-option label="已确认" value="tanchu"></el-option>
+            </el-select>
+          </el-form-item>
+          <div class="total">订单总计：50，未确认：10</div>
+      </el-form>
+    </el-col>
+    <div class="clearfix"></div>
+    <el-table :data="orderLists" border style="width: 100%">
+      <el-table-column prop="id" label="订单号">
       </el-table-column>
-      <el-table-column
-        prop="num"
-        label="个数">
+      <el-table-column prop="num" label="订单数量">
       </el-table-column>
-      <el-table-column
-        prop="playadvid"
-        label="广告ID">
+      <el-table-column prop="playadvid" label="广告ID">
       </el-table-column>
-      <el-table-column
-        prop="name"
-        label="广告名称">
+      <el-table-column prop="name" label="广告名称">
       </el-table-column>
-      <el-table-column
-        label="广告文件">
+      <el-table-column label="广告文件">
         <template scope="scope">
           <img src="" alt="">
         </template>
       </el-table-column>
-      <el-table-column
-        prop="deviceid"
-        label="设备编号">
+      <el-table-column prop="deviceid" label="设备编号">
       </el-table-column>
-      <el-table-column
-        prop="deviceaddress"
-        label="设备位置">
+      <el-table-column prop="deviceaddress" label="设备位置">
       </el-table-column>
-      <el-table-column
-        prop="regtime"
-        label="下单时间">
+<!--       <el-table-column prop="regtime" label="下单时间">
       </el-table-column>
-      <el-table-column
-        label="订单状态">
+      <el-table-column label="订单状态">
         <template scope="scope">
           <span>{{status[scope.row.status]}}</span>
         </template>
-      </el-table-column>
-      <el-table-column
-        label="操作">
+      </el-table-column> -->
+      <el-table-column label="操作">
         <template scope="scope">
           <el-button type="button" v-on:click="verifyOrder(scope.row.id)" :disabled="scope.row.status === 1" size="small">确认</el-button>
           <el-button type="danger" v-on:click="deleteOrder(scope.row.id)"
@@ -71,6 +64,13 @@ import global from '../global/global'
 export default {
   data () {
     return {
+      hah: '',
+      value: '',
+      options: [{
+        label: '未确认'
+      },{
+        label: '已确认'
+      }],
       orderLists: [
         { id: '1', playadvid: '123', deviceid: '1244', num: '5', status: 0, name: '广告名字', deviceaddress: '123', regtime: '2017-12-12', playadvid: '1' }
       ],
@@ -138,5 +138,20 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style scoped>
+.el-dialog__header {
+    text-align: center;
+}
+.el-form-item {
+  margin-bottom: 0px !important;
+}
+.form {
+  position: relative;
+}
+.total {
+  color: #48576a;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
 </style>

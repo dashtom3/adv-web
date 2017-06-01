@@ -1,5 +1,5 @@
 export default {
-  baseUrl: 'http://123.56.220.72:8080',
+  baseUrl: 'http://123.56.220.72:8080/',
   success (obj, msg, url) {
     obj.$message({
       message: msg,

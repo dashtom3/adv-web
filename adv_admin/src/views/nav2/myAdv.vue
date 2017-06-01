@@ -203,7 +203,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .el-dialog__header {
     text-align: center;
   }

@@ -27,7 +27,7 @@ let routes = [
     {
         path: '/login',
         component: Login,
-        name: '',
+        name: 'login',
         hidden: true
     },
     {

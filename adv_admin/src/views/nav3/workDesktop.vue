@@ -3,7 +3,7 @@
 		<div class="wait">
 			<div class="wait_word">待办任务</div>
 		</div>
-		<div class="item">
+		<div class="item" @click="adminLogin">
 			<img src="" alt="img">
 			<p class="item_word">广告订单(5)</p>
 		</div>
@@ -11,10 +11,37 @@
 </template>
 
 <script>
+    import axios from 'axios'
+    import global from '../global/global'
 	export default {
 		data() {
 			return {
+			    adminMsg: {
+                     userName: 'dapan123',
+                     password: '123'
+                }
 			}
+		},
+		methods: {
+            adminLogin () {
+              var self = this
+              if (this.adminMsg.userName && this.adminMsg.password) {
+                //global.success(self, '登录成功', '/admin/merchant')
+                axios.post(global.baseUrl + 'Advertisement/api/user/login', global.postHttpData(this.adminMsg))
+                .then((res) => {
+                	console.log(res);
+                  if (res.data.callStatus === 'SUCCEED') {
+                    global.setToken(res.data.token)
+                    global.setUser(res.data.data)
+                    global.success(self, '登录成功', '')
+                  } else {
+                    global.error(self, '账号或者密码错误', '')
+                  }
+                })
+              } else {
+                global.error(self, '账号或者密码不能为空', '')
+              }
+            }
 		}
 	}
 </script>

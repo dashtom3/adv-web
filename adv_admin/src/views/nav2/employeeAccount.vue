@@ -1,294 +1,132 @@
 <template>
-  <section>
+  <div>
     <!--工具条-->
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true" :model="filters">
+      <el-form :inline="true">
         <el-form-item>
-          <el-button type="primary" @click="handleAdd">添加账号</el-button>
+          <el-button type="primary" @click="addAdv">添加账号</el-button>
         </el-form-item>
       </el-form>
     </el-col>
-
-    <!--列表-->
-    <el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
-      <el-table-column type="selection" width="55">
+    <div class="clearfix"></div>
+    <el-table :data="industry" border style="width: 100%">
+      <el-table-column prop="advid" label="账号">
       </el-table-column>
-      <el-table-column prop="account" label="账号" width="160" sortable>
+      <el-table-column prop="name" label="密码">
       </el-table-column>
-      <el-table-column prop="password" label="密码" width="120" sortable>
+      <el-table-column prop="des" label="姓名">
       </el-table-column>
-      <el-table-column prop="name" label="姓名" width="100" sortable>
+      <el-table-column prop="contact" label="联系方式">
       </el-table-column>
-      <el-table-column prop="contact" label="联系方式" min-width="180" sortable>
-      </el-table-column>
-      <el-table-column label="操作" width="150">
+      <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
-          <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+          <el-button size="small" @click="addAdv">编辑</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <!--工具条-->
-    <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
-      </el-pagination>
-    </el-col>
-
-    <!--编辑界面-->
-    <el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-      <el-form :model="editForm" label-width="80px" :rules="addFormRules" ref="addForm">
-        <el-form-item label="账号" prop="account">
-          <el-input v-model="editForm.account" auto-complete="off"></el-input>
+    <!-- 弹出窗开始 -->
+    <el-dialog title="添加账号" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="账号">
+          <el-input v-model="form.account" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input type="password" v-model="editForm.password" auto-complete="off"></el-input>
+        <el-form-item label="密码">
+          <el-input v-model="form.pwd" type="password" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="editForm.name" auto-complete="off"></el-input>
+        <el-form-item label="姓名">
+          <el-input v-model="form.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="联系方式" prop="contact">
-          <el-input v-model="editForm.contact" auto-complete="off"></el-input>
+        <el-form-item label="联系方式">
+          <el-input v-model="form.contact" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="editFormVisible = false">取消</el-button>
-        <el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
       </div>
     </el-dialog>
-
-    <!--添加账户-->
-    <el-dialog title="添加账号" v-model="addFormVisible" :close-on-click-modal="false">
-      <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-        <el-form-item label="账号" prop="account">
-          <el-input v-model="addForm.account" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input type="password" v-model="addForm.password" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="addForm.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="联系方式" prop="contact">
-          <el-input v-model="addForm.contact" auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click.native="addFormVisible = false">取消</el-button>
-        <el-button type="primary" @click.native="addSubmit" :loading="addLoading">保存</el-button>
-      </div>
-    </el-dialog>
-  </section>
+    <!-- 弹出窗结束 -->
+  </div>
 </template>
 
 <script>
-  import util from '../../common/js/util'
-  //import NProgress from 'nprogress'
-  import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
-
   export default {
     data() {
       return {
-        filters: {
-          name: ''
-        },
-        users: [],
-        total: 0,
-        page: 1,
-        listLoading: false,
-        sels: [],//列表选中列
-
-        editFormVisible: false,//编辑界面是否显示
-        editLoading: false,
-        editFormRules: {
-          account: [
-            { required: true, message: '请输入账号', trigger: 'blur' }
-          ],
-          password: [
-            { required: true, message: '请输入密码', trigger: 'blur' }
-          ],
-          name: [
-            { required: true, message: '请输入姓名', trigger: 'blur' }
-          ],
-          contact: [
-            { required: true, message: '请输入联系方式', trigger: 'blur' }
-          ]
-        },
-        //编辑界面数据
-        editForm: {
-          id: 0,
+        my: true,
+        other: false,
+        dialogFormVisible: false,
+        tableData: [],
+        form: {
           account: '',
-          password: '',
+          pwd: '',
           name: '',
           contact: '',
         },
-
-        addFormVisible: false,//新增界面是否显示
-        addLoading: false,
-        addFormRules: {
-          account: [
-            { required: true, message: '请输入账号', trigger: 'blur' }
-          ],
-          password: [
-            { required: true, message: '请输入密码', trigger: 'blur' }
-          ],
-          name: [
-            { required: true, message: '请输入姓名', trigger: 'blur' }
-          ],
-          contact: [
-            { required: true, message: '请输入联系方式', trigger: 'blur' }
-          ]
-        },
-        //新增界面数据
-        addForm: {
-          name: '',
-          sex: -1,
-          age: 0,
-          birth: '',
-          addr: ''
+        type: '',
+        fileList: [],
+        industry: [{
+          advid: '123',
+          name: '123',
+          des: '田',
+          contact: '15900901007'
+        },{
+          advid: '222',
+          name: '222',
+          des: '田',
+          contact: '15900901007'
+        }],
+      }
+    },
+    watch: {
+      type: function() {
+        var that = this;
+        //console.log(that.type,'22');
+        if (that.type == 'other') {
+          that.my = false;
+          that.other = true;
+          return false
         }
-
+        if (that.type == 'my') {
+          that.my = true;
+          that.other = false;
+          return false;
+        }
       }
     },
     methods: {
-      handleCurrentChange(val) {
-        this.page = val;
-        this.getUsers();
+      addAdv() {
+        var that = this;
+        that.dialogFormVisible = true;
       },
-      //获取用户列表
-      getUsers() {
-        let para = {
-          page: this.page,
-          name: this.filters.name
-        };
-        this.listLoading = true;
-        //NProgress.start();
-        getUserListPage(para).then((res) => {
-          this.total = res.data.total;
-          this.users = res.data.users;
-          this.listLoading = false;
-          //NProgress.done();
-        });
+      handleRemove(file, fileList) {
+        console.log(file, fileList);
       },
-      //删除
-      handleDel: function (index, row) {
-        this.$confirm('确认删除该记录吗?', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { id: row.id };
-          removeUser(para).then((res) => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getUsers();
-          });
-        }).catch(() => {
-
-        });
+      handlePreview(file) {
+        console.log(file);
       },
-      //显示编辑界面
-      handleEdit: function (index, row) {
-        this.editFormVisible = true;
-        this.editForm = Object.assign({}, row);
-      },
-      //显示新增界面
-      handleAdd: function () {
-        this.addFormVisible = true;
-        this.addForm = {
-          name: '',
-          sex: -1,
-          age: 0,
-          birth: '',
-          addr: ''
-        };
-      },
-      //编辑
-      editSubmit: function () {
-        this.$refs.editForm.validate((valid) => {
-          if (valid) {
-            this.$confirm('确认提交吗？', '提示', {}).then(() => {
-              this.editLoading = true;
-              //NProgress.start();
-              let para = Object.assign({}, this.editForm);
-              para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-              editUser(para).then((res) => {
-                this.editLoading = false;
-                //NProgress.done();
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                });
-                this.$refs['editForm'].resetFields();
-                this.editFormVisible = false;
-                this.getUsers();
-              });
-            });
-          }
-        });
-      },
-      //新增
-      addSubmit: function () {
-        this.$refs.addForm.validate((valid) => {
-          if (valid) {
-            this.$confirm('确认提交吗？', '提示', {}).then(() => {
-              this.addLoading = true;
-              //NProgress.start();
-              let para = Object.assign({}, this.addForm);
-              para.birth = (!para.birth || para.birth == '') ? '' : util.formatDate.format(new Date(para.birth), 'yyyy-MM-dd');
-              addUser(para).then((res) => {
-                this.addLoading = false;
-                //NProgress.done();
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                });
-                this.$refs['addForm'].resetFields();
-                this.addFormVisible = false;
-                this.getUsers();
-              });
-            });
-          }
-        });
-      },
-      selsChange: function (sels) {
-        this.sels = sels;
-      },
-      //批量删除
-      batchRemove: function () {
-        var ids = this.sels.map(item => item.id).toString();
-        this.$confirm('确认删除选中记录吗？', '提示', {
-          type: 'warning'
-        }).then(() => {
-          this.listLoading = true;
-          //NProgress.start();
-          let para = { ids: ids };
-          batchRemoveUser(para).then((res) => {
-            this.listLoading = false;
-            //NProgress.done();
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            });
-            this.getUsers();
-          });
-        }).catch(() => {
-
-        });
+      handleClick() {
+        console.log(1);
       }
     },
-    mounted() {
-      this.getUsers();
-    }
   }
-
 </script>
 
 <style scoped>
-
+  .el-dialog__header {
+    text-align: center;
+  }
+  .pop_up {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: 18px;
+    background-color: #eaeaea;
+    margin-top: 20px;
+    font-size: 15px;
+  }
+  .wait_word {
+    margin-left: 20px;
+  }
 </style>

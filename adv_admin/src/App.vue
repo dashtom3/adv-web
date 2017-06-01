@@ -69,4 +69,8 @@ body {
 .fade-leave-active {
 	opacity: 0;
 }
+
+.el-dialog__header {
+    text-align: center !important;
+}
 </style>
