@@ -4,7 +4,13 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters">
 				<el-form-item>
-					<el-button type="primary" @click="handleAdd">添加账号</el-button>
+					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="getUsers">查询</el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
 			</el-form>
 		</el-col>
@@ -13,17 +19,21 @@
 		<el-table :data="users" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
 			<el-table-column type="selection" width="55">
 			</el-table-column>
-			<el-table-column prop="account" label="账号" width="160" sortable>
+			<el-table-column type="index" width="60">
 			</el-table-column>
-			<el-table-column prop="password" label="密码" width="120" sortable>
+			<el-table-column prop="name" label="姓名" width="120" sortable>
 			</el-table-column>
-			<el-table-column prop="name" label="姓名" width="100" sortable>
+			<el-table-column prop="sex" label="性别" width="100" :formatter="formatSex" sortable>
 			</el-table-column>
-			<el-table-column prop="contact" label="联系方式" min-width="180" sortable>
+			<el-table-column prop="age" label="年龄" width="100" sortable>
+			</el-table-column>
+			<el-table-column prop="birth" label="生日" width="120" sortable>
+			</el-table-column>
+			<el-table-column prop="addr" label="地址" min-width="180" sortable>
 			</el-table-column>
 			<el-table-column label="操作" width="150">
 				<template scope="scope">
-					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">修改</el-button>
+					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
 					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
 				</template>
 			</el-table-column>
@@ -38,54 +48,66 @@
 
 		<!--编辑界面-->
 		<el-dialog title="编辑" v-model="editFormVisible" :close-on-click-modal="false">
-			<el-form :model="editForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="账号" prop="account">
-					<el-input v-model="editForm.account" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="密码" prop="password">
-					<el-input type="password" v-model="editForm.password" auto-complete="off"></el-input>
-				</el-form-item>
+			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="联系方式" prop="contact">
-					<el-input v-model="editForm.contact" auto-complete="off"></el-input>
+				<el-form-item label="性别">
+					<el-radio-group v-model="editForm.sex">
+						<el-radio class="radio" :label="1">男</el-radio>
+						<el-radio class="radio" :label="0">女</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="年龄">
+					<el-input-number v-model="editForm.age" :min="0" :max="200"></el-input-number>
+				</el-form-item>
+				<el-form-item label="生日">
+					<el-date-picker type="date" placeholder="选择日期" v-model="editForm.birth"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="地址">
+					<el-input type="textarea" v-model="editForm.addr"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="editFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">保存</el-button>
+				<el-button type="primary" @click.native="editSubmit" :loading="editLoading">提交</el-button>
 			</div>
 		</el-dialog>
 
-		<!--添加账户-->
-		<el-dialog title="添加账号" v-model="addFormVisible" :close-on-click-modal="false">
+		<!--新增界面-->
+		<el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-				<el-form-item label="账号" prop="account">
-					<el-input v-model="addForm.account" auto-complete="off"></el-input>
-				</el-form-item>
-				<el-form-item label="密码" prop="password">
-					<el-input type="password" v-model="addForm.password" auto-complete="off"></el-input>
-				</el-form-item>
 				<el-form-item label="姓名" prop="name">
 					<el-input v-model="addForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-				<el-form-item label="联系方式" prop="contact">
-					<el-input v-model="addForm.contact" auto-complete="off"></el-input>
+				<el-form-item label="性别">
+					<el-radio-group v-model="addForm.sex">
+						<el-radio class="radio" :label="1">男</el-radio>
+						<el-radio class="radio" :label="0">女</el-radio>
+					</el-radio-group>
+				</el-form-item>
+				<el-form-item label="年龄">
+					<el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
+				</el-form-item>
+				<el-form-item label="生日">
+					<el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
+				</el-form-item>
+				<el-form-item label="地址">
+					<el-input type="textarea" v-model="addForm.addr"></el-input>
 				</el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 				<el-button @click.native="addFormVisible = false">取消</el-button>
-				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">保存</el-button>
+				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
 			</div>
 		</el-dialog>
 	</section>
 </template>
 
 <script>
-	import util from '../../common/js/util'
+	import util from '../../../common/js/util'
 	//import NProgress from 'nprogress'
-	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
+	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../../api/api';
 
 	export default {
 		data() {
@@ -102,42 +124,25 @@
 				editFormVisible: false,//编辑界面是否显示
 				editLoading: false,
 				editFormRules: {
-					account: [
-						{ required: true, message: '请输入账号', trigger: 'blur' }
-					],
-					password: [
-						{ required: true, message: '请输入密码', trigger: 'blur' }
-					],
 					name: [
 						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					],
-					contact: [
-						{ required: true, message: '请输入联系方式', trigger: 'blur' }
 					]
 				},
 				//编辑界面数据
 				editForm: {
 					id: 0,
-					account: '',
-					password: '',
 					name: '',
-					contact: '',
+					sex: -1,
+					age: 0,
+					birth: '',
+					addr: ''
 				},
 
 				addFormVisible: false,//新增界面是否显示
 				addLoading: false,
 				addFormRules: {
-					account: [
-						{ required: true, message: '请输入账号', trigger: 'blur' }
-					],
-					password: [
-						{ required: true, message: '请输入密码', trigger: 'blur' }
-					],
 					name: [
 						{ required: true, message: '请输入姓名', trigger: 'blur' }
-					],
-					contact: [
-						{ required: true, message: '请输入联系方式', trigger: 'blur' }
 					]
 				},
 				//新增界面数据
@@ -152,6 +157,10 @@
 			}
 		},
 		methods: {
+			//性别显示转换
+			formatSex: function (row, column) {
+				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
+			},
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();

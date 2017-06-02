@@ -1,6 +1,8 @@
 <template>
     <el-menu class="el-menu-vertical-demo" :default-active="routerActive" router>
-    <el-menu-item v-for="nav in navbar" :key="nav" :index="nav.url"><i :class="nav.className"></i>{{nav.name}}</el-menu-item>
+    <el-menu-item v-for="nav in navbar" :key="nav" :index="nav.url">
+      <i :class="nav.className"></i>{{nav.name}}
+    </el-menu-item>
   </el-menu>
   </el-col>
 </template>

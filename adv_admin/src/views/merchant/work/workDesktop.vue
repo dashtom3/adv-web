@@ -4,7 +4,7 @@
 			<div class="wait_word">待办任务</div>
 		</div>
 		<div class="item" @click="adminLogin">
-			<img src="" alt="img">
+			<img src="../../../images/mer-order.jpg">
 			<p class="item_word">广告订单(5)</p>
 		</div>
 	</div>
@@ -12,7 +12,7 @@
 
 <script>
     import axios from 'axios'
-    import global from '../global/global'
+    import global from '../../global/global'
 	export default {
 		data() {
 			return {
@@ -75,7 +75,7 @@
 		width: 130px;
 		height: 130px;
 		border-radius: 50%;
-		background-color: #EECE7C;
+		/*background-color: #EECE7C;*/
 	}
 	.item .item_word {
 		text-align: center;

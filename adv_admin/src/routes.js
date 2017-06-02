@@ -1,27 +1,27 @@
 import Login from './views/Login.vue'
 import Register from './views/Register.vue'
 import NotFound from './views/404.vue'
-import Home from './views/Home.vue'
+import Home from './views/merchant/main_mer.vue'
 import Main from './views/Main.vue'
-import Userinfo from './views/nav1/userinfo.vue'
-import MyProject from './views/nav1/myProject.vue'
-import PublishProject from './views/nav1/publishProject.vue'
-import MyResource from './views/nav1/MyResource.vue'
-import PublishResource from './views/nav1/PublishResource.vue'
-import MessageBox from './views/nav1/messageBox.vue'
-import Table from './views/nav1/Table.vue'
-import Form from './views/nav1/Form.vue'
-import user from './views/nav1/user.vue'
-import EmployeeAccount from './views/nav2/employeeAccount.vue'
-import MyAdv from './views/nav2/myAdv.vue'
-import Shield from './views/nav2/shield.vue'
-import MyDevice from './views/nav2/myDevice.vue'
-import Total from './views/nav2/total.vue'
-import Advlist from './views/nav2/advlist.vue'
-import Page4 from './views/nav2/Page4.vue'
-import Page5 from './views/nav2/Page5.vue'
-import WorkDesktop from './views/nav3/workDesktop.vue'
-import echarts from './views/charts/echarts.vue'
+import Userinfo from './views/merchant/basic/userinfo.vue'
+import MyProject from './views/merchant/basic/myProject.vue'
+import PublishProject from './views/merchant/basic/publishProject.vue'
+import MyResource from './views/merchant/basic/MyResource.vue'
+import PublishResource from './views/merchant/basic/PublishResource.vue'
+import MessageBox from './views/merchant/basic/messageBox.vue'
+import Table from './views/merchant/basic/Table.vue'
+import Form from './views/merchant/basic/Form.vue'
+import user from './views/merchant/basic/user.vue'
+import EmployeeAccount from './views/merchant/adv/employeeAccount.vue'
+import MyAdv from './views/merchant/adv/myAdv.vue'
+import Shield from './views/merchant/adv/shield.vue'
+import MyDevice from './views/merchant/adv/myDevice.vue'
+import Total from './views/merchant/adv/total.vue'
+import Advlist from './views/merchant/adv/advlist.vue'
+import Page4 from './views/merchant/adv/Page4.vue'
+import Page5 from './views/merchant/adv/Page5.vue'
+import WorkDesktop from './views/merchant/work/workDesktop.vue'
+// import echarts from './views/charts/echarts.vue'
 
 // 高级管理员
 import admin from './views/admin/admin.vue'
@@ -50,56 +50,44 @@ let routes = [
     },
     //{ path: '/main', component: Main },
     {
-        path: '/',
+        path: '/merchant',
         component: Home,
         name: '',
         iconCls: 'fa fa-address-card',
+        hidden: 'merchant',
         leaf: true,//只有一个节点
         children: [
-            { path: '/workdesktop', component: WorkDesktop, name: '工作桌面' }
+            { path: '/merchant/workdesktop', component: WorkDesktop, name: '工作桌面' }
         ]
     },
     {
-        path: '/home',
+        path: '/merchant',
         component: Home,
         name: '基本信息管理',
         iconCls: 'el-icon-message',//图标样式class
+        hidden: 'merchant',
         children: [
-            { path: '/main', component: Main, name: '主页' },
-            { path: '/userinfo', component: Userinfo, name: '基本资料' },
-            { path: '/myproject', component: MyProject, name: '我的项目' },
-            { path: '/publishproject', component: PublishProject, name: '发布项目' },
-            { path: '/myResource', component: MyResource, name: '我的资源' },
-            { path: '/publishResource', component: PublishResource , name: '发布资源' },
-            { path: '/messagebox', component: MessageBox, name: '留言箱' },
-            { path: '/table', component: Table, name: 'Table' },
-            { path: '/form', component: Form, name: 'Form' },
-            { path: '/user', component: user, name: '列表' },
+            { path: '/merchant/userinfo', component: Userinfo, name: '基本资料' },
+            { path: '/merchant/myproject', component: MyProject, name: '我的项目' },
+            { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
+            { path: '/merchant/myResource', component: MyResource, name: '我的资源' },
+            { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' },
+            { path: '/merchant/messagebox', component: MessageBox, name: '留言箱' }
         ]
     },
     {
-        path: '/',
+        path: '/merchant',
         component: Home,
         name: '广告平台管理',
         iconCls: 'fa fa-id-card-o',
+        hidden: 'merchant',
         children: [
-            { path: '/employeeaccount', component: EmployeeAccount, name: '员工账号' },
-            { path: '/myadv', component: MyAdv , name: '播放广告' },
-            { path: '/shield', component: Shield, name: '屏蔽行业' },
-            { path: '/mydevice', component: MyDevice, name: '我的设备' },
-            { path: '/total', component: Total, name: '统计数据' },
-            { path: '/advlist', component: Advlist, name: '广告订单' },
-            { path: '/page4', component: Page4, name: '页面4' },
-            { path: '/page5', component: Page5, name: '页面5' }
-        ]
-    },
-    {
-        path: '/',
-        component: Home,
-        name: 'Charts',
-        iconCls: 'fa fa-bar-chart',
-        children: [
-            { path: '/echarts', component: echarts, name: 'echarts' }
+            { path: '/merchant/employeeaccount', component: EmployeeAccount, name: '员工账号' },
+            { path: '/merchant/myadv', component: MyAdv , name: '播放广告' },
+            { path: '/merchant/shield', component: Shield, name: '屏蔽行业' },
+            { path: '/merchant/mydevice', component: MyDevice, name: '我的设备' },
+            { path: '/merchant/total', component: Total, name: '统计数据' },
+            { path: '/merchant/advlist', component: Advlist, name: '广告订单' }
         ]
     },
     {
@@ -116,7 +104,7 @@ let routes = [
     path: '/adm',
     name: 'adm',
     component: adm,
-    hidden: true,
+    hidden: 'admin',
     children: [{
       path: '/admin/merchant',
       name: '商户管理',

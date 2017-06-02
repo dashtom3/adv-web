@@ -64,7 +64,7 @@
 
 <script>
   import axios from 'axios'
-  import global from '../global/global'
+  import global from '../../global/global'
   export default {
     data () {
       return {
@@ -75,13 +75,13 @@
         },{
           label: '已确认'
         }],
-        totalLists: [{ 
+        totalLists: [{
           id: '123456',
           name: '秋衣',
-          deviceid: '文件', 
-          business: '自家商铺', 
-          status: '自家商铺', 
-          regtime: '2017-12-12', 
+          deviceid: '文件',
+          business: '自家商铺',
+          status: '自家商铺',
+          regtime: '2017-12-12',
           playadvid: '1' }],
         orderArgs: {
           currentPage: 1,

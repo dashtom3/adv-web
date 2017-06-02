@@ -11,7 +11,7 @@
 			</el-col>
 			<el-col :span="4" class="userinfo">
 				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img src="../images/head.png" alt="img"/> {{sysUserName}}</span>
+					<span class="el-dropdown-link userinfo-inner"><img src="../../images/head.png" alt="img"/> {{sysUserName}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
 						<el-dropdown-item>设置</el-dropdown-item>
@@ -25,7 +25,7 @@
 				<!--导航菜单-->
 				<el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
 					 unique-opened router v-show="!collapsed">
-					<template v-for="(item,index) in $router.options.routes" v-if="!item.hidden">
+					<template v-for="(item,index) in $router.options.routes" v-if="item.hidden == 'merchant'">
 						<el-submenu :index="index+''" v-if="!item.leaf">
 							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
 							<el-menu-item v-for="child in item.children" :index="child.path" :key="child.path" v-if="!child.hidden">{{child.name}}</el-menu-item>
@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import global from './global/global'
+import global from './../global/global'
 	export default {
 		data() {
 			return {
@@ -91,6 +91,10 @@ import global from './global/global'
 					desc: ''
 				}
 			}
+		},
+		created: function () {
+			console.log(this.$route.path)
+			console.log(this.$route)
 		},
 		methods: {
 			onSubmit() {

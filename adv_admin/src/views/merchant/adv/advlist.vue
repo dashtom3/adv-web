@@ -60,7 +60,7 @@
 
 <script>
 import axios from 'axios'
-import global from '../global/global'
+import global from '../../global/global'
 export default {
   data () {
     return {

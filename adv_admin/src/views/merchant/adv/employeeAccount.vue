@@ -4,19 +4,19 @@
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true">
         <el-form-item>
-          <el-button type="primary" @click="addAdv">添加行业</el-button>
+          <el-button type="primary" @click="addAdv">添加账号</el-button>
         </el-form-item>
       </el-form>
     </el-col>
     <div class="clearfix"></div>
-
-    <!-- 行业列表 -->
     <el-table :data="industry" border style="width: 100%">
-      <el-table-column prop="id" label="行业id">
+      <el-table-column prop="advid" label="账号">
       </el-table-column>
-      <el-table-column prop="name" label="行业名称">
+      <el-table-column prop="name" label="密码">
       </el-table-column>
-      <el-table-column prop="des" label="所属行业">
+      <el-table-column prop="des" label="姓名">
+      </el-table-column>
+      <el-table-column prop="contact" label="联系方式">
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
@@ -25,32 +25,20 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- 分页 -->
-    <div class="block" v-if="industryArg.totalPage > 1">
-      <el-pagination
-        layout="prev, pager, next"
-        :current-page.sync="industryArg.currentPage"
-        @current-change="changePage"
-        :page-count="industryArg.totalPage">
-      </el-pagination>
-    </div>
-
-
-    <!-- 添加行业 -->
-    <el-dialog title="添加行业" :visible.sync="dialogFormVisible">
+    <!-- 弹出窗开始 -->
+    <el-dialog title="添加账号" :visible.sync="dialogFormVisible">
       <el-form :model="form">
-        <el-form-item label="行业" :label-width="formLabelWidth">
-          <el-select v-model="type" placeholder="请选择">
-            <el-option label="衣服" value="my"></el-option>
-            <el-option label="上衣" value="other"></el-option>
-          </el-select>
+        <el-form-item label="账号">
+          <el-input v-model="form.account" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="行业细分" :label-width="formLabelWidth">
-          <el-select v-model="form.adtype" placeholder="请选择">
-            <el-option label="衣服" value="scroll"></el-option>
-            <el-option label="总行业" value="tanchu"></el-option>
-          </el-select>
+        <el-form-item label="密码">
+          <el-input v-model="form.pwd" type="password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="姓名">
+          <el-input v-model="form.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="联系方式">
+          <el-input v-model="form.contact" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -63,37 +51,35 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import global from '../global/global'
+  import axios from 'axios'
+  import global from '../../global/global'
   export default {
     data() {
       return {
         my: true,
         other: false,
         dialogFormVisible: false,
-        formLabelWidth: '120px',
         tableData: [],
         form: {
-          type: '',
+          account: '',
+          pwd: '',
           name: '',
-          des: '',
-          adtype: '',
-          list: '',
-          time: '',
+          contact: '',
         },
         type: '',
         fileList: [],
-        industry: [],
-        industryArg: {
-          userId: global.getUser().id,
-          numberPerpage: 10,
-          currentPage: 1,
-          totalPage: -1
-        }
+        industry: [{
+          advid: '123',
+          name: '123',
+          des: '田',
+          contact: '15900901007'
+        },{
+          advid: '222',
+          name: '222',
+          des: '田',
+          contact: '15900901007'
+        }],
       }
-    },
-    created () {
-      this.getIndustryList(this.industryArg)
     },
     watch: {
       type: function() {
@@ -111,6 +97,11 @@
         }
       }
     },
+    created: function() {
+      var that = this;
+      let adverUser = global.getUser();
+      //console.log(adverUser);
+    },
     methods: {
       addAdv() {
         var that = this;
@@ -124,28 +115,15 @@
       },
       handleClick() {
         console.log(1);
-      },
-      // 获取屏蔽行业列表
-      getIndustryList (args) {
-        var self = this
-        global.axiosGetReq('exclude/getExcludeList?', args).then((res) => {
-          // console.log(res)
-          self.industry = res.data.data
-          self.industryArg.currentPage = res.data.currentPage
-          self.industryArg.totalPage = res.data.totalPage
-        })
-      },
-      // 分页
-      changePage (value) {
-        this.industryArg.currentPage = value
-        this.getIndustryList(this.industryArg)
       }
-    }
+    },
   }
 </script>
 
 <style scoped>
-@import "../global/style.css"
+  .el-dialog__header {
+    text-align: center;
+  }
   .pop_up {
     width: 100%;
     height: 50px;
