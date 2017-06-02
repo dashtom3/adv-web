@@ -56,6 +56,10 @@ export default {
   getUser () {
     return JSON.parse(localStorage.getItem('adverUser'))
   },
+  axiosPostReq (url, data) {
+    axios.defaults.headers['token'] = this.getToken()
+    return axios.post(this.baseUrl + url, this.postHttpData(data))
+  },
   axiosGetReq (url, data) {
     axios.defaults.headers['token'] = this.getToken()
     return axios.get(this.baseUrl + url + this.getHttpData(data))
