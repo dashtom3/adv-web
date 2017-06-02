@@ -60,12 +60,12 @@ let routes = [
         ]
     },
     {
-        path: '/',
+        path: '/home',
         component: Home,
         name: '基本信息管理',
         iconCls: 'el-icon-message',//图标样式class
         children: [
-            { path: '/main', component: Main, name: '主页', hidden: true },
+            { path: '/main', component: Main, name: '主页' },
             { path: '/userinfo', component: Userinfo, name: '基本资料' },
             { path: '/myproject', component: MyProject, name: '我的项目' },
             { path: '/publishproject', component: PublishProject, name: '发布项目' },
@@ -84,7 +84,7 @@ let routes = [
         iconCls: 'fa fa-id-card-o',
         children: [
             { path: '/employeeaccount', component: EmployeeAccount, name: '员工账号' },
-            { path: '/myadv', component: MyAdv , name: '我的广告' },
+            { path: '/myadv', component: MyAdv , name: '播放广告' },
             { path: '/shield', component: Shield, name: '屏蔽行业' },
             { path: '/mydevice', component: MyDevice, name: '我的设备' },
             { path: '/total', component: Total, name: '统计数据' },
@@ -110,11 +110,13 @@ let routes = [
     {
     path: '/admin/login',
     name: 'admin',
-    component: admin
+    component: admin,
+    hidden: true
   }, {
     path: '/adm',
     name: 'adm',
     component: adm,
+    hidden: true,
     children: [{
       path: '/admin/merchant',
       name: '商户管理',

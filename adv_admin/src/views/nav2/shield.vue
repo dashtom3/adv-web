@@ -9,8 +9,10 @@
       </el-form>
     </el-col>
     <div class="clearfix"></div>
+
+    <!-- 行业列表 -->
     <el-table :data="industry" border style="width: 100%">
-      <el-table-column prop="advid" label="行业id">
+      <el-table-column prop="id" label="行业id">
       </el-table-column>
       <el-table-column prop="name" label="行业名称">
       </el-table-column>
@@ -23,7 +25,19 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- 弹出窗开始 -->
+
+    <!-- 分页 -->
+    <div class="block" v-if="industryArg.totalPage > 1">
+      <el-pagination
+        layout="prev, pager, next"
+        :current-page.sync="industryArg.currentPage"
+        @current-change="changePage"
+        :page-count="industryArg.totalPage">
+      </el-pagination>
+    </div>
+
+
+    <!-- 添加行业 -->
     <el-dialog title="添加行业" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="行业" :label-width="formLabelWidth">
@@ -50,6 +64,7 @@
 
 <script>
   import axios from 'axios';
+  import global from '../global/global'
   export default {
     data() {
       return {
@@ -68,16 +83,17 @@
         },
         type: '',
         fileList: [],
-        industry: [{
-          advid: '1',
-          name: '上衣',
-          des: '衣服',
-        },{
-          advid: '2',
-          name: '衣服',
-          des: '总行业',
-        }],
+        industry: [],
+        industryArg: {
+          userId: global.getUser().id,
+          numberPerpage: 10,
+          currentPage: 1,
+          totalPage: -1
+        }
       }
+    },
+    created () {
+      this.getIndustryList(this.industryArg)
     },
     watch: {
       type: function() {
@@ -108,12 +124,28 @@
       },
       handleClick() {
         console.log(1);
+      },
+      // 获取屏蔽行业列表
+      getIndustryList (args) {
+        var self = this
+        global.axiosGetReq('exclude/getExcludeList?', args).then((res) => {
+          // console.log(res)
+          self.industry = res.data.data
+          self.industryArg.currentPage = res.data.currentPage
+          self.industryArg.totalPage = res.data.totalPage
+        })
+      },
+      // 分页
+      changePage (value) {
+        this.industryArg.currentPage = value
+        this.getIndustryList(this.industryArg)
       }
-    },
+    }
   }
 </script>
 
 <style scoped>
+@import "../global/style.css"
   .pop_up {
     width: 100%;
     height: 50px;

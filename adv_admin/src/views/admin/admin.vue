@@ -36,7 +36,7 @@ export default {
         // console.log(global.postHttpData(this.adminMsg))
         // global.success(self, '登录成功', '/admin/merchant')
         // console.log(global.getHttpData(this.adminMsg))
-        axios.post(global.baseUrl + 'Advertisement/api/user/login', global.postHttpData(this.adminMsg))
+        axios.post(global.baseUrl + 'user/login', global.postHttpData(this.adminMsg))
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
             global.setToken(res.data.token)

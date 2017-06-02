@@ -1,5 +1,6 @@
+import axios from 'axios'
 export default {
-  baseUrl: 'http://123.56.220.72:8080/',
+  baseUrl: 'http://123.56.220.72:8080/Advertisement/api/',
   success (obj, msg, url) {
     obj.$message({
       message: msg,
@@ -37,6 +38,7 @@ export default {
     for (let i in data) {
       formData = formData + '&' + i + '=' + data[i]
     }
+    return formData
   },
   setToken (token) {
     localStorage.setItem('adverToken', token)
@@ -53,5 +55,12 @@ export default {
   },
   getUser () {
     return JSON.parse(localStorage.getItem('adverUser'))
+  },
+  axiosGetReq (url, data) {
+    axios.defaults.headers['token'] = this.getToken()
+    return axios.get(this.baseUrl + url + this.getHttpData(data))
+  },
+  getQiNiuToken () {
+    return this.axiosGetReq('qiniu/getQiNiuToken')
   }
 }
