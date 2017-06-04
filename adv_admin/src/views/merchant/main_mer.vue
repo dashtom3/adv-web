@@ -93,8 +93,8 @@ import global from './../global/global'
 			}
 		},
 		created: function () {
-			console.log(this.$route.path)
-			console.log(this.$route)
+			// console.log(this.$route.path)
+			// console.log(this.$route)
 		},
 		methods: {
 			onSubmit() {

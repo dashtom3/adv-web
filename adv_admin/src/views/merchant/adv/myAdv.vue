@@ -49,7 +49,7 @@
       <el-table-column label="操作">
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row.userId, scope.row.id)" v-if="scope.row.userId != adverInfo.userId">修改</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,7 +93,7 @@
       <el-table-column label="操作">
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row.id)" v-if="scope.row.userId === adverInfo.userId">修改</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -155,12 +155,15 @@
           </el-form-item>
           <el-form-item label="文件" :label-width="formLabelWidth">
             <el-upload class="upload-demo"
-            :action=qiNiuUrl :on-preview="handlePreview" :on-remove="handleRemove" :file-list="fileList">
+            :action=qiNiuUrl
+            :on-success="uploadFile"
+            :data="qiNiuToken"
+            :file-list="fileList">
               <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件，且不超过500kb</div>
             </el-upload>
           </el-form-item>
-          <el-form-item label="时长(仅上传文件时图片时显示)" :label-width="formLabelWidth">
+          <el-form-item label="时长(仅上传文件时图片时显示)" :label-width="formLabelWidth" v-if="uploadFileType">
             <el-input v-model="addAdverMsg.time" auto-complete="off"></el-input>
           </el-form-item>
         </div>
@@ -182,6 +185,7 @@ import global from '../../global/global'
         my: false,
         other: false,
         addAdverAlert: false,
+        uploadFileType: false,
         formLabelWidth: '120px',
         addAdverMsg: {
           selectType: null,
@@ -201,14 +205,14 @@ import global from '../../global/global'
           currentPage: 1,
           totalPage: -1
         },
-        qiNiuUrl: null,
-        addAdverUrl: null
+        qiNiuUrl: global.qiNiuUrl,
+        qiNiuToken: null
       }
     },
     created () {
       var self = this
       global.getQiNiuToken().then((res) => {
-        self.qiNiuUrl = global.baseUrl + res.data.data
+        self.qiNiuToken = {token: res.data.data}
       })
       this.getAdverList(this.adverInfo)
     },
@@ -255,6 +259,13 @@ import global from '../../global/global'
           }
         })
       },
+      // 上传文件
+      uploadFile (file, response) {
+        if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/gif') {
+          this.uploadFileType = true
+        }
+        this.addAdverMsg.fileSrc = global.qiniuShUrl + file.key
+      },
       // 添加广告
       addAdverPost () {
         var self = this
@@ -266,6 +277,31 @@ import global from '../../global/global'
             self.getAdverList(self.adverInfo)
           }
         })
+      },
+      handleDelete (adverId) {
+        var adverMsg = {
+          playAdvId: adverId
+        }
+        var self = this
+        this.$confirm('是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          global.axiosPostReq('playAdv/delete', adverMsg)
+          .then((res) => {
+            if (res.data.callStatus === 'SUCCEED') {
+              self.$message({
+                type: 'success',
+                message: '删除成功!',
+                duration: '800',
+                onClose: function () {
+                  self.getAdverList(this.adverInfo)
+                }
+              });
+            }
+          })
+        }).catch(() => {});
       }
     },
     watch: {
@@ -277,6 +313,7 @@ import global from '../../global/global'
         }
         this.my = false
         this.other = false
+        this.uploadFileType = false
       }
     }
   }
