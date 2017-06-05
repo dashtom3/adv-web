@@ -167,18 +167,17 @@
       },
       // 分类
       setKind (value) {
-        // console.log(this.allIndustry)
-        for (let i in value) {
-          for (let m in this.allIndustry) {
-            for (let j in this.allIndustry[i].subIndusrty) {
-              if (this.allIndustry[i].subIndusrty[j]['industryId'] === value[i].industryId) {
-                value[i].name = this.allIndustry[i].subIndusrty[i].name
-                value[i].kindName = this.allIndustry[i].name
+        for (let i in this.allIndustry) {
+          for (let j in value) {
+            for (let m in this.allIndustry[i].subIndusrty) {
+              if (this.allIndustry[i].subIndusrty[m].industryId === value[j].industryId) {
+                // console.log(value[j],this.allIndustry[i])
+                value[j].name = this.allIndustry[i].subIndusrty[m].name
+                value[j].kindName = this.allIndustry[i].name
               }
             }
           }
         }
-        // console.log(value)
       },
       // 分页
       changePage (value) {
