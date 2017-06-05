@@ -296,7 +296,7 @@ import global from '../../global/global'
                 message: '删除成功!',
                 duration: '800',
                 onClose: function () {
-                  self.getAdverList(this.adverInfo)
+                  self.getAdverList(self.adverInfo)
                 }
               });
             }

@@ -18,6 +18,31 @@ import global from './views/global/global'
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
+Vue.filter('time', function (value) {
+  if (value) {
+    var month = new Date(parseInt(value)).getMonth() + 1
+    var date = new Date(parseInt(value)).getDate()
+    var hour = new Date(parseInt(value)).getHours()
+    var minutes = new Date(parseInt(value)).getMinutes()
+    var seconds = new Date(parseInt(value)).getSeconds()
+    if (minutes < 10) {
+      minutes = '0' + minutes
+    }
+    if (seconds < 10) {
+      seconds = '0' + seconds
+    }
+    if (hour < 10) {
+      hour = '0' + hour
+    }
+    if (month < 10) {
+      month = '0' + month
+    }
+    if (date < 10) {
+      date = '0' + date
+    }
+    return new Date(parseInt(value)).getFullYear() + '-' + month + '-' + date + ' ' + hour + ':' + minutes + ':' + seconds
+  }
+})
 
 //NProgress.configure({ showSpinner: false });
 

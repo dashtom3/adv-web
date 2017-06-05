@@ -9,14 +9,14 @@
       </el-form>
     </el-col>
     <div class="clearfix"></div>
-    <el-table :data="industry" border style="width: 100%">
-      <el-table-column prop="advid" label="账号">
+    <el-table :data="employeeLists" border style="width: 100%">
+      <el-table-column prop="userName" label="账号">
       </el-table-column>
-      <el-table-column prop="name" label="密码">
+      <el-table-column prop="password" label="密码">
       </el-table-column>
-      <el-table-column prop="des" label="姓名">
+      <el-table-column prop="realName" label="姓名">
       </el-table-column>
-      <el-table-column prop="contact" label="联系方式">
+      <el-table-column prop="phone" label="联系方式">
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
@@ -25,25 +25,36 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+    <div class="block" v-if="employeeArgs.totalPag > 1">
+      <el-pagination
+        layout="prev, pager, next"
+        :current-page.sync="employeeArgs.currentPage"
+        @current-change="changePage"
+        :page-count="employeeArgs.totalPage">
+      </el-pagination>
+    </div>
+
     <!-- 弹出窗开始 -->
-    <el-dialog title="添加账号" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
+    <el-dialog title="添加账号" :visible.sync="addEmployeeAlert">
+      <el-form :model="addEmployeeInfo">
         <el-form-item label="账号">
-          <el-input v-model="form.account" auto-complete="off"></el-input>
+          <el-input v-model="addEmployeeInfo.userName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input v-model="form.pwd" type="password" auto-complete="off"></el-input>
+          <el-input v-model="addEmployeeInfo.password" type="password" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
-          <el-input v-model="form.name" auto-complete="off"></el-input>
+          <el-input v-model="addEmployeeInfo.realName" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="联系方式">
-          <el-input v-model="form.contact" auto-complete="off"></el-input>
+          <el-input v-model="addEmployeeInfo.phone" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
+        <el-button @click="addEmployeeAlert = false">取 消</el-button>
+        <el-button type="primary" @click="addEmployeeClick">保 存</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
@@ -58,27 +69,22 @@
       return {
         my: true,
         other: false,
-        dialogFormVisible: false,
-        tableData: [],
-        form: {
-          account: '',
-          pwd: '',
-          name: '',
-          contact: '',
+        addEmployeeAlert: false,
+        addEmployeeInfo: {
+          userName: null,
+          password: null,
+          realName: null,
+          phone: null
         },
         type: '',
         fileList: [],
-        industry: [{
-          advid: '123',
-          name: '123',
-          des: '田',
-          contact: '15900901007'
-        },{
-          advid: '222',
-          name: '222',
-          des: '田',
-          contact: '15900901007'
-        }],
+        employeeLists: [],
+        employeeArgs: {
+          type: 3,
+          currentPage: 1,
+          totalPage: -1,
+          numberPerpage: 10
+        }
       }
     },
     watch: {
@@ -100,12 +106,13 @@
     created: function() {
       var that = this;
       let adverUser = global.getUser();
+      this.getEmployeeList(this.employeeArgs)
       //console.log(adverUser);
     },
     methods: {
       addAdv() {
         var that = this;
-        that.dialogFormVisible = true;
+        that.addEmployeeAlert = true;
       },
       handleRemove(file, fileList) {
         console.log(file, fileList);
@@ -115,8 +122,36 @@
       },
       handleClick() {
         console.log(1);
+      },
+      getEmployeeList (args) {
+        global.axiosGetReq('user/admin/getUserList?', args)
+        .then((res) => {
+          console.log(res)
+          if (res.data.callStatus === 'SUCCEED') {
+            this.employeeLists = res.data.data
+            this.employeeArgs.currentPage = res.data.currentPage
+            this.employeeArgs.totalPage = res.data.totalPage
+          } else {
+            global.error(this, res.data.data, '')
+          }
+        })
+      },
+      // 添加子账号
+      addEmployeeClick () {
+        global.axiosPostReq('user/createChildAccount', this.addEmployeeInfo)
+        .then((res) => {
+          if (res.data.callStatus === 'SUCCEED') {
+            global.success(this, '添加成功', '')
+            this.getEmployeeList(this.employeeArgs)
+          }
+        })
+      },
+      // 分页
+      changePage (value) {
+        this.changePage.currentPage = value
+        this.getEmployeeList(this.employeeArgs)
       }
-    },
+    }
   }
 </script>
 

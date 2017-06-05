@@ -4,7 +4,7 @@
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true">
         <el-form-item>
-          <el-button type="primary" @click="addAdv">添加行业</el-button>
+          <el-button type="primary" @click="addIndustryAlert = true">添加行业</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -16,12 +16,11 @@
       </el-table-column>
       <el-table-column prop="name" label="行业名称">
       </el-table-column>
-      <el-table-column prop="des" label="所属行业">
+      <el-table-column label="所属行业" prop="kindName">
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="addAdv">编辑</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -38,24 +37,32 @@
 
 
     <!-- 添加行业 -->
-    <el-dialog title="添加行业" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
-        <el-form-item label="行业" :label-width="formLabelWidth">
-          <el-select v-model="type" placeholder="请选择">
-            <el-option label="衣服" value="my"></el-option>
-            <el-option label="上衣" value="other"></el-option>
+    <el-dialog title="添加行业" :visible.sync="addIndustryAlert">
+      <el-form :model="addIndustryInfo">
+        <el-form-item label="分类" :label-width="formLabelWidth">
+          <el-select v-model="subIndustry" placeholder="请选择"
+          @change="selectKind">
+            <el-option
+            :key="industry"
+            v-for="industry in allIndustry"
+            :label="industry.name"
+            :value="industry.subIndusrty"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="行业细分" :label-width="formLabelWidth">
-          <el-select v-model="form.adtype" placeholder="请选择">
-            <el-option label="衣服" value="scroll"></el-option>
-            <el-option label="总行业" value="tanchu"></el-option>
+
+        <el-form-item label="行业" :label-width="formLabelWidth">
+          <el-select v-model="addIndustryInfo.industryId" placeholder="请选择">
+            <el-option
+            :key="item"
+            v-for="item in subIndustry"
+            :label="item.name"
+            :value="item.industryId"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">保 存</el-button>
+        <el-button @click="addIndustryAlert = false">取 消</el-button>
+        <el-button type="primary" @click="addPostClick">保 存</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
@@ -68,20 +75,8 @@
   export default {
     data() {
       return {
-        my: true,
-        other: false,
-        dialogFormVisible: false,
+        addIndustryAlert: false,
         formLabelWidth: '120px',
-        tableData: [],
-        form: {
-          type: '',
-          name: '',
-          des: '',
-          adtype: '',
-          list: '',
-          time: '',
-        },
-        type: '',
         fileList: [],
         industry: [],
         industryArg: {
@@ -89,51 +84,101 @@
           numberPerpage: 10,
           currentPage: 1,
           totalPage: -1
+        },
+        allIndustry: [],
+        subIndustry: [],
+        addIndustryInfo: {
+          industryId: null
         }
       }
     },
     created () {
       this.getIndustryList(this.industryArg)
+      // setTimeout(this.getAllIndustry, 300)
+      this.getAllIndustry()
     },
     watch: {
-      type: function() {
-        var that = this;
-        //console.log(that.type,'22');
-        if (that.type == 'other') {
-          that.my = false;
-          that.other = true;
-          return false
-        }
-        if (that.type == 'my') {
-          that.my = true;
-          that.other = false;
-          return false;
+      addIndustryAlert () {
+        if (this.addIndustryAlert) {
+          this.subIndustry = []
+          this.addIndustryInfo.industryId = null
         }
       }
     },
     methods: {
-      addAdv() {
-        var that = this;
-        that.dialogFormVisible = true;
-      },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-      },
-      handleClick() {
-        console.log(1);
-      },
       // 获取屏蔽行业列表
       getIndustryList (args) {
         var self = this
+        // console.log('hhh')
         global.axiosGetReq('exclude/getExcludeList?', args).then((res) => {
           // console.log(res)
-          self.industry = res.data.data
-          self.industryArg.currentPage = res.data.currentPage
-          self.industryArg.totalPage = res.data.totalPage
+          if (res.data.callStatus === 'SUCCEED') {
+            self.industry = res.data.data
+            self.industryArg.currentPage = res.data.currentPage
+            self.industryArg.totalPage = res.data.totalPage
+            self.setKind(res.data.data)
+          }
         })
+      },
+      // 获取所有行业
+      getAllIndustry () {
+        global.axiosGetReq('exclude/getIndustryList')
+        .then((res) => {
+          this.allIndustry = res.data.data
+        })
+      },
+      selectKind () {
+        this.addIndustryInfo.industryId = null
+      },
+      // 添加屏蔽行业
+      addPostClick () {
+        global.axiosPostReq('exclude/add', this.addIndustryInfo)
+        .then((res) => {
+          if (res.data.callStatus === 'SUCCEED') {
+            global.success(this, '添加成功', '')
+            this.addIndustryAlert = false
+            this.getIndustryList(this.industryArg)
+          }
+        })
+      },
+      // 删除
+      handleDelete (id) {
+        var adverMsg = {
+          excludeId: id
+        }
+        this.$confirm('是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          var self = this
+          global.axiosPostReq('exclude/delete', adverMsg)
+          .then((res) => {
+            if (res.data.callStatus === 'SUCCEED') {
+              self.getIndustryList(self.industryArg)
+              self.$message({
+                type: 'success',
+                message: '删除成功!',
+                duration: '800'
+              });
+            }
+          })
+        }).catch(() => {});
+      },
+      // 分类
+      setKind (value) {
+        // console.log(this.allIndustry)
+        for (let i in value) {
+          for (let m in this.allIndustry) {
+            for (let j in this.allIndustry[i].subIndusrty) {
+              if (this.allIndustry[i].subIndusrty[j]['industryId'] === value[i].industryId) {
+                value[i].name = this.allIndustry[i].subIndusrty[i].name
+                value[i].kindName = this.allIndustry[i].name
+              }
+            }
+          }
+        }
+        // console.log(value)
       },
       // 分页
       changePage (value) {

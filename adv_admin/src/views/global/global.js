@@ -18,6 +18,7 @@ export default {
     obj.$message({
       message: msg,
       duration: '1000',
+      type: 'error',
       onClose: function () {
         if (url) {
           obj.$router.push(url)
@@ -28,7 +29,7 @@ export default {
   postHttpData (data) {
     var formData = new FormData()
     for (let i in data) {
-      if (data[i]) {
+      if (data[i] != null) {
         formData.append(i, data[i])
       }
     }
@@ -37,7 +38,9 @@ export default {
   getHttpData (data) {
     var formData = ''
     for (let i in data) {
-      formData = formData + '&' + i + '=' + data[i]
+      if (data[i] != null) {
+        formData = formData + '&' + i + '=' + data[i]
+      }
     }
     return formData
   },
