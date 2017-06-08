@@ -21,6 +21,7 @@ import Advlist from './views/merchant/adv/advlist.vue'
 import Page4 from './views/merchant/adv/Page4.vue'
 import Page5 from './views/merchant/adv/Page5.vue'
 import WorkDesktop from './views/merchant/work/workDesktop.vue'
+import games from './views/merchant/games/gamelist.vue'
 // import echarts from './views/charts/echarts.vue'
 
 // 高级管理员
@@ -28,6 +29,11 @@ import admin from './views/admin/admin.vue'
 import adm from './views/admin/adm.vue'
 import merchant from './views/admin/merchant.vue'
 import adver from './views/admin/adver.vue'
+
+// 异业合作
+import yyhz from './views/yyhz/yyhz.vue'
+import companyDetail from './views/yyhz/company/companyDetail.vue'
+import projectDetail from './views/yyhz/project/projectDetail.vue'
 
 let routes = [
     {
@@ -91,9 +97,25 @@ let routes = [
         ]
     },
     {
+        path: '/merchant',
+        component: Home,
+        name: '',
+        iconCls: 'fa fa-address-card',
+        hidden: 'merchant',
+        leaf: true,//只有一个节点
+        children: [
+            { path: '/merchant/games', component: games, name: '游戏管理' }
+        ]
+    },
+    {
         path: '*',
         hidden: true,
         redirect: { path: '/404' }
+    },
+    {
+        path: '/',
+        hidden: true,
+        redirect: { path: '/login' }
     },
     {
     path: '/admin/login',
@@ -114,6 +136,18 @@ let routes = [
       name: '广告管理',
       component: adver
     }]
+  },
+  {
+    path: '/yyhz',
+    component: yyhz
+  },
+  {
+    path: '/companyDetail/:id',
+    component: companyDetail
+  },
+  {
+    path: '/projectDetail/:id',
+    component: projectDetail
   }
 ];
 

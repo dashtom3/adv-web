@@ -7,7 +7,7 @@
     </el-form-item>
     <el-form-item prop="pass">
       <label for="confirmpwd">设置密码：</label>
-      <el-input type="password" v-model="ruleForm2.pass" auto-complete="off" placeholder="密码"></el-input>
+      <el-input type="password" v-model="ruleForm2.password" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
     <el-form-item prop="checkPass">
       <label for="confirmpwd">确认密码：</label>
@@ -15,7 +15,7 @@
     </el-form-item>
     <el-form-item>
       <label style="display:block;" for="confirmpwd">商户类型：</label>
-      <el-select v-model="value" placeholder="请选择">
+      <el-select v-model="ruleForm2.type" placeholder="请选择">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
       </el-option>
     </el-select>
@@ -45,7 +45,7 @@
       var validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm2.pass) {
+        } else if (value !== this.ruleForm2.password) {
           callback(new Error('两次输入密码不一致!'));
         } else {
           callback();
@@ -60,18 +60,18 @@
           value: '2',
           label: '无设备商铺',
         }],
-        value: '',
         ruleForm2: {
-          userName: '',
-          pass: '',
-          checkPass: ''
+          userName: null,
+          password: null,
+          checkPass: null,
+          type: null
         },
         rules2: {
           userName: [
           { required: true, message: '请输入账号', trigger: 'blur' },
             //{ validator: validaePass }
             ],
-            pass: [
+            password: [
             { validator: validatePass, trigger: 'blur' }
             ],
             checkPass: [
@@ -86,26 +86,16 @@
           that.$refs.ruleForm2.validate((valid) => {
             if (valid && that.value!=='') {
               that.loading = true;
-              axios({
-                method: 'post',
-                url: global.baseUrl + '/Advertisement/api/user/register',
-                data: `userName=${that.ruleForm2.userName}&password=${that.ruleForm2.pass}&type=${that.value}`
-              }).then((res) => {
+              global.axiosPostReq('user/register', this.ruleForm2)
+              .then((res) => {
                 if (res.data.callStatus === 'SUCCEED') {
-                // console.log(res.data);
-                // global.setToken(res.data.token)
-                // global.setUser(res.data.data)
-                console.log(res);
-                global.success(that, '注册成功', '/login')
-                that.loading = false;
-              } else {
-                global.error(that, '注册失败', '')
-                that.loading = false;
-              }
-            })
+                  global.success(this, '注册成功', '/login')
+                } else {
+                  global.error(this, res.data.data, '')
+                }
+                ths.loading = false;
+              })
             } else {
-              global.error(that, '注册失败', '')
-              console.log('error submit!!');
               return false;
             }
           });

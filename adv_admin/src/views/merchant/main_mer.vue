@@ -1,7 +1,7 @@
 <template>
 	<el-row class="container">
 		<el-col :span="24" class="header">
-			<el-col :span="10" class="logo" :class="collapsed?'logo-collapse-width':'logo-width'">
+			<el-col :span="10" class="logoAdmin" :class="collapsed?'logo-collapse-width':'logo-width'">
 				{{collapsed?'':sysName}}
 			</el-col>
 			<el-col :span="10">
@@ -114,6 +114,7 @@ import global from './../global/global'
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
+					global.removeMsg()
 					_this.$router.push('/login');
 				}).catch(() => {
 
@@ -166,7 +167,7 @@ import global from './../global/global'
 					}
 				}
 			}
-			.logo {
+			.logoAdmin {
 				//width:230px;
 				height:60px;
 				font-size: 22px;
@@ -175,6 +176,7 @@ import global from './../global/global'
 				border-color: rgba(238,241,146,0.3);
 				border-right-width: 1px;
 				border-right-style: solid;
+				margin-top: 0;
 				img {
 					width: 40px;
 					float: left;

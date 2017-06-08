@@ -38,7 +38,7 @@
 
     <!-- 添加行业 -->
     <el-dialog title="添加行业" :visible.sync="addIndustryAlert">
-      <el-form :model="addIndustryInfo">
+      <el-form :model="addIndustryInfo" ref="addIndustryInfo" label-position="left">
         <el-form-item label="分类" :label-width="formLabelWidth">
           <el-select v-model="subIndustry" placeholder="请选择"
           @change="selectKind">
@@ -60,9 +60,10 @@
           </el-select>
         </el-form-item>
       </el-form>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="addIndustryAlert = false">取 消</el-button>
-        <el-button type="primary" @click="addPostClick">保 存</el-button>
+        <el-button type="primary" @click="addPostClick('addIndustryInfo')">保 存</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
@@ -93,9 +94,8 @@
       }
     },
     created () {
-      this.getIndustryList(this.industryArg)
-      // setTimeout(this.getAllIndustry, 300)
       this.getAllIndustry()
+      // setTimeout(this.getAllIndustry, 300)
     },
     watch: {
       addIndustryAlert () {
@@ -125,6 +125,7 @@
         global.axiosGetReq('exclude/getIndustryList')
         .then((res) => {
           this.allIndustry = res.data.data
+          this.getIndustryList(this.industryArg)
         })
       },
       selectKind () {
@@ -132,14 +133,20 @@
       },
       // 添加屏蔽行业
       addPostClick () {
-        global.axiosPostReq('exclude/add', this.addIndustryInfo)
-        .then((res) => {
-          if (res.data.callStatus === 'SUCCEED') {
-            global.success(this, '添加成功', '')
-            this.addIndustryAlert = false
-            this.getIndustryList(this.industryArg)
-          }
-        })
+        if (this.addIndustryInfo.industryId != null) {
+          global.axiosPostReq('exclude/add', this.addIndustryInfo)
+          .then((res) => {
+            if (res.data.callStatus === 'SUCCEED') {
+              global.success(this, '添加成功', '')
+              this.addIndustryAlert = false
+              this.getIndustryList(this.industryArg)
+            } else {
+              global.error(this, res.data.data, '')
+            }
+          })
+        } else {
+          global.error(this, '请选择行业', '')
+        }
       },
       // 删除
       handleDelete (id) {
@@ -167,6 +174,7 @@
       },
       // 分类
       setKind (value) {
+        // console.log(this.allIndustry)
         for (let i in this.allIndustry) {
           for (let j in value) {
             for (let m in this.allIndustry[i].subIndusrty) {

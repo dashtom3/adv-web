@@ -24,7 +24,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="editBase(scope.row.id)">编辑</el-button>
+          <el-button size="small" @click="editBase(scope.row.id)">修改位置</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -42,7 +42,7 @@
 
     <!-- 弹出窗开始 -->
     <el-dialog title="添加设备" :visible.sync="addBaseAlert">
-      <el-form :model="baseInfo">
+      <el-form :model="baseInfo" label-position="left">
         <el-form-item label="地点" :label-width="formLabelWidth">
           <el-input v-model="baseInfo.place" auto-complete="off"></el-input>
         </el-form-item>

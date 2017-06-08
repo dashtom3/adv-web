@@ -53,24 +53,18 @@
         that.$refs.ruleForm.validate((valid) => {
           if (valid) {
             that.logining = true;
-            // console.log(global.postHttpData(that.ruleForm))
-            axios({
-              method: 'post',
-              url: global.baseUrl + '/Advertisement/api/user/login',
-              data: global.postHttpData(that.ruleForm),
-            }).then((res) => {
-              console.log(res);
+            global.axiosPostReq('user/login', this.ruleForm)
+            .then((res) => {
               if (res.data.callStatus === 'SUCCEED') {
                 global.setToken(res.data.token)
                 global.setUser(res.data.data)
-                global.success(that, '登录成功', '/workdesktop')
-                that.logining = false;
+                global.success(this, '登录成功', '/merchant', '')
               } else {
-                global.error(that, '账号或者密码错误', '')
+                global.error(this, res.data.data, '')
               }
+              this.loading = false;
             })
           } else {
-            console.log('error submit!!');
             return false;
           }
         });

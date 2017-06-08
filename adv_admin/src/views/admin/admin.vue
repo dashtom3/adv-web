@@ -24,8 +24,8 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       adminMsg: {
-        userName: 'dapan123',
-        password: '123'
+        userName: null,
+        password: null
       }
     }
   },
@@ -41,7 +41,7 @@ export default {
           if (res.data.callStatus === 'SUCCEED') {
             global.setToken(res.data.token)
             global.setUser(res.data.data)
-            global.success(self, '登录成功', '/admin/merchant')
+            global.success(self, '登录成功', '/merchant')
           } else {
             global.error(self, '账号或者密码错误', '')
           }
