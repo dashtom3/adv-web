@@ -5,7 +5,7 @@
       <el-input type="text" v-model="ruleForm.userName" auto-complete="off" placeholder="账号"></el-input>
     </el-form-item>
     <el-form-item prop="password">
-      <el-input type="password" v-model="ruleForm.password" auto-complete="off" placeholder="密码"></el-input>
+      <el-input type="password" v-model="ruleForm.password" auto-complete="off" placeholder="密码" v-on:keyup.enter.native="logIn"></el-input>
     </el-form-item>
     <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
     <el-form-item style="width:100%;">
@@ -52,9 +52,10 @@
         // 发送 POST 请求
         that.$refs.ruleForm.validate((valid) => {
           if (valid) {
-            that.logining = true;
+            // that.logining = true;
             global.axiosPostReq('user/login', this.ruleForm)
             .then((res) => {
+              // this.loading = false;
               if (res.data.callStatus === 'SUCCEED') {
                 global.setToken(res.data.token)
                 global.setUser(res.data.data)
@@ -62,7 +63,6 @@
               } else {
                 global.error(this, res.data.data, '')
               }
-              this.loading = false;
             })
           } else {
             return false;

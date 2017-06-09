@@ -85,7 +85,7 @@
           var that = this;
           that.$refs.ruleForm2.validate((valid) => {
             if (valid && that.value!=='') {
-              that.loading = true;
+              // that.loading = true;
               global.axiosPostReq('user/register', this.ruleForm2)
               .then((res) => {
                 if (res.data.callStatus === 'SUCCEED') {
@@ -93,7 +93,7 @@
                 } else {
                   global.error(this, res.data.data, '')
                 }
-                ths.loading = false;
+                // ths.loading = false;
               })
             } else {
               return false;

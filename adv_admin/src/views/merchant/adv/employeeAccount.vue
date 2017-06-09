@@ -18,7 +18,7 @@
       </el-table-column>
       <el-table-column label="所属行业">
         <template scope="scope">
-          <span>{{allIndustry[scope.row.industryId]}}</span>
+          <span>{{allIndustry[scope.row.industryId].name}}</span>
           <!-- <span>{{scope.row.industryId}}</span> -->
         </template>
       </el-table-column>
@@ -26,8 +26,8 @@
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="addAdv">编辑</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="small" @click="editChildren(scope.row.index)">编辑</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -43,12 +43,12 @@
     </div>
 
     <!-- 弹出窗开始 -->
-    <el-dialog title="添加账号" :visible.sync="addEmployeeAlert">
-      <el-form :model="addEmployeeInfo" label-position="left" label-width="80px">
-        <el-form-item label="账号">
+    <el-dialog :title="title" :visible.sync="addEmployeeAlert">
+      <el-form :model="addEmployeeInfo" label-position="left" label-width="80px" :rules="rules" ref="addEmployeeInfo">
+        <el-form-item label="账号" prop="userName">
           <el-input v-model="addEmployeeInfo.userName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="password">
           <el-input v-model="addEmployeeInfo.password" type="password" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
@@ -62,10 +62,12 @@
               class="upload-demo"
               :action="uploadUrl"
               :on-success="uploadSuccess"
+              :on-remove="removeFile"
               :data="qiNiuToken"
               :file-list="fileList"
-              list-type="picture">
-              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              :disabled="fileList.length !== 0">
+              <el-button slot="trigger" size="small" type="primary"
+              :disabled="fileList.length !== 0">选取文件</el-button>
             </el-upload>
           </el-form-item>
         <el-form-item label="所属行业">
@@ -90,7 +92,8 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addEmployeeAlert = false">取 消</el-button>
-        <el-button type="primary" @click="addEmployeeClick">保 存</el-button>
+        <el-button type="primary" v-if="addEmployeeShow" @click="addEmployeeClick">保 存</el-button>
+        <el-button type="primary" v-if="editEmployeeShow" @click="editEmployeeClick">保 存</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
@@ -104,11 +107,15 @@
     data() {
       return {
         addEmployeeAlert: false,
+        addEmployeeShow: false,
+        editEmployeeShow: false,
+        title: null,
         addEmployeeInfo: {
           userName: null,
           password: null,
           realName: null,
           allName: null,
+          fileName: null,
           logo: null,
           industryId: null,
           intro: null,
@@ -121,12 +128,12 @@
         employeeArgs: {
           currentPage: 1,
           totalPage: -1,
-          numberPerpage: 10
+          numberPerPage: 10
         },
         uploadUrl: global.qiNiuUrl,
         qiNiuToken: null,
         rules: {
-          username: [
+          userName: [
             { required: true, message: '请输入名称', trigger: 'blur' }
           ],
           password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
@@ -134,7 +141,6 @@
       }
     },
     created: function() {
-      this.getEmployeeList(this.employeeArgs)
       this.getAllIndustry()
       global.getQiNiuToken().then((res) => {
         this.qiNiuToken = {token: res.data.data}
@@ -143,12 +149,18 @@
     methods: {
       addAdv() {
         var that = this;
+        this.title = '添加账号'
+        this.addEmployeeShow = true
+        this.editEmployeeShow = false
         that.addEmployeeAlert = true;
       },
       getEmployeeList (args) {
         global.axiosGetReq('user/getChildAccountList?', args)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
+            for (let i in res.data.data) {
+              res.data.data[i].index = i
+            }
             this.employeeLists = res.data.data
             this.employeeArgs.currentPage = res.data.currentPage
             this.employeeArgs.totalPage = res.data.totalPage
@@ -162,24 +174,90 @@
         global.axiosGetReq('exclude/getIndustryList')
         .then((res) => {
           this.allIndustry = res.data.data
+          this.getEmployeeList(this.employeeArgs)
         })
       },
       uploadSuccess (file, response) {
         // console.log(file, response)
+        var obj = {
+          name: response.name,
+          url: global.qiniuShUrl + file.key
+        }
+        this.fileList.push(obj)
+        this.addEmployeeInfo.fileName = response.name
         this.addEmployeeInfo.logo = global.qiniuShUrl + file.key
+      },
+      // 删除文件
+      removeFile () {
+        this.fileList = []
       },
       // 添加子账号
       addEmployeeClick () {
-        global.axiosPostReq('user/createChildAccount', this.addEmployeeInfo)
-        .then((res) => {
-          if (res.data.callStatus === 'SUCCEED') {
-            global.success(this, '添加成功', '')
-            this.addEmployeeAlert = false
-            this.getEmployeeList(this.employeeArgs)
+        this.$refs['addEmployeeInfo'].validate((valid) => {
+          if (valid) {
+            global.axiosPostReq('user/createChildAccount', this.addEmployeeInfo)
+            .then((res) => {
+              if (res.data.callStatus === 'SUCCEED') {
+                global.success(this, '添加成功', '')
+                this.addEmployeeAlert = false
+                this.getEmployeeList(this.employeeArgs)
+              } else {
+                global.error(this, res.data.data, '')
+              }
+            })
           } else {
-            global.error(this, res.data.data, '')
+            return false
           }
         })
+      },
+      editChildren (index) {
+        this.title = '修改账号'
+        this.addEmployeeShow = false
+        this.editEmployeeShow = true
+        this.addEmployeeAlert = true
+        this.addEmployeeInfo = this.employeeLists[index]
+      },
+      editEmployeeClick () {
+        this.$refs['addEmployeeInfo'].validate((valid) => {
+          if (valid) {
+            global.axiosPostReq('user/updateChildAccount', this.addEmployeeInfo)
+            .then((res) => {
+              if (res.data.callStatus === 'SUCCEED') {
+                global.success(this, '修改成功', '')
+                this.addEmployeeAlert = false
+                this.getEmployeeList(this.employeeArgs)
+              }
+            })
+          } else {
+            return false
+          }
+        })
+      },
+      // 删除子账号
+      handleDelete (id) {
+        var adverMsg = {
+          childAccountId: id
+        }
+        var self = this
+        this.$confirm('是否删除?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          global.axiosPostReq('user/deleteChildAccount', adverMsg)
+          .then((res) => {
+            if (res.data.callStatus === 'SUCCEED') {
+              self.$message({
+                type: 'success',
+                message: '删除成功!',
+                duration: '800',
+                onClose: function () {
+                  self.getEmployeeList(self.employeeArgs)
+                }
+              });
+            }
+          })
+        }).catch(() => {});
       },
       // 分页
       changePage (value) {
@@ -189,11 +267,13 @@
     },
     watch: {
       addEmployeeAlert () {
-        if (this.addEmployeeAlert) {
+        if (this.addEmployeeAlert === false) {
           for (let i in this.addEmployeeInfo) {
             this.addEmployeeInfo[i] = null
           }
           this.fileList = []
+          this.$refs['addEmployeeInfo'].resetFields()
+          console.log(this.employeeLists)
         }
       }
     }

@@ -49,7 +49,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.row)" v-if="scope.row.userId != adverInfo.userId">修改</el-button>
+          <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -97,7 +97,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.row)" v-if="scope.row.userId === adverInfo.userId">修改</el-button>
+          <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
@@ -114,7 +114,7 @@
     </div>
 
     <!-- 弹出窗开始 -->
-    <el-dialog title="添加广告" :visible.sync="addAdverAlert">
+    <el-dialog :title="title" :visible.sync="addAdverAlert">
       <el-form :model="addAdverMsg" label-position="left">
         <el-form-item label="商铺类型" :label-width="formLabelWidth" v-if="isEdit">
           <el-select v-model="addAdverMsg.selectType" placeholder="请选择商铺类型" @change="selectAdverType">
@@ -128,14 +128,19 @@
           </el-form-item>
           <el-form-item label="是否下单" :label-width="formLabelWidth">
             <el-select v-model="addAdverMsg.isOrder" placeholder="请选择">
-              <el-option label="是" value="1"></el-option>
-              <el-option label="否" value="0"></el-option>
+              <el-option
+              :key="orderType"
+              v-for="orderType in isOrder"
+              :label="orderType.name"
+              :value="orderType.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="广告类型" :label-width="formLabelWidth">
             <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
-              <el-option label="滚动广告" value="1"></el-option>
-              <el-option label="弹出广告" value="0"></el-option>
+              <el-option
+              :key="type"
+              v-for="type in adverType"
+              :label="type.name" :value="type.value"></el-option>
             </el-select>
           </el-form-item>
         </div>
@@ -149,24 +154,30 @@
           </el-form-item>
           <el-form-item label="广告类型" :label-width="formLabelWidth">
             <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
-              <el-option label="滚动广告" value="1"></el-option>
-              <el-option label="弹出广告" value="0"></el-option>
+              <el-option
+              :key="type"
+              v-for="type in adverType"
+              :label="type.name" :value="type.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="是否下单" :label-width="formLabelWidth">
             <el-select v-model="addAdverMsg.isOrder" placeholder="请选择">
-              <el-option label="是" value="1"></el-option>
-              <el-option label="否" value="0"></el-option>
+              <el-option
+              :key="orderType"
+              v-for="orderType in isOrder"
+              :label="orderType.name"
+              :value="orderType.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="文件" :label-width="formLabelWidth">
             <el-upload class="upload-demo"
             :action=qiNiuUrl
             :on-success="uploadFile"
+            :on-remove="removeFile"
             :data="qiNiuToken"
-            :file-list="fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件，且不超过500kb</div> -->
+            :file-list="fileList"
+            :disabled="fileList.length !== 0">
+              <el-button size="small" type="primary" :disabled="fileList.length !== 0">点击上传</el-button>
             </el-upload>
           </el-form-item>
           <el-form-item label="时长(仅上传文件时图片时显示)" :label-width="formLabelWidth" v-if="uploadFileType">
@@ -176,71 +187,11 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addAdverAlert = false">取 消</el-button>
-        <el-button type="primary" @click="addAdverPost">保 存</el-button>
+        <el-button type="primary" @click="addAdverPost" v-if="addAdverShow">保 存</el-button>
+        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow">保 存</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
-
-    <!-- 修改自身发布的广告 -->
-    <!-- <el-dialog title="添加广告" :visible.sync="addAdverAlert">
-      <el-form :model="addAdverMsg" label-position="left">
-        <div v-show="other">
-          <el-form-item label="广告id" :label-width="formLabelWidth">
-            <el-input v-model="addAdverMsg.advertisementId" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="是否下单" :label-width="formLabelWidth">
-            <el-select v-model="addAdverMsg.isOrder" placeholder="请选择">
-              <el-option label="是" value="1"></el-option>
-              <el-option label="否" value="0"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="广告类型" :label-width="formLabelWidth">
-            <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
-              <el-option label="滚动广告" value="1"></el-option>
-              <el-option label="弹出广告" value="0"></el-option>
-            </el-select>
-          </el-form-item>
-        </div>
-
-        <div v-show="my">
-          <el-form-item label="名称" :label-width="formLabelWidth">
-            <el-input v-model="addAdverMsg.name" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="描述" :label-width="formLabelWidth">
-            <el-input v-model="addAdverMsg.content" auto-complete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="广告类型" :label-width="formLabelWidth">
-            <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
-              <el-option label="滚动广告" value="1"></el-option>
-              <el-option label="弹出广告" value="0"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="是否下单" :label-width="formLabelWidth">
-            <el-select v-model="addAdverMsg.isOrder" placeholder="请选择">
-              <el-option label="是" value="1"></el-option>
-              <el-option label="否" value="0"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="文件" :label-width="formLabelWidth">
-            <el-upload class="upload-demo"
-            :action=qiNiuUrl
-            :on-success="uploadFile"
-            :data="qiNiuToken"
-            :file-list="fileList">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png/gif文件，且不超过500kb</div>
-            </el-upload>
-          </el-form-item>
-          <el-form-item label="时长(仅上传文件时图片时显示)" :label-width="formLabelWidth" v-if="uploadFileType">
-            <el-input v-model="addAdverMsg.time" auto-complete="off"></el-input>
-          </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addAdverAlert = false">取 消</el-button>
-        <el-button type="primary" @click="addAdverPost">保 存</el-button>
-      </div>
-    </el-dialog> -->
 
   </div>
 </template>
@@ -254,6 +205,9 @@ import global from '../../global/global'
         other: false,
         addAdverAlert: false,
         uploadFileType: false,
+        title: null,
+        addAdverShow: false,
+        editAdverShow: false,
         formLabelWidth: '80px',
         addAdverMsg: {
           selectType: null,
@@ -261,17 +215,28 @@ import global from '../../global/global'
           name: null,
           content: null,
           fileSrc: null,
+          fileName: null,
           fileType: null,
           time: null,
-          isOrder: null
+          isOrder: null,
+          advertisementId: null
         },
+        adverType: [
+          { name: '滚动广告', value: 1 },
+          { name: '弹出广告', value: 0 }
+        ],
+        isOrder: [
+          { name: '是', value: 1 },
+          { name: '否', value: 0 }
+        ],
         isEdit: true,
         fileList: [],
         addAdverLists: [],
         scrollAvder: [],
+        allAdverLists: [],
         adverInfo: {
           userId: global.getUser().id,
-          numberPerpage: 10,
+          numberPerPage: 10,
           currentPage: 1,
           totalPage: -1
         },
@@ -281,7 +246,8 @@ import global from '../../global/global'
           type: null
         },
         qiNiuUrl: global.qiNiuUrl,
-        qiNiuToken: null
+        qiNiuToken: null,
+        editUrl: null
       }
     },
     created () {
@@ -296,6 +262,11 @@ import global from '../../global/global'
         var that = this;
         that.addAdverAlert = true;
         this.isEdit = true
+        this.title = '添加广告'
+        this.addAdverShow = true
+        this.editAdverShow = false
+        this.my = false
+        this.other = false
       },
       selectAdverType () {
         // console.log(this.addAdverMsg)
@@ -314,6 +285,7 @@ import global from '../../global/global'
         global.axiosGetReq('playAdv/getPlayAdvList?', args)
         .then((res) => {
           // console.log(res)
+          self.allAdverLists = res.data.data
           self.scrollAvder = []
           self.addAdverLists = []
           for (let i in res.data.data) {
@@ -331,14 +303,25 @@ import global from '../../global/global'
       },
       // 上传文件
       uploadFile (file, response) {
-        console.log(this.fileList, file, response)
+        // console.log(this.fileList, file, response)
         if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/gif') {
           this.uploadFileType = true
           this.addAdverMsg.fileType = 0
         } else {
           this.addAdverMsg.fileType = 1
         }
+        var obj = {
+          name: response.name,
+          url: global.qiniuShUrl + file.key
+        }
+        this.fileList.push(obj)
+        this.addAdverMsg.fileName = response.name
         this.addAdverMsg.fileSrc = global.qiniuShUrl + file.key
+      },
+      removeFile () {
+        this.fileList = []
+        this.uploadFileType = false
+        this.addAdverMsg.time = null
       },
       // 添加广告
       addAdverPost () {
@@ -354,25 +337,60 @@ import global from '../../global/global'
           }
         })
       },
+      // 修改广告
       handleEdit (obj) {
+        this.title = '修改广告'
         this.isEdit = false
         this.addAdverAlert = true
-        if (obj.userId === this.adverInfo.userId) {
-          console.log(this.addAdverLists[obj.index-1])
+        this.addAdverShow = false
+        this.editAdverShow = true
+        if (obj.advertisement.userId === this.adverInfo.userId) {
+          if (this.allAdverLists[obj.index].advertisement.fileName) {
+            var newObj = {
+              name: this.allAdverLists[obj.index].advertisement.fileName,
+              url: this.allAdverLists[obj.index].advertisement.fileSrc
+            }
+            this.fileList.push(newObj)
+          }
           this.my = true
           this.other = false
           this.addAdverMsg.selectType = null
-          this.addAdverMsg.name = this.addAdverLists[obj.index-1].advertisement.name
-          this.addAdverMsg.content = this.addAdverLists[obj.index-1].advertisement.content
-          this.addAdverMsg.isOrder = this.addAdverLists[obj.index-1].isOrder
-          this.addAdverMsg.type = this.addAdverLists[obj.index-1].type
-          // this.addAdverMsg.type
+          this.addAdverMsg.name = this.allAdverLists[obj.index].advertisement.name
+          this.addAdverMsg.content = this.allAdverLists[obj.index].advertisement.content
           // console.log(this.addAdverMsg)
         } else {
           this.other = true
-          this.my = true
+          this.my = false
         }
+        this.addAdverMsg.playAdvId = this.allAdverLists[obj.index].id
+        this.addAdverMsg.isOrder = this.allAdverLists[obj.index].isOrder
+        this.addAdverMsg.type = this.allAdverLists[obj.index].type
+        this.addAdverMsg.advertisementId = this.allAdverLists[obj.index].advertisement.id
       },
+      editAdverPost () {
+        global.axiosPostReq('playAdv/update', this.addAdverMsg)
+        .then((res) => {
+          if (this.my) {
+            global.axiosPostReq('advertisement/update', this.addAdverMsg)
+            .then((res) => {
+              if (res.data.callStatus === 'SUCCEED') {
+                global.success(this, '修改成功', '')
+                this.getAdverList(this.adverInfo)
+                this.addAdverAlert = false
+              } else {
+                global.error(this, res.data.data, '')
+              }
+            })
+          } else if (res.data.callStatus === 'SUCCEED') {
+              global.success(this, '修改成功', '')
+              this.getAdverList(this.adverInfo)
+              this.addAdverAlert = false
+            } else {
+              global.error(this, res.data.data, '')
+            }
+        })
+      },
+      // 删除广告
       handleDelete (adverId) {
         var adverMsg = {
           playAdvId: adverId
@@ -397,6 +415,11 @@ import global from '../../global/global'
             }
           })
         }).catch(() => {});
+      },
+      // 分页
+      changePage (value) {
+        this.adverInfo.currentPage = value
+        this.getAdverList(this.adverInfo)
       }
     },
     watch: {
@@ -405,10 +428,10 @@ import global from '../../global/global'
           for (let i in this.addAdverMsg) {
             this.addAdverMsg[i] = null
           }
-          this.my = false
-          this.other = false
           this.uploadFileType = false
           this.fileList = []
+          this.my = false
+          this.other = false
         }
       }
     }
