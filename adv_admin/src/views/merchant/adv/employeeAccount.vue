@@ -18,7 +18,7 @@
       </el-table-column>
       <el-table-column label="所属行业">
         <template scope="scope">
-          <span>{{allIndustry[scope.row.industryId].name}}</span>
+          <span>{{allIndustry[scope.row.industryId-1].name}}</span>
           <!-- <span>{{scope.row.industryId}}</span> -->
         </template>
       </el-table-column>
@@ -44,11 +44,11 @@
 
     <!-- 弹出窗开始 -->
     <el-dialog :title="title" :visible.sync="addEmployeeAlert">
-      <el-form :model="addEmployeeInfo" label-position="left" label-width="80px" :rules="rules" ref="addEmployeeInfo">
-        <el-form-item label="账号" prop="userName">
+      <el-form :model="addEmployeeInfo" label-position="left" label-width="80px" ref="addEmployeeInfo" :rules="rules">
+        <el-form-item label="账号" prop="userName" v-if="addEmployeeShow">
           <el-input v-model="addEmployeeInfo.userName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item label="密码" v-if="addEmployeeShow" prop="password">
           <el-input v-model="addEmployeeInfo.password" type="password" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="姓名">
@@ -115,7 +115,7 @@
           password: null,
           realName: null,
           allName: null,
-          fileName: null,
+          logoName: null,
           logo: null,
           industryId: null,
           intro: null,
@@ -133,10 +133,8 @@
         uploadUrl: global.qiNiuUrl,
         qiNiuToken: null,
         rules: {
-          userName: [
-            { required: true, message: '请输入名称', trigger: 'blur' }
-          ],
-          password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+          userName: [{ required: 'true', message: '请输入子账号名字', trigger: 'blur' }],
+          password: [{ required: 'true', message: '请输入密码', trigger: 'blur' }]
         }
       }
     },
@@ -178,18 +176,20 @@
         })
       },
       uploadSuccess (file, response) {
-        // console.log(file, response)
+        // console.log(response.name)
         var obj = {
           name: response.name,
           url: global.qiniuShUrl + file.key
         }
         this.fileList.push(obj)
-        this.addEmployeeInfo.fileName = response.name
+        this.addEmployeeInfo.logoName = response.name
         this.addEmployeeInfo.logo = global.qiniuShUrl + file.key
       },
       // 删除文件
       removeFile () {
         this.fileList = []
+        this.addEmployeeInfo.logoName = null
+        this.addEmployeeInfo.logo = null
       },
       // 添加子账号
       addEmployeeClick () {
@@ -215,7 +215,21 @@
         this.addEmployeeShow = false
         this.editEmployeeShow = true
         this.addEmployeeAlert = true
-        this.addEmployeeInfo = this.employeeLists[index]
+        this.fileList.push({
+          name: this.employeeLists[index].logoName,
+          url: this.employeeLists[index].logo
+        })
+        // this.addEmployeeInfo = this.employeeLists[index]
+        this.addEmployeeInfo.realName = this.employeeLists[index].realName
+        this.addEmployeeInfo.allName = this.employeeLists[index].allName
+        this.addEmployeeInfo.logoName = this.employeeLists[index].logoName
+        this.addEmployeeInfo.logo = this.employeeLists[index].logo
+        this.addEmployeeInfo.industryId = this.employeeLists[index].industryId
+        this.addEmployeeInfo.intro = this.employeeLists[index].intro
+        this.addEmployeeInfo.content = this.employeeLists[index].content
+        this.addEmployeeInfo.phone = this.employeeLists[index].phone
+        this.addEmployeeInfo.childAccountId = this.employeeLists[index].id
+        // console.log(this.addEmployeeInfo)
       },
       editEmployeeClick () {
         this.$refs['addEmployeeInfo'].validate((valid) => {
@@ -226,6 +240,8 @@
                 global.success(this, '修改成功', '')
                 this.addEmployeeAlert = false
                 this.getEmployeeList(this.employeeArgs)
+              } else {
+                global.error(this, res.data.data, '')
               }
             })
           } else {
@@ -273,7 +289,7 @@
           }
           this.fileList = []
           this.$refs['addEmployeeInfo'].resetFields()
-          console.log(this.employeeLists)
+          // console.log(this.addEmployeeInfo)
         }
       }
     }

@@ -34,6 +34,7 @@ import adver from './views/admin/adver.vue'
 import yyhz from './views/yyhz/yyhz.vue'
 import companyDetail from './views/yyhz/company/companyDetail.vue'
 import projectDetail from './views/yyhz/project/projectDetail.vue'
+import sourceDetail from './views/yyhz/source/sourceDetail.vue'
 
 let routes = [
     {
@@ -148,6 +149,10 @@ let routes = [
   {
     path: '/projectDetail/:id',
     component: projectDetail
+  },
+  {
+    path: '/sourceDetail/:id',
+    component: sourceDetail
   }
 ];
 

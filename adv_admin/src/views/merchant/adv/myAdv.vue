@@ -320,6 +320,8 @@ import global from '../../global/global'
       },
       removeFile () {
         this.fileList = []
+        this.addAdverMsg.fileName = null
+        this.addAdverMsg.fileSrc = null
         this.uploadFileType = false
         this.addAdverMsg.time = null
       },

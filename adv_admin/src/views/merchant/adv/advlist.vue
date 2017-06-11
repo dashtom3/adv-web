@@ -84,7 +84,7 @@ export default {
       orderLists: [],
       orderArgs: {
         currentPage: 1,
-        numberPage: 10,
+        numberPerPage: 10,
         totalPage: -1,
         state: null
       },
