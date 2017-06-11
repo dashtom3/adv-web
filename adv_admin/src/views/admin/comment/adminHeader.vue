@@ -28,11 +28,11 @@ export default {
       }
     }
   },
-  // mounted () {
-  //   if (!global.getToken()) {
-  //     this.$router.push('/admin')
-  //   }
-  // },
+  mounted () {
+    if (!global.getToken()) {
+      this.$router.push('/admin/login')
+    }
+  },
   methods: {
     exit () {
       this.$router.push('/admin/login')

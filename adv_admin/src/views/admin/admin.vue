@@ -33,17 +33,14 @@ export default {
     adminLogin () {
       var self = this
       if (this.adminMsg.userName && this.adminMsg.password) {
-        // console.log(global.postHttpData(this.adminMsg))
-        // global.success(self, '登录成功', '/admin/merchant')
-        // console.log(global.getHttpData(this.adminMsg))
-        axios.post(global.baseUrl + 'user/login', global.postHttpData(this.adminMsg))
+        global.axiosPostReq('user/login', this.adminMsg)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
+            global.success(this, '登录成功', '/admin/merchant')
             global.setToken(res.data.token)
             global.setUser(res.data.data)
-            global.success(self, '登录成功', '/merchant')
           } else {
-            global.error(self, '账号或者密码错误', '')
+            global.error(this, res.data.data, '')
           }
         })
       } else {

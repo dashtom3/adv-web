@@ -29,6 +29,7 @@ import admin from './views/admin/admin.vue'
 import adm from './views/admin/adm.vue'
 import merchant from './views/admin/merchant.vue'
 import adver from './views/admin/adver.vue'
+import dataview from './views/admin/dataview.vue'
 
 // 异业合作
 import yyhz from './views/yyhz/yyhz.vue'
@@ -136,6 +137,10 @@ let routes = [
       path: '/admin/adver',
       name: '广告管理',
       component: adver
+    }, {
+      path: '/admin/dataview',
+      name: '数据查看',
+      component: dataview
     }]
   },
   {

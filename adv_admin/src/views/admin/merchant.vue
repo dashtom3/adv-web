@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="selectEquipment">
-    <el-row>
-      <el-radio-group v-model="equipment" v-on:change="selectEquipment">
-        <el-radio label="0">全部</el-radio>
+    <el-row class="m20">
+      <el-radio-group v-model="merchantArgs.type" v-on:change="selectEquipment">
+        <el-radio :label="null">全部</el-radio>
         <el-radio :label="1">有设备商户</el-radio>
         <el-radio :label="2">无设备商户</el-radio>
       </el-radio-group>
@@ -15,15 +15,14 @@
     <div class="lists">
       <el-table
         :data="merchantLists"
-        height="250"
         border
         style="width: 100%">
         <el-table-column
-          prop="userid"
+          prop="id"
           label="商户ID">
         </el-table-column>
         <el-table-column
-          prop="username"
+          prop="realName"
           label="姓名">
         </el-table-column>
         <el-table-column
@@ -31,20 +30,22 @@
           label="密码">
         </el-table-column>
         <el-table-column
-          prop="realname"
+          prop="allName"
           label="店铺名称">
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="allname"
           label="全称">
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
-          prop="parentid"
+          prop="parentId"
           label="店铺主账号id">
         </el-table-column>
         <el-table-column
-          prop="type"
           label="类型">
+          <template scope="scope">
+            <span>{{type[scope.row.type-1]}}</span>
+          </template>
         </el-table-column>
         <el-table-column
           label="logo">
@@ -69,8 +70,10 @@
           label="联系方式">
         </el-table-column>
         <el-table-column
-          prop="regtime"
           label="注册时间">
+          <template scope="scope">
+            <span>{{scope.row.registerTime | time}}</span>
+          </template>
         </el-table-column>
         <el-table-column
          label="操作"
@@ -125,10 +128,13 @@
               class="upload-demo"
               ref="upload"
               :action="uploadUrl"
+              :on-remove="handleRemove"
               :on-success="uploadSuccess"
               :data="qiNiuToken"
-              list-type="picture">
-              <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              list-type="picture"
+              :file-list="fileList"
+              :disabled="fileList.length !== 0">
+              <el-button slot="trigger" size="small" type="primary" :disabled="fileList.length !== 0">选取文件</el-button>
             </el-upload>
           </el-form-item>
         <el-form-item label="行业编号">
@@ -178,13 +184,13 @@ export default {
     }
     return {
       addmerchantAlert: false,
-      equipment: '0',
       merchantArgs: {
         currentPage: 1,
-        numberPage: 10,
+        numberPerPage: 10,
         totalPage: -1,
-        equipment: null
+        type: null
       },
+      fileList: [],
       addmerchantMsg: {
         username: null,
         password: null,
@@ -194,6 +200,7 @@ export default {
         parentid: null,
         type: null,
         logo: null,
+        logoName: null,
         industryId: null,
         intro: null,
         content: null,
@@ -211,38 +218,31 @@ export default {
         ],
         type: [{ required: true, message: '请选择类型', trigger: 'blur' }]
       },
-      merchantLists: [
-        { userid: '1', username: '测试', password: '123456', realname: '店铺名称', allname: '全称', parentid: '2', type: '管理员', logo: '1', industryId: '234', intro: '简介', content: '需求内容', phone: '电话', regtime: '注册时间' }
-      ],
-      uploadUrl: global.qiniuUrl,
+      merchantLists: [],
+      type: ['有设备账号', '无设备账号', '子账号'],
+      uploadUrl: global.qiNiuUrl,
       qiNiuToken: null
     }
   },
   created () {
-    // this.getmerchantList(this.merchantArgs)
+    this.getmerchantList(this.merchantArgs)
     // 获取七牛token
-    // var self = this
-    // axios.get(global.baseUrl + 'dvertisement/api/qiniu/getQiNiuToken?token=' + global.getToken())
-    // .then((res) => {
-    //   console.log(res)
-    //   // self.qiNiuToken = res.data.token
-    // })
+    global.getQiNiuToken()
+    .then((res) => {
+      this.qiNiuToken = {token: res.data.data}
+    })
   },
   methods: {
     addmerchantpost (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // console.log(123)
-          var self = this
-          axios({
-            method: 'post',
-            url: global.baseUrl + 'Advertisement/api/user/register',
-            data: this.addmerchantMsg
-          })
+          global.axiosPostReq('user/register', this.addmerchantMsg)
           .then((res) => {
             if (res.data.callStatus === 'SUCCEED') {
-              global.success(self, '添加成功', '')
-              self.getmerchantList(self.merchantArgs)
+              global.success(this, '添加成功', '')
+              this.getmerchantList(this.merchantArgs)
+            } else {
+              global.error(this, res.data.data, '')
             }
           })
         } else {
@@ -251,19 +251,27 @@ export default {
       })
     },
     getmerchantList (args) {
-      var self = this
-      axios.get(global.baseUrl + '?' + global.getHttpData(args))
+      global.axiosGetReq('user/admin/getUserList?', args)
       .then((res) => {
         if (res.data.callStatus === 'SUCCEED') {
-          self.merchantLists = res.data.data
-          self.merchantArgs.currentPage = res.data.currentPage
-          self.merchantArgs.totalPage = res.data.totalPage
+          this.merchantLists = res.data.data
+          this.merchantArgs.currentPage = res.data.currentPage
+          this.merchantArgs.totalPage = res.data.totalPage
+        } else {
+          global.error(this, res.data.data, '')
         }
       })
     },
     // 上传logo
     uploadSuccess (file, response) {
-      console.log(file, response)
+      this.addmerchantMsg.logo = global.qiniuShUrl + file.key
+      this.addmerchantMsg.logoName = response.name
+      this.fileList.push({ name: response.name, url: global.qiniuShUrl + file.key })
+    },
+    handleRemove () {
+      this.fileList = []
+      this.addmerchantMsg.logo = null
+      this.addmerchantMsg.logoName = null
     },
     // 分页
     changePage (value) {
@@ -272,13 +280,7 @@ export default {
     },
     // 选择设备
     selectEquipment () {
-      if (this.equipment !== '0') {
-        this.merchantArgs.equipment = this.equipment
-      } else {
-        this.merchantArgs.equipment = null
-      }
-      // this.getmerchantList(this.merchantArgs)
-      console.log(this.merchantArgs.equipment)
+      this.getmerchantList(this.merchantArgs)
     },
     // 删除
     deleteuser (userid) {
@@ -318,6 +320,7 @@ export default {
     addmerchantAlert () {
       if (!this.addmerchantAlert) {
         this.emptyData(this.addmerchantMsg)
+        this.fileList = []
         this.$refs['addmerchantMsg'].resetFields()
       }
     }
@@ -326,5 +329,11 @@ export default {
 </script>
 
 <style lang="css">
-@import url(../global/style.css)
+@import url(../global/style.css);
+.m20{
+  margin: 20px 0;
+}
+.m20 .equipmentRight{
+  float: right;
+}
 </style>
