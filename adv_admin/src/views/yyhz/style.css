@@ -1,0 +1,281 @@
+.bg{
+  width: 100%;
+  background: #ebebeb;
+}
+.bgcontent{
+  width: 1200px;
+  background-color: #fff;
+  margin: 0 auto;
+  /*padding: 10px 0 0;*/
+}
+.contentHead{
+  height: 50px;
+  line-height: 50px;
+  border-bottom: 1px solid #e2e2e2;
+}
+.contentHeadKind ul{
+  padding: 0;
+}
+.contentHeadKind ul li{
+  float: left;
+  width: 105px;
+  text-align: center;
+}
+.contentHeadKind ul li.active a{
+  border-bottom: 3px solid #e95412;
+}
+.contentHeadKind ul li a{
+  display: inline-block;
+  width: 100%;
+  /*height: 80%;*/
+  color: #000;
+}
+.contentHeadRight{
+  float: right;
+}
+.bgCenter{
+  width: 1160px;
+  height: 148px;
+  border: 1px solid #bfbfbf;
+  margin: 20px auto;
+}
+.rz{
+  width: 160px;
+  height: 40px;
+  border: none;
+  outline: none;
+  background-color: #e95412;
+  color: #fff;
+  border-radius: 5px;
+  position: relative;
+  right: 10px;
+  cursor: pointer;
+}
+.hy{
+  margin-left: 20px;
+}
+.hy:nth-child(1){
+  margin-top: 20px;
+}
+.hy label,.hy .select{
+  display: inline-block;
+  vertical-align: top;
+}
+.hy .select{
+  width: 1032px;
+}
+.hy label{
+  width: 70px;
+  font-size: 16px;
+}
+.select{
+  margin-left: 20px;
+}
+.select a{
+  color: #000;
+  font-size: 14px;
+}
+.select ul{
+  margin: 0;
+  padding: 0;
+}
+.select ul li{
+  float: left;
+  margin-right: 18px;
+  margin-bottom: 23px;
+}
+.select ul li.active{
+  color: #f6bba0;
+}
+.select ul li a:hover,.select ul li.on a{
+  color: #f6bba0;
+}
+.img,.listContent,.listLeft,.listRight{
+  display: inline-block;
+  vertical-align: top;
+}
+
+.img{
+  width: 140px;
+  text-align: center;
+}
+.contentTitle{
+  font-size: 20px;
+  color: rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.contentFooter span{
+  font-size: 14px;
+  display: inline-block;
+  vertical-align: middle;
+  font-family: "MicrosoftYaHei";
+  color: rgba(0, 0, 0, 0.6);
+}
+.kindLogo{
+  display: inline-block;
+  width: 27px;
+  height: 26px;
+  background: url('../../images/kind.gif');
+  margin-right: 20px;
+}
+.foruser{
+  width: 30px;
+  height: 21px;
+  background: url('../../images/user.gif');
+  margin-left: 180px;
+  margin-right: 20px;
+}
+.contTime{
+  width: 25px;
+  height: 26px;
+  background:url('../../images/time.gif');
+  margin-left: 160px;
+  margin-right: 20px;
+}
+.listContent{
+  width: 714px;
+}
+.listLeft ul li:hover .contentTitle{
+  color:#ff8000
+}
+.listLeft ul li{
+  border-bottom: 1px solid #e2e2e2;
+}
+.listLeft{
+  width: 860px;
+}
+.listRight{
+  width: 320px;
+  margin-left: 10px;
+}
+.listRightTitle{
+  margin: 45px 0 30px 0;
+}
+.listRight ul li{
+  /*float: left;*/
+  display: inline-block;
+  margin-right: 15px;
+}
+.detailContainer{
+  width: 100%;
+  background-color: #ebebeb;
+}
+.detailContent{
+  width: 1200px;
+  margin: 0px auto;
+  background-color: #fff;
+  padding: 40px 20px;
+}
+.detailDivContent{
+  padding: 30px 20px;
+  overflow: hidden;
+}
+.detailDiv{
+  border-width: 1px;
+  border-color: rgb(191, 191, 191);
+  border-style: solid;
+}
+.headerImg,.headerTitle,.detailDivContentHeaderRight{
+  display: inline-block;
+  vertical-align: top;
+}
+.headerTitle{
+  margin-left: 40px;
+}
+.titelName{
+  margin-top: 0px;
+  font-size: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgb(233,84,18);
+  font-family: "MicrosoftYaHei";
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: bold;
+}
+.realName,.hz,.address{
+  font-size: 18px;
+  font-family: "MicrosoftYaHei";
+  color: rgba(0, 0, 0, 0.6);
+  /*line-height: 3.889;*/
+  /*line-height: 40px;*/
+  margin: 8px 0;
+  display: inline-block;
+}
+.realName{
+  margin-top: 10px;
+}
+.detailDivContentHeaderRight{
+  width: 160px;
+  float: right;
+  text-align: center;
+}
+.detailDivContentHeaderRight p span{
+  display: inline-block;
+  vertical-align: middle;
+}
+.iconsc,.iconly{
+  display: inline-block;
+  margin-right: 10px;
+}
+.iconsc{
+  width: 22px;
+  height: 20px;
+  background: url('../../images/collection.png');
+}
+.iconly{
+  width: 19px;
+  height: 17px;
+  background: url('../../images/message.png');
+}
+.detailDivContentHeaderRight p{
+  cursor: pointer;
+}
+.detailDivContentHeaderRight p input{
+  font-size: 14px;
+  color: #fff;
+  border-radius: 4px;
+  background-color: rgb(233, 84, 18);
+  width: 160px;
+  height: 40px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.infoMsg{
+  font-size: 14px;
+  font-family: "MicrosoftYaHei";
+  color: rgba(0, 0, 0, 0.6);
+  /*font-weight: bold;*/
+}
+.jj{
+  font-size: 20px;
+  font-family: "MicrosoftYaHei";
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: bold;
+}
+.photos ul li{
+  border-width: 1px;
+  border-color: rgb(191, 191, 191);
+  border-style: solid;
+  width: 132px;
+  height: 176px;
+  padding: 10px;
+  /*display: inline-block;*/
+  float: left;
+}
+.photos ul li:nth-child(2n){
+  margin-top: 20px;
+}
+.detialLeft{
+  width: 1200px!important;
+}
+.detialLeft .listContent{
+  width: 1054px;
+}
+.detialLeft .foruser{
+  margin-left: 340px;
+}
+.detialLeft .contTime{
+  margin-left: 315px;
+}
