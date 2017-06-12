@@ -127,7 +127,7 @@ export default {
 @import "../style.css";
 .sourceList{
   width: 1160px;
-  margin: 20px auto;
+  margin: 0px auto;
 }
 .sourceList ul{
   overflow: hidden;

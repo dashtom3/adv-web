@@ -21,7 +21,6 @@ import Advlist from './views/merchant/adv/advlist.vue'
 import Page4 from './views/merchant/adv/Page4.vue'
 import Page5 from './views/merchant/adv/Page5.vue'
 import WorkDesktop from './views/merchant/work/workDesktop.vue'
-import games from './views/merchant/games/gamelist.vue'
 // import echarts from './views/charts/echarts.vue'
 
 // 高级管理员
@@ -30,6 +29,7 @@ import adm from './views/admin/adm.vue'
 import merchant from './views/admin/merchant.vue'
 import adver from './views/admin/adver.vue'
 import dataview from './views/admin/dataview.vue'
+import games from './views/admin/gamelist.vue'
 
 // 异业合作
 import yyhz from './views/yyhz/yyhz.vue'
@@ -99,17 +99,6 @@ let routes = [
         ]
     },
     {
-        path: '/merchant',
-        component: Home,
-        name: '',
-        iconCls: 'fa fa-address-card',
-        hidden: 'merchant',
-        leaf: true,//只有一个节点
-        children: [
-            { path: '/merchant/games', component: games, name: '游戏管理' }
-        ]
-    },
-    {
         path: '*',
         hidden: true,
         redirect: { path: '/404' }
@@ -141,6 +130,10 @@ let routes = [
       path: '/admin/dataview',
       name: '数据查看',
       component: dataview
+    }, {
+      path: '/admin/game',
+      name: '游戏管理',
+      component: games
     }]
   },
   {

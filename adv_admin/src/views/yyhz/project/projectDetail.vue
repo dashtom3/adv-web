@@ -70,6 +70,7 @@ import kindLogo from '../../../images/kindLogo.gif'
 import header from '../header'
 import footer from '../footer'
 import photo from '../../../images/photo.png'
+import global from '../../global/global'
 export default {
   data () {
     return {
@@ -89,8 +90,22 @@ export default {
         { img: kindLogo, name: '51Talk无忧英语'},
         { img: kindLogo, name: '51Talk无忧英语'},
         { img: kindLogo, name: '51Talk无忧英语'}
-      ]
+      ],
+      projectDetail: null,
+      projectDetailArgs: {
+        projectId: this.$route.params.id
+      }
     }
+  },
+  created () {
+    global.axiosGetReq('project/getProjectDetails?', this.projectDetailArgs)
+    .then((res) => {
+      if (res.data.callStatus === 'SUCCEED') {
+        this.projectDetail = res.data.data
+      } else {
+        global.error(this, res.data.data, '')
+      }
+    })
   },
   components: {
     'v-header': header,

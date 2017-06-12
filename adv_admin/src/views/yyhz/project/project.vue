@@ -28,19 +28,19 @@
       <div class="listLeft">
         <ul>
           <li v-for="project in projectLists">
-            <a href="/projectDetail/1">
+            <a :href="'/projectDetail/' + project.id">
               <div class="img">
                 <img :src="project.src" alt="">
               </div>
               <div class="listContent">
-                <p class="contentTitle">{{project.title}}</p>
-                <p class="contentFooter">
+                <p class="contentTitle">{{project.content}}</p>
+                <p class="contentFooter pro">
                     <span class="kindLogo"></span>
-                    <span>{{project.kind}}</span>
+                    <span class="w200">{{project.type}}</span>
                     <span class="foruser"></span>
-                    <span>{{project.user}}</span>
+                    <span class="w160">{{project.userGroup}}</span>
                     <span class="contTime"></span>
-                    <span>{{project.time}}</span>
+                    <span>{{project.createDate | time}}</span>
                 </p>
               </div>
             </a>
@@ -48,7 +48,7 @@
         </ul>
         <!-- 分页 -->
         <div class="h20"></div>
-        <div class="">
+        <div class="" v-if="projectArgs.totalPage > 1">
           <page v-on:page="changePage" :args="projectArgs"></page>
         </div>
       </div>
@@ -85,6 +85,7 @@
 <script>
 import kindLogo from '../../../images/kindLogo.gif'
 import rz from '../../../images/sourcename.png'
+import global from '../../global/global'
 import page from '../page'
 export default {
   data () {
@@ -130,11 +131,7 @@ export default {
         { name: '企业用户', value: '9' },
         { name: '其他', value: '10' }
       ],
-      projectLists: [
-        { src: kindLogo, title: '你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' }
-      ],
+      projectLists: [],
       rzLists: [
         { url: 'javascript:;', src: rz },
         { url: 'javascript:;', src: rz },
@@ -142,11 +139,16 @@ export default {
         { url: 'javascript:;', src: rz }
       ],
       projectArgs: {
-        numPerPage: 10,
+        type: null,
+        userGroup: null,
+        numberPerPage: 10,
         currentPage: 1,
-        totalPage: 5
+        totalPage: -1
       }
     }
+  },
+  created () {
+    this.getProjectLists(this.projectArgs)
   },
   methods: {
     selectKind (index) {
@@ -154,6 +156,19 @@ export default {
     },
     changePage (value) {
       this.projectArgs.currentPage = value
+    },
+    getProjectLists (args) {
+      global.axiosGetReq('project/getProjectList?', args)
+      .then((res) => {
+        // console.log(res)
+        if (res.data.callStatus === "SUCCEED") {
+          this.projectLists = res.data.data
+          this.projectArgs.currentPage = res.data.currentPage
+          this.projectArgs.totalPage = res.data.totalPage
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
     }
   },
   components: {
@@ -278,26 +293,33 @@ export default {
   font-family: "MicrosoftYaHei";
   color: rgba(0, 0, 0, 0.6);
 }
-.kindLogo{
+.pro .kindLogo{
   display: inline-block;
-  width: 27px;
-  height: 26px;
-  background: url('../../../images/kind.gif');
-  margin-right: 20px;
+  width: 19px;
+  height: 19px;
+  background: url('../../../images/sourceKind.png');
+  margin-right: 10px;
 }
-.foruser{
-  width: 30px;
-  height: 21px;
-  background: url('../../../images/user.gif');
-  margin-left: 180px;
-  margin-right: 20px;
+.w200{
+  width: 200px;
+}
+.pro .foruser{
+  width: 20px;
+  height: 18px;
+  background: url('../../../images/sourceUser.png');
+  margin-right: 10px;
+  margin-left: 0!important;
+}
+.w160{
+  display: inline-block;
+  width: 160px;
 }
 .contTime{
   width: 25px;
   height: 26px;
   background:url('../../../images/time.gif');
-  margin-left: 160px;
   margin-right: 20px;
+  margin-left: 0!important;
 }
 .listContent{
   width: 714px;

@@ -22,9 +22,9 @@
         <div class="headerRight">
           <el-input icon="search" class="inputStyle"></el-input>
           <!-- <input type="text" name="" value=""> -->
-          <a href="javascript:;" v-on:click="showLogin">登录</a>
+          <a href="javascript:;" v-on:click="showLogin" :class="{active: loginShow}">登录</a>
           <span>/</span>
-          <a href="javascript:;" v-on:click="showRegister">注册</a>
+          <a href="javascript:;" v-on:click="showRegister" :class="{active: registerShow}">注册</a>
         </div>
       </div>
     </div>
@@ -36,22 +36,25 @@
       <el-collapse-transition>
         <div v-show="registerShow">
           <div class="h20"></div>
-          <div class="formData">
-            <div class="formDataLeft">
-              <input type="text" placeholder="手机号/邮箱/会员"><br>
-              <input type="password" placeholder="密码"><br>
-              <input type="text" placeholder="商铺名"><br>
-              <input type="text" placeholder="商铺全称"><br>
-            </div>
-            <div class="formDataLeft">
-              <div class="a-upload">
-                <span>上传logo</span>
-                <a href="javascript:;"><input type="file" id="file" value="上传文件"><i class="el-icon-plus"></i></a>
+          <div class="loginFormData">
+            <div class="formData">
+              <p class="spzc">商铺注册</p>
+              <div class="formDataLeft">
+                <input type="text" placeholder="手机号/邮箱/会员"><br>
+                <input type="password" placeholder="密码"><br>
+                <input type="text" placeholder="商铺名"><br>
+                <input type="text" placeholder="商铺全称"><br>
               </div>
-            </div>
-            <div class="dl">
-              <input type="button" name="" value="注册"><br>
-              <el-checkbox><span class="ch">同意市场部</span><span class="cr">网站服务条款</span></el-checkbox>
+              <div class="formDataLeft">
+                <div class="a-upload">
+                  <span>上传logo</span>
+                  <a href="javascript:;"><input type="file" id="file" value="上传文件"><i class="el-icon-plus"></i></a>
+                </div>
+              </div>
+              <div class="dl">
+                <input type="button" value="注册" :disabled="!check" :class="{disable: !check}" v-on:click="register"><br>
+                <el-checkbox v-model="check"><span class="ch">同意市场部</span><span class="cr">网站服务条款</span></el-checkbox>
+              </div>
             </div>
           </div>
           <div class="h20"></div>
@@ -64,13 +67,14 @@
           <div class="registFormData">
             <div class="registerForm">
               <div class="h90"></div>
+              <p class="spdl">商铺登录</p>
               <input type="text" placeholder="手机号/邮箱/会员"><br>
               <input type="password" placeholder="密码"><br>
               <a href="#" class="forgetPwd"><span>忘记密码</span></a>
               <div class="zc">
                 <input type="button" name="" value="登录">
               </div>
-              <p><a href="javascript:;"><img src="../../images/qqLogin.png" alt=""></a></p>
+              <!-- <p><a href="javascript:;"><img src="../../images/qqLogin.png" alt=""></a></p> -->
             </div>
           </div>
           <div class="h20"></div>
@@ -87,6 +91,7 @@ export default {
     return {
       loginShow: false,
       registerShow: false,
+      check: false,
       navbarLists: [
         { data: '首页', url: 'http://www.shichangbu.com/' },
         { data: '知识库', url: 'http://www.shichangbu.com/knowledge/' },
@@ -121,6 +126,9 @@ export default {
     showRegister () {
       this.loginShow = false
       this.registerShow = !this.registerShow
+    },
+    register () {
+      console.log(123)
     }
   }
 }
@@ -243,6 +251,7 @@ font-size: 14px;
   outline: none;
   border: none;
   cursor: pointer;
+  margin-bottom: 5px;
 }
 /*.a-upload {
     padding: 4px 10px;
@@ -314,7 +323,7 @@ font-size: 14px;
 .formDataLeft{
   display: inline-block;
   vertical-align: middle;
-  margin: 50px 0 0 30px;
+  margin: 20px 0 0 30px;
 }
 .formDataLeft:last-child{
   margin-left: 66px;
@@ -392,6 +401,13 @@ font-size: 14px;
 .inputStyle input{
   border-radius: 20px;
 }
+.inputStyle input:focus,.dl .el-checkbox__inner:hover{
+  border: 1px solid #e95412!important;
+}
+.dl .el-checkbox__input.is-checked .el-checkbox__inner{
+  border: 1px solid #e95412;
+  background-color: #e95412;
+}
 .headerRight a{
   font-size: 14px;
   color: #000;
@@ -399,5 +415,30 @@ font-size: 14px;
 .headerRight a:hover{
   cursor: pointer;
   color: #ee7641;
+}
+.loginFormData{
+  position: relative;
+  height: 461px;
+}
+.loginFormData .formData{
+  position: absolute;
+  right: 20px;
+}
+a.active{
+  cursor: pointer;
+  color: #ee7641;
+}
+.spzc{
+  margin: 20px 0 0;
+  font-size: 20px;
+  text-align: center;
+}
+.spdl{
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  text-align: center;
+}
+.disable{
+  background-color: #e2e2e2!important;
 }
 </style>
