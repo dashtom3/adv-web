@@ -314,10 +314,10 @@ export default {
   display: inline-block;
   width: 160px;
 }
-.contTime{
-  width: 25px;
-  height: 26px;
-  background:url('../../../images/time.gif');
+.pro .contTime{
+  width: 19px !important;
+  height: 19px !important;
+  background:url('../../../images/time.jpg')!important;
   margin-right: 20px;
   margin-left: 0!important;
 }

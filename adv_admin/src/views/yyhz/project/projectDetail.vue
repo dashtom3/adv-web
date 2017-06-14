@@ -8,13 +8,13 @@
           <div class="detailDivContent">
             <div class="detailDivContentHeader">
               <div class="headerImg">
-                <img src="../../../images/detailImg.png" alt="">
+                <img :src="companyInfo.logo" alt="">
               </div>
               <div class="headerTitle">
                 <span class="titelName">51Talk无忧英语</span><br>
-                <span class="realName">公司全称：北京大生知行科技有限公司上海分公司</span><br>
-                <span class="hz">合作地区: 上海市</span><br>
-                <span class="address"> 详细地址：上海市徐汇区桂林路406号华鑫中心1号楼6楼</span>
+                <span class="realName">公司全称：{{companyInfo.allName}}</span><br>
+                <span class="hz">合作地区: {{companyInfo.region}}</span><br>
+                <span class="address"> 详细地址：{{companyInfo.address}}</span>
               </div>
               <div class="detailDivContentHeaderRight">
                 <p><span class="iconsc"></span><span>收藏</span></p>
@@ -24,19 +24,19 @@
             </div>
             <div class="detailInfo">
               <p class="jj">公司简介</p>
-              <p class="infoMsg">51Talk无忧英语， 美国纽交所上市公司，全球信赖的在线英语教育品牌。美国小学、青少英语、成人英语。100%真人外</p>
+              <p class="infoMsg">{{companyInfo.intro}}</p>
             </div>
           </div>
         </div>
         <div class="partners">
-          <p class="jj projectName">这个是公司的名字</p>
+          <p class="jj projectName">{{companyInfo.realName}}</p>
           <p class="contentFooter cen">
             <span class="kindLogo"></span><span>线上合作联合</span>
-            <span class="foruser"></span><span>大众</span>
-            <span class="contTime"></span><span>2017-05-19截至</span>
+            <span class="foruser"></span><span>{{companyInfo.userGroup}}</span>
+            <span class="contTime"></span><span>{{companyInfo.registerTime | time}}截至</span>
             <span class="iconsc"></span><span>收藏</span>
           </p>
-          <p>51Talk无忧英语， 美国纽交所上市公司，全球信赖的在线英语教育品牌。美国小学、青少英语、成人英语。100%真人外</p>
+          <p>{{companyInfo.content}}</p>
           <p class="apply">
             <input type="button" name="" value="申请合作">
           </p>
@@ -92,6 +92,7 @@ export default {
         { img: kindLogo, name: '51Talk无忧英语'}
       ],
       projectDetail: null,
+      companyInfo: null,
       projectDetailArgs: {
         projectId: this.$route.params.id
       }
@@ -102,6 +103,11 @@ export default {
     .then((res) => {
       if (res.data.callStatus === 'SUCCEED') {
         this.projectDetail = res.data.data
+        global.axiosGetReq('company/getCompanyDetails?userId=' + res.data.data.userId)
+        .then((respone) => {
+          console.log(respone)
+          this.companyInfo = respone.data.data
+        })
       } else {
         global.error(this, res.data.data, '')
       }
