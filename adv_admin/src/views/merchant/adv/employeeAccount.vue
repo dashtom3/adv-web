@@ -12,8 +12,8 @@
     <el-table :data="employeeLists" border style="width: 100%">
       <el-table-column prop="userName" label="账号">
       </el-table-column>
-      <el-table-column prop="password" label="密码">
-      </el-table-column>
+      <!-- <el-table-column prop="password" label="密码">
+      </el-table-column> -->
       <el-table-column prop="realName" label="姓名">
       </el-table-column>
       <el-table-column label="所属行业">
@@ -156,14 +156,17 @@
         global.axiosGetReq('user/getChildAccountList?', args)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
-            for (let i in res.data.data) {
-              res.data.data[i].index = i
+            if (res.data.data.length > 0) {
+              for (let i in res.data.data) {
+                res.data.data[i].index = i
+              }
+              this.employeeLists = res.data.data
+              this.employeeArgs.currentPage = res.data.currentPage
+              this.employeeArgs.totalPage = res.data.totalPage
+            } else if (this.employeeArgs.currentPage !== 1) {
+              this.employeeArgs.currentPage --
+              this.getEmployeeList(this.employeeArgs)
             }
-            this.employeeLists = res.data.data
-            this.employeeArgs.currentPage = res.data.currentPage
-            this.employeeArgs.totalPage = res.data.totalPage
-          } else {
-            global.error(this, res.data.data, '')
           }
         })
       },
@@ -172,6 +175,7 @@
         global.axiosGetReq('exclude/getIndustryList')
         .then((res) => {
           this.allIndustry = res.data.data
+          // console.log(res)
           this.getEmployeeList(this.employeeArgs)
         })
       },

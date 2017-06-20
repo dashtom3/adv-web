@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <v-header></v-header>
+    <v-header v-bind:args="joinClick"></v-header>
     <div class="bg">
       <div class="h20"></div>
       <div class="bgcontent">
@@ -12,7 +12,7 @@
           </div>
           <div class="contentHeadRight">
             <el-input icon="search" class="inputStyle" placeholder="搜索公司"></el-input>
-            <input type="button" name="" value="入驻异业合作" class="rz">
+            <input type="button" v-on:click="join" value="入驻异业合作" class="rz">
           </div>
         </div>
         <transition name="fade">
@@ -38,13 +38,17 @@ export default {
   data () {
     return {
       kinds: ['项目', '公司', '资源'],
-      item: 0
+      item: 0,
+      joinClick: false
     }
   },
   methods: {
     selectKind (index) {
       // console.log(index)
       this.item = index
+    },
+    join () {
+      this.joinClick = !this.joinClick
     }
   },
   components: {

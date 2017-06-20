@@ -10,7 +10,7 @@
         </div>
         <div class="navbar">
           <ul class="navlist">
-            <li v-for="navbar in navbarLists"  class="nav"><a :href="navbar.url" target="_blank" class="navfont">{{navbar.data}}<i class="caret" v-if="navbar.secondNavLists"></i></a>
+            <li v-for="(navbar, index) in navbarLists"  class="nav"><a :href="navbar.url" target="_blank" class="navfont">{{navbar.data}}<i class="caret" v-if="navbar.secondNavLists"></i></a>
               <ul class="secondNav" v-if="navbar.secondNavLists">
                 <li v-for="secondNav in navbar.secondNavLists" class="secondFont">
                   <a :href="secondNav.url" target="_blank">{{secondNav.data}}<i>&gt;</i></a>
@@ -22,9 +22,12 @@
         <div class="headerRight">
           <el-input icon="search" class="inputStyle"></el-input>
           <!-- <input type="text" name="" value=""> -->
-          <a href="javascript:;" v-on:click="showLogin" :class="{active: loginShow}">登录</a>
-          <span>/</span>
-          <a href="javascript:;" v-on:click="showRegister" :class="{active: registerShow}">注册</a>
+          <a href="javascript:;" v-on:click="showLogin" :class="{active: loginShow}" v-if="!isLogin">登录</a>
+          <span v-if="!isLogin">/</span>
+          <a href="javascript:;" v-on:click="showRegister" :class="{active: registerShow}" v-if="!isLogin">注册</a>
+          <!-- <span v-if="isLogin">我是小明</span> -->
+          <span v-if="isLogin"><img src="../../images/head.png" alt="" class="tx"></span>
+          <span v-if="isLogin"><a href="/merchant/workdesktop">进入商铺管理</a></span>
         </div>
       </div>
     </div>
@@ -52,7 +55,7 @@
                 </div>
               </div>
               <div class="dl">
-                <input type="button" value="注册" :disabled="!check" :class="{disable: !check}" v-on:click="register"><br>
+                <input type="button" value="注册" :disabled="!check" :class="{disable: !check}" v-on:click="register" style="margin-bottom:10px;"><br>
                 <el-checkbox v-model="check"><span class="ch">同意市场部</span><span class="cr">网站服务条款</span></el-checkbox>
               </div>
             </div>
@@ -68,11 +71,11 @@
             <div class="registerForm">
               <div class="h90"></div>
               <p class="spdl">商铺登录</p>
-              <input type="text" placeholder="手机号/邮箱/会员"><br>
-              <input type="password" placeholder="密码"><br>
+              <input type="text" placeholder="手机号/邮箱/会员" v-model="loginInfo.userName"><br>
+              <input type="password" placeholder="密码" v-model="loginInfo.password"><br>
               <a href="#" class="forgetPwd"><span>忘记密码</span></a>
               <div class="zc">
-                <input type="button" name="" value="登录">
+                <input type="button" name="" value="登录" v-on:click="loginSubmit">
               </div>
               <!-- <p><a href="javascript:;"><img src="../../images/qqLogin.png" alt=""></a></p> -->
             </div>
@@ -86,16 +89,25 @@
 </template>
 
 <script>
+import global from '../global/global'
+import axios from 'axios'
 export default {
+  props: ['args', 'projectDetailInfo'],
   data () {
     return {
       loginShow: false,
       registerShow: false,
       check: false,
+      isLogin: false,
+      userinfo: global.getUser(),
+      loginInfo: {
+        userName: null,
+        password: null
+      },
       navbarLists: [
         { data: '首页', url: 'http://www.shichangbu.com/' },
         { data: '知识库', url: 'http://www.shichangbu.com/knowledge/' },
-        { data: '异业合作', url: 'http://www.shichangbu.com/yiye/' },
+        { data: '异业合作', url: 'javascript:showNavlists();' },
         { data: '服务商', url: 'http://www.shichangbu.com/agency/' },
         { data: '学院', url: 'http://www.shichangbu.com/edu/' },
         { data: '问答', url: 'http://www.shichangbu.com/forum-52-1.html' },
@@ -118,6 +130,12 @@ export default {
       ]
     }
   },
+  created () {
+    console.log(this.projectDetailInfo)
+    if (global.getToken()) {
+      this.isLogin = true
+    }
+  },
   methods: {
     showLogin () {
       this.registerShow = false
@@ -127,8 +145,33 @@ export default {
       this.loginShow = false
       this.registerShow = !this.registerShow
     },
+    // 登录
+    loginSubmit () {
+      axios.post(global.baseUrl + 'user/login', global.postHttpData(this.loginInfo))
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          global.setToken(res.data.token)
+          global.setUser(res.data.data)
+          global.success(this, '登录成功', '/yyhz')
+          location.reload()
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
+    },
     register () {
       console.log(123)
+    },
+    showNavlists () {
+      console.log(123)
+    }
+  },
+  watch: {
+    args () {
+      this.showRegister()
+    },
+    projectDetailInfo () {
+      console.log(this.projectDetailInfo.login)
     }
   }
 }
@@ -198,7 +241,7 @@ export default {
   /*float: left;*/
   display: inline-block;
   position: relative;
-  margin-right: 38px;
+  margin-right: 25px;
   top: 20px;
   /*height: px;*/
   /*line-height: 92px;*/
@@ -393,6 +436,7 @@ font-size: 14px;
 .headerRight{
   height: 92px;
   line-height: 92px;
+  float: right;
 }
 .inputStyle{
   width: 150px;
@@ -430,15 +474,24 @@ a.active{
 }
 .spzc{
   margin: 20px 0 0;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
 }
 .spdl{
   margin: 0 0 20px 0;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
 }
 .disable{
   background-color: #e2e2e2!important;
+}
+.tx{
+  max-width: 20px;
+  max-height: 20px;
+  border-radius: 50%;
+}
+.headerRight span{
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

@@ -8,10 +8,10 @@
           <div class="detailDivContent">
             <div class="detailDivContentHeader">
               <div class="headerImg borad">
-                <img src="../../../images/detailImg.png" alt="">
+                <img :src="sourceInfo.fileSrc" alt="">
               </div>
               <div class="headerTitle">
-                <span class="titelName">51Talk无忧英语</span><br><br><br>
+                <span class="titelName">{{sourceInfo.name}}</span><br><br><br>
                 <div class="detailDivContentHeaderRight">
                   <p><span class="iconsc"></span><span>收藏</span></p>
                   <p><span class="iconly"></span><span>留言</span></p>
@@ -33,31 +33,56 @@
           </div>
         </div>
         <div class="partners">
-          <p class="jj projectName">这个是公司的名字</p>
+          <p class="jj projectName">{{sourceInfo.name}}</p>
           <p class="contentFooter cen">
-            <span class="kindLogo"></span><span>线上合作联合</span>
-            <span class="foruser"></span><span>大众</span>
-            <span class="contTime"></span><span>2017-05-19截至</span>
+            <span class="kindLogo"></span><span>{{sourceInfo.type}}</span>
+            <span class="foruser"></span><span>{{sourceInfo.userGroup}}</span>
+            <span class="contTime"></span><span>{{sourceInfo.endDate | time}}截至</span>
             <span class="iconsc"></span><span>收藏</span>
           </p>
-          <p>51Talk无忧英语， 美国纽交所上市公司，全球信赖的在线英语教育品牌。美国小学、青少英语、成人英语。100%真人外</p>
-          <p class="apply">
-            <input type="button" name="" value="申请合作">
-          </p>
+          <p>{{sourceInfo.content}}</p>
+          <!-- <p class="apply">
+            <input type="button" name="" value="申请合作" v-on:click="apply">
+          </p> -->
+        </div>
+        <div class="contact" style="margin-top:20px;">
+          <p class="lxfs">联系方式：</p>
+          <div class="contLx" v-if="!userToken">
+            <img src="../../../images/msg.png" alt="">
+            <div class="">
+              <p>登录后可查看联系方式、留言</p>
+              <a href="javascript:;" class="button">登录</a>
+              <a href="javascript:;" class="button">注册</a>
+            </div>
+          </div>
+          <div class="contLx msg" v-if="userToken">
+            <ul class="msgInfo">
+              <li>联系人:</li>
+              <li>部门:</li>
+              <li>职位:</li>
+              <li>公司固话:</li>
+              <li>邮箱:</li>
+            </ul>
+          </div>
+          <div class="contLx ly" v-if="userToken">
+            <p class="lxfs">留言：</p>
+            <textarea type="text" name="" value="" v-model="message.content"></textarea>
+            <a href="javascript:;" class="button submit" >提交</a>
+          </div>
         </div>
         <div class="contact">
-          <div class="">
+          <!-- <div class="">
             <img src="../../../images/change.png" alt="">
-          </div>
+          </div> -->
           <div class="applyCompany">
-            <p class="applyCompanyTitle">合作公司(2)</p>
+            <p class="applyCompanyTitle">合作公司({{applyCompanyLists.length}})</p>
             <ul>
               <li v-for="applyCompany in applyCompanyLists"><a href="javascript:;">
                 <div class="middle">
                   <span></span>
-                  <img :src="applyCompany.img" alt="">
+                  <img :src="applyCompany.applyLogo" alt="">
                 </div>
-                <p>{{applyCompany.name}}</p>
+                <p>{{applyCompany.applyRealName}}</p>
               </a></li>
             </ul>
           </div>
@@ -74,26 +99,52 @@ import kindLogo from '../../../images/kindLogo.gif'
 import header from '../header'
 import footer from '../footer'
 import photo from '../../../images/photo.png'
+import global from '../../global/global'
 export default {
   data () {
     return {
       photos: [photo, photo, photo, photo, photo, photo],
-      projectLists: [
-        { src: kindLogo, title: '你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' }
-      ],
-      applyCompanyLists: [
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'}
-      ]
+      applyCompanyLists: [],
+      sourceDetailArgs: {
+        resourceId: this.$route.params.id
+      },
+      sourceInfo: null,
+      userinfo: global.getUser(),
+      userToken: global.getToken(),
+      userMsg: global.getUser(),
+      message: {
+        content: null,
+        projectId: this.$route.params.id
+      }
+    }
+  },
+  created () {
+    this.getSourceDetail(this.sourceDetailArgs)
+    this.getCooperationLIsts(this.sourceDetailArgs)
+  },
+  methods: {
+    getSourceDetail (args) {
+      // console.log(args)
+      global.axiosGetReq('resource/getResourceDetails?', args)
+      .then((res) => {
+        // console.log(res)
+        this.sourceInfo = res.data.data
+      })
+    },
+    getCooperationLIsts (args) {
+      global.axiosGetReq('resource/getApplyList?', args)
+      .then((res) => {
+        // console.log(res)
+        this.applyCompanyLists = res.data.data
+      })
+    },
+    // 申请合作
+    apply () {
+      if (!global.getToken()) {
+        alert('请先登录')
+      } else {
+        global.axiosPostReq('')
+      }
     }
   },
   components: {

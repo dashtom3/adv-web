@@ -10,10 +10,10 @@
                 <img src="../../../images/detailImg.png" alt="">
               </div>
               <div class="headerTitle">
-                <span class="titelName">51Talk无忧英语</span><br>
-                <span class="realName">公司全称：北京大生知行科技有限公司上海分公司</span><br>
-                <span class="hz">合作地区: 上海市</span><br>
-                <span class="address"> 详细地址：上海市徐汇区桂林路406号华鑫中心1号楼6楼</span>
+                <span class="titelName">{{companyInfo.realName}}</span><br>
+                <span class="realName">公司全称：{{companyInfo.allName}}</span><br>
+                <span class="hz">合作地区: {{companyInfo.region}}</span><br>
+                <span class="address"> 详细地址：{{companyInfo.address}}</span>
               </div>
               <div class="detailDivContentHeaderRight">
                 <p><span class="iconsc"></span><span>收藏</span></p>
@@ -23,36 +23,61 @@
             </div>
             <div class="detailInfo">
               <p class="jj">公司简介</p>
-              <p class="infoMsg">51Talk无忧英语， 美国纽交所上市公司，全球信赖的在线英语教育品牌。美国小学、青少英语、成人英语。100%真人外</p>
+              <p class="infoMsg">{{companyInfo.intro}}</p>
             </div>
             <div class="detailPhotos">
               <p class="jj">公司相册</p>
               <p class="photos">
                 <ul>
-                  <li v-for="photo in photos"><img :src="photo" alt=""></li>
+                  <li v-for="photo in photos"><img :src="photo.fileSrc" alt=""></li>
                 </ul>
               </p>
             </div>
           </div>
         </div>
+        <div class="contact" style="margin-top:20px;">
+          <p class="lxfs">联系方式：</p>
+          <div class="contLx" v-if="!userToken">
+            <img src="../../../images/msg.png" alt="">
+            <div class="">
+              <p>登录后可查看联系方式、留言</p>
+              <a href="javascript:;" class="button">登录</a>
+              <a href="javascript:;" class="button">注册</a>
+            </div>
+          </div>
+          <div class="contLx msg" v-if="userToken">
+            <ul class="msgInfo">
+              <li>联系人:</li>
+              <li>部门:</li>
+              <li>职位:</li>
+              <li>公司固话:</li>
+              <li>邮箱:</li>
+            </ul>
+          </div>
+          <div class="contLx ly" v-if="userToken">
+            <p class="lxfs">留言：</p>
+            <textarea type="text" name="" value="" v-model="message.content"></textarea>
+            <a href="javascript:;" class="button submit" >提交</a>
+          </div>
+        </div>
         <div class="partners">
-          <p class="jj">合作伙伴</p>
+          <p class="jj">合作项目</p>
           <div class="listLeft detialLeft">
             <ul>
-              <li v-for="project in projectLists">
-                <a href="#">
+              <li v-for="project in togetherProject">
+                <a href="javascript:;">
                   <div class="img">
-                    <img :src="project.src" alt="">
+                    <img :src="project.fileSrc" alt="">
                   </div>
                   <div class="listContent">
-                    <p class="contentTitle">{{project.title}}</p>
+                    <p class="contentTitle">{{project.content}}</p>
                     <p class="contentFooter">
                         <span class="kindLogo"></span>
-                        <span>{{project.kind}}</span>
+                        <span>{{project.type}}</span>
                         <span class="foruser"></span>
-                        <span>{{project.user}}</span>
+                        <span>{{project.userGroup}}</span>
                         <span style="float:right;"><span class="contTime"></span>
-                        <span>{{project.time}}</span></span>
+                        <span>{{project.endDate | time}}</span></span>
                     </p>
                   </div>
                 </a>
@@ -75,15 +100,61 @@ import kindLogo from '../../../images/kindLogo.gif'
 import header from '../header'
 import footer from '../footer'
 import photo from '../../../images/photo.png'
+import global from '../../global/global'
 export default {
   data () {
     return {
-      photos: [photo, photo, photo, photo, photo, photo],
-      projectLists: [
-        { src: kindLogo, title: '你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' }
-      ]
+      photos: [],
+      togetherProject: [],
+      companyArgs: {
+        userId: this.$route.params.id
+      },
+      companyPhotos: {
+        userId: null,
+        numberPerPage: 6
+      },
+      userToken: global.getToken(),
+      userMsg: global.getUser(),
+      message: {
+        content: null,
+        projectId: this.$route.params.id
+      },
+      companyInfo: {}
+    }
+  },
+  created () {
+    this.getCompanyDetail(this.companyArgs)
+  },
+  methods: {
+    getCompanyDetail (args) {
+      global.axiosGetReq('company/getCompanyDetails?', args)
+      .then((res) => {
+        // console.log(res)
+        if (res.data.callStatus === 'SUCCEED') {
+          this.companyInfo = res.data.data
+          this.companyPhotos.userId = res.data.data.id
+          this.getCompanyPhotos(this.companyPhotos)
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
+    },
+    getCompanyPhotos (args) {
+      global.axiosGetReq('photo/getPhotoList?numberPerPage=6', args)
+      .then((res) => {
+        // console.log(res)
+        this.photos = res.data.data
+        this.companyPhotos.numberPerPage = null
+        this.getTogetherProject(this.companyPhotos)
+      })
+    },
+    // 合作项目
+    getTogetherProject (args) {
+      global.axiosGetReq('company/getApplyProjects?', args)
+      .then((res) => {
+        // console.log(res)
+        this.togetherProject = res.data.data
+      })
     }
   },
   components: {

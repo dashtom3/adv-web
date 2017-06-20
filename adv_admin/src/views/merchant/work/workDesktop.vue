@@ -3,9 +3,11 @@
 		<div class="wait">
 			<div class="wait_word">待办任务</div>
 		</div>
-		<div class="item" @click="adminLogin">
-			<img src="../../../images/mer-order.jpg">
-			<p class="item_word">广告订单(5)</p>
+		<div class="item">
+      <a href="/merchant/advlist">
+        <img src="../../../images/mer-order.jpg">
+  			<p class="item_word">广告订单({{unacknowledged}})</p>
+      </a>
 		</div>
 	</div>
 </template>
@@ -16,33 +18,15 @@
 	export default {
 		data() {
 			return {
-			    adminMsg: {
-                     userName: 'dapan123',
-                     password: '123'
-                }
+        unacknowledged: null
 			}
 		},
-		methods: {
-            adminLogin () {
-              var self = this
-              if (this.adminMsg.userName && this.adminMsg.password) {
-                //global.success(self, '登录成功', '/admin/merchant')
-                axios.post(global.baseUrl + 'Advertisement/api/user/login', global.postHttpData(this.adminMsg))
-                .then((res) => {
-                	console.log(res);
-                  if (res.data.callStatus === 'SUCCEED') {
-                    global.setToken(res.data.token)
-                    global.setUser(res.data.data)
-                    global.success(self, '登录成功', '')
-                  } else {
-                    global.error(self, '账号或者密码错误', '')
-                  }
-                })
-              } else {
-                global.error(self, '账号或者密码不能为空', '')
-              }
-            }
-		}
+    created () {
+      global.axiosGetReq('advOrder/getAdvOrderList', '')
+      .then((res) => {
+        this.unacknowledged = res.data.unacknowledged
+      })
+    }
 	}
 </script>
 

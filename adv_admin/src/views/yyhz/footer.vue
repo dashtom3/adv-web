@@ -30,6 +30,9 @@
         </p>
       </div>
     </div>
+    <p class="ba">&copy;2006-2017 shichangbu.com 沪ICP备12015044号-2
+      <a href="http://www.beian.gov.cn" rel="nofollow" target="_blank"><img src="../../images/copy.png" alt=""> 沪公网备 31011502003647</a>
+    </p>
   </div>
 </template>
 
@@ -169,5 +172,22 @@ export default {
   margin-left:15px;
   position: relative;
   top: -1px;
+}
+.ba{
+  margin: 0px;
+  height: 45px;
+  background: red;
+  line-height: 45px;
+  text-align: center;
+  clear: both;
+  color: #818181;
+  background-color: #23282d;
+}
+.ba img{
+  position: relative;
+  top: 8px;
+}
+.ba a{
+  color: #818181;
 }
 </style>

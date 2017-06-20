@@ -56,7 +56,6 @@
 				let para = {
 					name: this.filters.name
 				};
-				this.loading = true;
 				//NProgress.start();
 				getUserList(para).then((res) => {
 					this.users = res.data.users;

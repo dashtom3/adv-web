@@ -28,11 +28,13 @@
     <div class="list companyLists">
       <ul>
         <li v-for="project in projectLists">
-          <a href="/companyDetail/1">
+          <a :href="'/companyDetail/' + project.id">
             <div class="sourceImg companyImg">
-              <img :src="project.src" alt="">
+              <div class="companyw160">
+                <img :src="project.logo" alt="">
+              </div>
               <p class="contentFooter source companyFooter">
-                  <span class="fl">{{project.title}}</span>
+                  <span class="fl">{{project.intro}}</span>
                   <span class="fr">
                     <span class="eye"></span>
                     <span>100</span>
@@ -44,7 +46,7 @@
       </ul>
 
         <!-- 分页 -->
-        <div class="block">
+        <div class="block" v-if="projectArgs.totalPage > 1">
           <page v-on:page="changePage" :args="projectArgs"></page>
         </div>
         <div class="h20">
@@ -57,8 +59,9 @@
 </template>
 
 <script>
-import companyImg from '../../../images/company.png'
+// import companyImg from '../../../images/company.png'
 import page from '../page'
+import global from '../../global/global'
 export default {
   data () {
     return {
@@ -103,30 +106,32 @@ export default {
         { name: '企业用户', value: '9' },
         { name: '其他', value: '10' }
       ],
-      projectLists: [
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
-        { src: companyImg, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' }
-      ],
+      projectLists: [],
       projectArgs: {
-        numPerPage: 10,
+        numberPerPage: 10,
         currentPage: 1,
-        totalPage: 5
+        totalPage: -1
       }
     }
+  },
+  created () {
+    this.getAllCompanys(this.projectArgs)
   },
   methods: {
     selectKind (index) {
       this.item = index
+    },
+    getAllCompanys (args) {
+      global.axiosGetReq('company/getCompanyList?', args)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          this.projectLists = res.data.data
+          this.projectArgs.currentPage = res.data.currentPage
+          this.projectArgs.totalPage = res.data.totalPage
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
     },
     changePage (value) {
       this.projectArgs.currentPage = value
@@ -142,7 +147,7 @@ export default {
 @import "../style.css";
 .companyLists{
   width: 1160px;
-  margin: 20px auto;
+  margin: 0px auto;
 }
 .companyLists ul{
   overflow: hidden;
@@ -158,6 +163,7 @@ export default {
   display: inline-block;
   text-align: center;
   padding: 10px;
+  vertical-align: top;
 }
 .companyLists ul li a:hover .companyImg img{
   background-color: rgb(248, 247, 245);
@@ -188,5 +194,13 @@ export default {
 }
 .companyFooter{
   margin-top: 0px;
+}
+.companyw160{
+  width: 160px;
+  height: 160px;
+}
+.companyw160 img{
+  max-width: 160px;
+  max-height: 160px;
 }
 </style>

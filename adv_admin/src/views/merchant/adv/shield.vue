@@ -113,10 +113,15 @@
         global.axiosGetReq('exclude/getExcludeList?', args).then((res) => {
           // console.log(res)
           if (res.data.callStatus === 'SUCCEED') {
-            self.industry = res.data.data
-            self.industryArg.currentPage = res.data.currentPage
-            self.industryArg.totalPage = res.data.totalPage
-            self.setKind(res.data.data)
+            if (res.data.data.length) {
+              self.industry = res.data.data
+              self.industryArg.currentPage = res.data.currentPage
+              self.industryArg.totalPage = res.data.totalPage
+              self.setKind(res.data.data)
+            } else if (self.industryArg.currentPage !== 1) {
+              self.industryArg.currentPage --
+              this.getIndustryList(this.industryArg)
+            }
           }
         })
       },

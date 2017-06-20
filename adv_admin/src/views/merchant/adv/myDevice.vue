@@ -112,9 +112,14 @@ import global from '../../global/global'
         global.axiosGetReq('device/getDeviceList?', args)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
-            this.baseLists = res.data.data
-            this.baseListArgs.currentPage = res.data.currentPage
-            this.baseListArgs.totalPage = res.data.totalPage
+            if (res.data.data.length > 0) {
+              this.baseLists = res.data.data
+              this.baseListArgs.currentPage = res.data.currentPage
+              this.baseListArgs.totalPage = res.data.totalPage
+            } else if(this.baseListArgs.currentPage !== 1){
+              this.baseListArgs.currentPage --
+              this.getBaseLists(this.baseListArgs)
+            }
           }
         })
       },

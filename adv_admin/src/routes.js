@@ -5,9 +5,9 @@ import Home from './views/merchant/main_mer.vue'
 import Main from './views/Main.vue'
 import Userinfo from './views/merchant/basic/userinfo.vue'
 import MyProject from './views/merchant/basic/myProject.vue'
-import PublishProject from './views/merchant/basic/publishProject.vue'
+// import PublishProject from './views/merchant/basic/publishProject.vue'
 import MyResource from './views/merchant/basic/MyResource.vue'
-import PublishResource from './views/merchant/basic/PublishResource.vue'
+// import PublishResource from './views/merchant/basic/PublishResource.vue'
 import MessageBox from './views/merchant/basic/messageBox.vue'
 import Table from './views/merchant/basic/Table.vue'
 import Form from './views/merchant/basic/Form.vue'
@@ -77,9 +77,9 @@ let routes = [
         children: [
             { path: '/merchant/userinfo', component: Userinfo, name: '基本资料' },
             { path: '/merchant/myproject', component: MyProject, name: '我的项目' },
-            { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
+            // { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
             { path: '/merchant/myResource', component: MyResource, name: '我的资源' },
-            { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' },
+            // { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' }
             { path: '/merchant/messagebox', component: MessageBox, name: '留言箱' }
         ]
     },
@@ -106,7 +106,7 @@ let routes = [
     {
         path: '/',
         hidden: true,
-        redirect: { path: '/login' }
+        redirect: { path: '/yyhz' }
     },
     {
     path: '/admin/login',

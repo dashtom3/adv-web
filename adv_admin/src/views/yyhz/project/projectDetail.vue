@@ -1,6 +1,6 @@
 <template>
   <div class="detail">
-    <v-header></v-header>
+    <v-header v-bind:projectDetailInfo="clickState"></v-header>
     <div class="detailContainer">
       <div class="h10"></div>
       <div class="detailContent project">
@@ -37,25 +37,33 @@
             <span class="iconsc"></span><span>收藏</span>
           </p>
           <p>{{companyInfo.content}}</p>
-          <p class="apply">
+          <!-- <p class="apply">
             <input type="button" name="" value="申请合作">
-          </p>
+          </p> -->
         </div>
-        <div class="contact">
-          <div class="">
-            <img src="../../../images/change.png" alt="">
+        <div class="contact" style="margin-top:20px;">
+          <p class="lxfs">联系方式：</p>
+          <div class="contLx" v-if="!userToken">
+            <img src="../../../images/msg.png" alt="">
+            <div class="">
+              <p>登录后可查看联系方式、留言</p>
+              <a href="javascript:;" v-on:click="loginClick" class="button">登录</a>
+              <a href="javascript:;" v-on:click="registerClick" class="button">注册</a>
+            </div>
           </div>
-          <div class="applyCompany">
-            <p class="applyCompanyTitle">合作公司(2)</p>
-            <ul>
-              <li v-for="applyCompany in applyCompanyLists"><a href="javascript:;">
-                <div class="middle">
-                  <span></span>
-                  <img :src="applyCompany.img" alt="">
-                </div>
-                <p>{{applyCompany.name}}</p>
-              </a></li>
+          <div class="contLx msg" v-if="userToken">
+            <ul class="msgInfo">
+              <li>联系人:</li>
+              <li>部门:</li>
+              <li>职位:</li>
+              <li>公司固话:</li>
+              <li>邮箱:</li>
             </ul>
+          </div>
+          <div class="contLx ly" v-if="userToken">
+            <p class="lxfs">留言：</p>
+            <textarea type="text" name="" value="" v-model="message.content"></textarea>
+            <a href="javascript:;" class="button submit" v-on:click="submitMsg">提交</a>
           </div>
         </div>
       </div>
@@ -91,6 +99,16 @@ export default {
         { img: kindLogo, name: '51Talk无忧英语'},
         { img: kindLogo, name: '51Talk无忧英语'}
       ],
+      message: {
+        content: null,
+        projectId: this.$route.params.id
+      },
+      clickState: {
+        login: false,
+        register: false
+      },
+      userToken: global.getToken(),
+      userMsg: global.getUser(),
       projectDetail: null,
       companyInfo: null,
       projectDetailArgs: {
@@ -105,13 +123,36 @@ export default {
         this.projectDetail = res.data.data
         global.axiosGetReq('company/getCompanyDetails?userId=' + res.data.data.userId)
         .then((respone) => {
-          console.log(respone)
+          // console.log(respone)
           this.companyInfo = respone.data.data
         })
       } else {
         global.error(this, res.data.data, '')
       }
     })
+  },
+  methods: {
+    loginClick () {
+      this.clickState.login = !this.clickState.login
+      // console.log(this.clickState.login)
+    },
+    registerClick () {
+      this.clickState.register = !this.clickState.register
+    },
+    submitMsg () {
+      if (!this.message.content) {
+        alert('请输入留言内容')
+      } else {
+        global.axiosPostReq('message/add', this.message)
+        .then((res) => {
+          if (res.data.callStatus === 'SUCCEED') {
+            global.success(this, '留言成功', '')
+          } else {
+            global.error(this, res.data.data, '')
+          }
+        })
+      }
+    }
   },
   components: {
     'v-header': header,
@@ -213,5 +254,85 @@ export default {
   font-size: 14px;
   font-family: "MicrosoftYaHei";
   color: rgba(0, 0, 0, 0.8);
+}
+.lxfs::before{
+  content: '';
+  display: inline-block;
+  background-color: rgb(233, 84, 18);
+  position: absolute;
+  width: 8px;
+  height: 22px;
+  margin-left: -20px;
+}
+.lxfs{
+  font-size: 18px;
+  font-family: "MicrosoftYaHei";
+  color: rgba(0, 0, 0, 0.8);
+  font-weight: bold;
+  position: relative;
+  margin-left: 20px;
+}
+.contLx{
+  position: relative;
+}
+.contLx div{
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 0px;
+}
+.button{
+  display: inline-block;
+  border-radius: 3px;
+  background-color: rgb(233, 84, 18);
+  width: 74px;
+  height: 31px;
+  line-height: 31px;
+  color: #fff;
+  margin-right: 10px;
+}
+.msg{
+  border-width: 1px;
+  border-color: rgb(191, 191, 191);
+  border-style: solid;
+  width: 1158px;
+  height: 97px;
+}
+.msgInfo li{
+  float: left;
+  padding: 10px
+}
+.msgInfo li:nth-child(1),.msgInfo li:nth-child(4){
+  width: 470px;
+}
+.msgInfo li:nth-child(2){
+  width: 400px;
+}
+.msgInfo li:nth-child(3){
+  width: 220px;
+}
+.ly{
+  text-align: right;
+}
+.ly textarea{
+  border-width: 1px;
+  border-color: rgb(191, 191, 191);
+  border-style: solid;
+  width: 1158px;
+  height: 97px;
+  resize:none;
+}
+.lxfs{
+  text-align: left;
+}
+.submit{
+  position: relative;
+  text-align: center;
+  border-radius: 3px;
+  background-color: rgb(233, 84, 18);
+  width: 74px;
+  height: 31px;
+  top: 10px;
+  left: 10px;
 }
 </style>

@@ -8,7 +8,7 @@
             <label for="">行&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业:</label>
             <div class="select">
               <ul>
-                <li v-for="industryList in industryLists" :class="{ on: industry === industryList.value}"><a href="javascript:;">{{industryList.name}}</a></li>
+                <li v-for="(industryList, index) in industryLists" :class="{ on: industry === index}"><a href="javascript:;" v-on:click="selectIndustryList(industryList, index)">{{industryList}}</a></li>
               </ul>
             </div>
           </div>
@@ -16,7 +16,7 @@
             <label for="">用户群体:</label>
             <div class="select">
               <ul>
-                <li v-for="userList in userLists" :class="{on: user === userList.value}"><a href="#">{{userList.name}}</a></li>
+                <li v-for="(userList, index) in userLists" :class="{on: user === index}"><a href="javascript:;" v-on:click="selectUserGroup(userList, index)">{{userList}}</a></li>
               </ul>
             </div>
           </div>
@@ -59,23 +59,28 @@
           <p class="listRightTitle">
           <img src="../../../images/rz.gif" alt=""></p>
           <ul>
-            <li v-for="rzList in rzLists">
-              <a :href="rzList.url">
-                <img :src="rzList.src" alt="">
+            <li v-for="rzList in newJoinLists" class="w89">
+              <a href="javascript:;">
+                <img :src="rzList.logo" alt="">
               </a>
             </li>
           </ul>
         </div>
+
+        <!-- 最新的资源 -->
         <div class="">
           <p class="listRightTitle">
           <img src="../../../images/source.gif" alt=""></p>
           <ul>
-            <li v-for="rzList in rzLists">
-              <a :href="rzList.url">
-                <img :src="rzList.src" alt="">
+            <li v-for="rzList in newSourceLists" class="w89">
+              <a href="javascript:;">
+                <img :src="rzList.fileSrc" alt="">
               </a>
             </li>
           </ul>
+        </div>
+        <div class="" style="text-align:center;">
+          <img src="../../../images/code.png" alt="">
         </div>
       </div>
     </div>
@@ -92,52 +97,13 @@ export default {
     return {
       kinds: ['项目', '公司', '资源'],
       item: 0,
-      industry: '0',
-      industryLists: [
-        { name: '不限', value: '0' },
-        { name: '母婴', value: '1' },
-        { name: '金融', value: '2' },
-        { name: '地产', value: '3' },
-        { name: '零售', value: '4' },
-        { name: '物流', value: '5' },
-        { name: '企业服务', value: '6' },
-        { name: '工业制造', value: '7' },
-        { name: '农业', value: '8' },
-        { name: '3C', value: '9' },
-        { name: '广告传媒', value: '10' },
-        { name: '汽车', value: '11' },
-        { name: '医疗', value: '12' },
-        { name: '家居建材', value: '13' },
-        { name: '线下活动合作', value: '14' },
-        { name: '积分兑换', value: '15' },
-        { name: '产品置换', value: '16' },
-        { name: '媒体广告置换', value: '17' },
-        { name: '微信互推', value: '18' },
-        { name: '平台招商', value: '19' },
-        { name: 'GPS', value: '20' },
-        { name: '其他', value: '21' }
-      ],
-      user: '0',
-      userLists: [
-        { name: '不限', value: '0' },
-        { name: '男性', value: '1' },
-        { name: '女性', value: '2' },
-        { name: '母婴', value: '3' },
-        { name: '青少年', value: '4' },
-        { name: '中老年', value: '5' },
-        { name: '职场白领', value: '6' },
-        { name: '大学生', value: '7' },
-        { name: '高净值人群', value: '8' },
-        { name: '企业用户', value: '9' },
-        { name: '其他', value: '10' }
-      ],
+      industry: 0,
+      industryLists: ['不限', '品牌联合', '提供免费福利', '发放卡券', '线下渠道合作', '线上流量互换', '线上活动联合', '线下活动合作', '活动招商', '积分兑换', '产品置换', '媒体广告置换', '微信互推', '平台招商', 'CPS', '其他'],
+      user: 0,
+      userLists: ['不限', '男性', '女性', '母婴', '青少年', '中老年', '职场白领', '大学生', '高净值白领', '企业用户', '其他'],
       projectLists: [],
-      rzLists: [
-        { url: 'javascript:;', src: rz },
-        { url: 'javascript:;', src: rz },
-        { url: 'javascript:;', src: rz },
-        { url: 'javascript:;', src: rz }
-      ],
+      newJoinLists: [],
+      newSourceLists: [],
       projectArgs: {
         type: null,
         userGroup: null,
@@ -149,6 +115,8 @@ export default {
   },
   created () {
     this.getProjectLists(this.projectArgs)
+    this.getNewJoinLists()
+    this.getNewSourceLists()
   },
   methods: {
     selectKind (index) {
@@ -169,6 +137,54 @@ export default {
           global.error(this, res.data.data, '')
         }
       })
+    },
+    // 获取最新入住
+    getNewJoinLists () {
+      var newJoinArgs = {
+        numberPerPage: 6,
+        currentPage: 1
+      }
+      global.axiosGetReq('company/getCompanyList?', newJoinArgs)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          this.newJoinLists = res.data.data
+        }
+      })
+    },
+    // 获取最新的资源
+    getNewSourceLists () {
+      var sourceArgs = {
+        numberPerPage: 6,
+        currentPage: 1
+      }
+      global.axiosGetReq('resource/getResourceList?', sourceArgs)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          this.newSourceLists = res.data.data
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
+    },
+    // 选择类别
+    selectIndustryList (obj, index) {
+      this.industry = index
+      if (obj !== '不限') {
+        this.projectArgs.type = obj
+      } else {
+        this.projectArgs.type = null
+      }
+      this.getProjectLists(this.projectArgs)
+    },
+    // 选择用户
+    selectUserGroup (obj, index) {
+      this.user = index
+      if (obj !== '不限') {
+        this.projectArgs.userGroup = obj
+      } else {
+        this.projectArgs.userGroup = null
+      }
+      this.getProjectLists(this.projectArgs)
     }
   },
   components: {
@@ -279,6 +295,10 @@ export default {
   width: 140px;
   text-align: center;
 }
+.img img{
+  max-width: 140px;
+  max-height: 140px;
+}
 .contentTitle{
   font-size: 20px;
   color: rgba(0, 0, 0, 0.8);
@@ -344,5 +364,14 @@ export default {
   /*float: left;*/
   display: inline-block;
   margin-right: 15px;
+  vertical-align: top;
+}
+.w89{
+  width: 89px;
+  height: 94px;
+}
+.w89 img{
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>

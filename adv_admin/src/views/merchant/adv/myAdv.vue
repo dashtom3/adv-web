@@ -36,6 +36,11 @@
           <span v-if="scope.row.isOrder == 0">否</span>
         </template>
       </el-table-column>
+      <el-table-column label="单价">
+        <template scope="scope">
+          <span>{{scope.row.advertisement.price}}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="文件">
         <template scope="scope">
           <img :src="scope.row.advertisement.fileSrc" v-if="scope.row.advertisement.fileType === 0" alt="" class="maxAndMin">
@@ -81,6 +86,11 @@
         <template scope="scope">
           <span v-if="scope.row.isOrder == 1">是</span>
           <span v-if="scope.row.isOrder == 0">否</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="单价">
+        <template scope="scope">
+          <span>{{scope.row.advertisement.price}}</span>
         </template>
       </el-table-column>
       <el-table-column label="文件">
@@ -152,6 +162,9 @@
           <el-form-item label="描述" :label-width="formLabelWidth">
             <el-input v-model="addAdverMsg.content" auto-complete="off"></el-input>
           </el-form-item>
+          <el-form-item label="单价" :label-width="formLabelWidth">
+            <el-input v-model="addAdverMsg.price" auto-complete="off" style="width:100px;"></el-input>&nbsp;元
+          </el-form-item>
           <el-form-item label="广告类型" :label-width="formLabelWidth">
             <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
               <el-option
@@ -181,7 +194,7 @@
             </el-upload>
           </el-form-item>
           <el-form-item label="时长(仅上传文件时图片时显示)" :label-width="formLabelWidth" v-if="uploadFileType">
-            <el-input v-model="addAdverMsg.time" auto-complete="off"></el-input>
+            <el-input v-model="addAdverMsg.time" auto-complete="off" style="width:100px;"></el-input>&nbsp;秒
           </el-form-item>
         </div>
       </el-form>
@@ -214,6 +227,7 @@ import global from '../../global/global'
           type: null,
           name: null,
           content: null,
+          price: null,
           fileSrc: null,
           fileName: null,
           fileType: null,
@@ -285,20 +299,27 @@ import global from '../../global/global'
         global.axiosGetReq('playAdv/getPlayAdvList?', args)
         .then((res) => {
           // console.log(res)
-          self.allAdverLists = res.data.data
-          self.scrollAvder = []
-          self.addAdverLists = []
-          for (let i in res.data.data) {
-            res.data.data[i].index = i
-            if (res.data.data[i].type === 0) {
-              // console.log(res.data.data[i])
-              self.scrollAvder.push(res.data.data[i])
-            } else {
-              self.addAdverLists.push(res.data.data[i])
+          if (res.data.callStatus === 'SUCCEED') {
+            if (res.data.data.length > 0) {
+              self.allAdverLists = res.data.data
+              self.scrollAvder = []
+              self.addAdverLists = []
+              for (let i in res.data.data) {
+                res.data.data[i].index = i
+                if (res.data.data[i].type === 0) {
+                  // console.log(res.data.data[i])
+                  self.scrollAvder.push(res.data.data[i])
+                } else {
+                  self.addAdverLists.push(res.data.data[i])
+                }
+              }
+              self.adverInfo.currentPage = res.data.currentPage
+              self.adverInfo.totalPage = res.data.totalPage
+            } else if (this.adverInfo.currentPage !== 1) {
+              this.adverInfo.currentPage --
+              this.getAdverList(this.adverInfo)
             }
           }
-          self.adverInfo.currentPage = res.data.currentPage
-          self.adverInfo.totalPage = res.data.totalPage
         })
       },
       // 上传文件
@@ -359,7 +380,9 @@ import global from '../../global/global'
           this.addAdverMsg.selectType = null
           this.addAdverMsg.name = this.allAdverLists[obj.index].advertisement.name
           this.addAdverMsg.content = this.allAdverLists[obj.index].advertisement.content
+          this.addAdverMsg.price = this.allAdverLists[obj.index].advertisement.price
           // console.log(this.addAdverMsg)
+          // console.log(this.fileList)
         } else {
           this.other = true
           this.my = false

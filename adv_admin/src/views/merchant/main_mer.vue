@@ -115,7 +115,7 @@ import global from './../global/global'
 					//type: 'warning'
 				}).then(() => {
 					global.removeMsg()
-					_this.$router.push('/login');
+					_this.$router.push('/');
 				}).catch(() => {
 
 				});
