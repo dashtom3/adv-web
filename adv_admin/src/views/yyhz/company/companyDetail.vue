@@ -7,7 +7,7 @@
           <div class="detailDivContent">
             <div class="detailDivContentHeader">
               <div class="headerImg">
-                <img src="../../../images/detailImg.png" alt="">
+                <img :src="companyInfo.logo" alt="" class="max100">
               </div>
               <div class="headerTitle">
                 <span class="titelName">{{companyInfo.realName}}</span><br>
@@ -40,21 +40,21 @@
           <div class="contLx" v-if="!userToken">
             <img src="../../../images/msg.png" alt="">
             <div class="">
-              <p>登录后可查看联系方式、留言</p>
-              <a href="javascript:;" class="button">登录</a>
-              <a href="javascript:;" class="button">注册</a>
+              <p class="errMsg">登录后可查看联系方式、留言</p>
+              <!-- <a href="javascript:;" class="button">登录</a>
+              <a href="javascript:;" class="button">注册</a> -->
             </div>
           </div>
-          <div class="contLx msg" v-if="userToken">
+          <div class="contLx msg w1200" v-if="userToken">
             <ul class="msgInfo">
-              <li>联系人:</li>
-              <li>部门:</li>
-              <li>职位:</li>
-              <li>公司固话:</li>
-              <li>邮箱:</li>
+              <li>联系人:{{companyInfo.contact}}</li>
+              <li>部门:{{companyInfo.department}}</li>
+              <li>职位:{{companyInfo.position}}</li>
+              <li>公司固话:{{companyInfo.phone}}</li>
+              <li>邮箱:{{companyInfo.email}}</li>
             </ul>
           </div>
-          <div class="contLx ly" v-if="userToken">
+          <div class="contLx ly w1200" v-if="userToken">
             <p class="lxfs">留言：</p>
             <textarea type="text" name="" value="" v-model="message.content"></textarea>
             <a href="javascript:;" class="button submit" >提交</a>
@@ -117,6 +117,7 @@ export default {
       userMsg: global.getUser(),
       message: {
         content: null,
+        type:'1',
         projectId: this.$route.params.id
       },
       companyInfo: {}
@@ -129,15 +130,23 @@ export default {
     getCompanyDetail (args) {
       global.axiosGetReq('company/getCompanyDetails?', args)
       .then((res) => {
-        // console.log(res)
+        console.log(res)
         if (res.data.callStatus === 'SUCCEED') {
           this.companyInfo = res.data.data
           this.companyPhotos.userId = res.data.data.id
           this.getCompanyPhotos(this.companyPhotos)
+          // this.getCompanyInfo(res.data.data.id)
         } else {
           global.error(this, res.data.data, '')
         }
       })
+    },
+    // 公司信息
+    getCompanyInfo (userId) {
+      var obj = {
+        userId: userId
+      }
+      global.axiosGetReq('')
     },
     getCompanyPhotos (args) {
       global.axiosGetReq('photo/getPhotoList?numberPerPage=6', args)
@@ -166,4 +175,15 @@ export default {
 
 <style lang="css">
 @@import "../style.css";
+.max100{
+  max-width: 100px;
+  max-height: 100px;
+}
+.w1200,.w1200 textarea{
+  width: 1200px!important;
+}
+.errMsg{
+  line-height: 77px;
+  color: rgb(233, 84, 18);
+}
 </style>

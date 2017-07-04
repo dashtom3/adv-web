@@ -8,10 +8,10 @@
           <div class="detailDivContent">
             <div class="detailDivContentHeader">
               <div class="headerImg">
-                <img :src="companyInfo.logo" alt="">
+                <img :src="projectDetail.fileSrc" alt="" class="max100">
               </div>
               <div class="headerTitle">
-                <span class="titelName">51Talk无忧英语</span><br>
+                <span class="titelName">{{projectDetail.name}}</span><br>
                 <span class="realName">公司全称：{{companyInfo.allName}}</span><br>
                 <span class="hz">合作地区: {{companyInfo.region}}</span><br>
                 <span class="address"> 详细地址：{{companyInfo.address}}</span>
@@ -46,18 +46,18 @@
           <div class="contLx" v-if="!userToken">
             <img src="../../../images/msg.png" alt="">
             <div class="">
-              <p>登录后可查看联系方式、留言</p>
-              <a href="javascript:;" v-on:click="loginClick" class="button">登录</a>
-              <a href="javascript:;" v-on:click="registerClick" class="button">注册</a>
+              <p class="lh77">登录后可查看联系方式、留言</p>
+              <!-- <a href="javascript:;" v-on:click="loginClick" class="button">登录</a>
+              <a href="javascript:;" v-on:click="registerClick" class="button">注册</a> -->
             </div>
           </div>
           <div class="contLx msg" v-if="userToken">
             <ul class="msgInfo">
-              <li>联系人:</li>
-              <li>部门:</li>
-              <li>职位:</li>
-              <li>公司固话:</li>
-              <li>邮箱:</li>
+              <li>联系人:{{companyInfo.contact}}</li>
+              <li>部门:{{companyInfo.department}}</li>
+              <li>职位:{{companyInfo.position}}</li>
+              <li>公司固话:{{companyInfo.phone}}</li>
+              <li>邮箱:{{companyInfo.email}}</li>
             </ul>
           </div>
           <div class="contLx ly" v-if="userToken">
@@ -88,19 +88,9 @@ export default {
         { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' },
         { src: kindLogo, title: '你好', kind: '母婴', user: '大众', time: '2016-01-12' }
       ],
-      applyCompanyLists: [
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'},
-        { img: kindLogo, name: '51Talk无忧英语'}
-      ],
       message: {
         content: null,
+        type: '2',
         projectId: this.$route.params.id
       },
       clickState: {
@@ -109,8 +99,8 @@ export default {
       },
       userToken: global.getToken(),
       userMsg: global.getUser(),
-      projectDetail: null,
-      companyInfo: null,
+      projectDetail: {},
+      companyInfo: {},
       projectDetailArgs: {
         projectId: this.$route.params.id
       }
@@ -120,6 +110,7 @@ export default {
     global.axiosGetReq('project/getProjectDetails?', this.projectDetailArgs)
     .then((res) => {
       if (res.data.callStatus === 'SUCCEED') {
+        // console.log(res.data.data)
         this.projectDetail = res.data.data
         global.axiosGetReq('company/getCompanyDetails?userId=' + res.data.data.userId)
         .then((respone) => {
@@ -334,5 +325,13 @@ export default {
   height: 31px;
   top: 10px;
   left: 10px;
+}
+.lh77{
+  line-height: 77px;
+  color: rgb(233, 84, 18)
+}
+.max100{
+  max-width: 100px;
+  max-height: 100px;
 }
 </style>

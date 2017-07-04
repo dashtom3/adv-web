@@ -26,11 +26,11 @@
 				<el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleopen" @close="handleclose" @select="handleselect"
 					 unique-opened router v-show="!collapsed">
 					<template v-for="(item,index) in $router.options.routes" v-if="item.hidden == 'merchant'">
-						<el-submenu :index="index+''" v-if="!item.leaf">
+						<el-submenu :index="index+''" v-if="!item.leaf&&item.type.indexOf(userinfo.type)>-1">
 							<template slot="title"><i :class="item.iconCls"></i>{{item.name}}</template>
-							<el-menu-item v-for="child in item.children" :index="child.path" :key="child.path" v-if="!child.hidden">{{child.name}}</el-menu-item>
+							<el-menu-item v-for="child in item.children" :index="child.path" :key="child.path" v-if="!child.hidden&&child.isChildAccount.indexOf(userinfo.type) > -1">{{child.name}}</el-menu-item>
 						</el-submenu>
-						<el-menu-item v-if="item.leaf&&item.children.length>0" :index="item.children[0].path"><i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
+						<el-menu-item v-if="item.leaf&&item.children.length>0&&userinfo.type!=2" :index="item.children[0].path"><i :class="item.iconCls"></i>{{item.children[0].name}}</el-menu-item>
 					</template>
 				</el-menu>
 				<!--导航菜单-折叠后-->
@@ -79,6 +79,8 @@ import global from './../global/global'
 				sysName:'商户账号后台',
 				collapsed:false,
 				sysUserName: '',
+				userType: global.getUser().type,
+				userinfo: global.getUser(),
 				// sysUserAvatar: '../images/head.png',
 				form: {
 					name: '',
@@ -129,6 +131,7 @@ import global from './../global/global'
 			}
 		},
 		mounted() {
+			// console.log(global.getUser().type)
 			if (global.getUser()) {
 				this.sysUserName = global.getUser().userName || '';
 				// this.sysUserAvatar = user.avatar || '';

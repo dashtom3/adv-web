@@ -26,8 +26,8 @@
           <span v-if="!isLogin">/</span>
           <a href="javascript:;" v-on:click="showRegister" :class="{active: registerShow}" v-if="!isLogin">注册</a>
           <!-- <span v-if="isLogin">我是小明</span> -->
-          <span v-if="isLogin"><img src="../../images/head.png" alt="" class="tx"></span>
-          <span v-if="isLogin"><a href="/merchant/workdesktop">进入商铺管理</a></span>
+          <span v-if="isLogin"><img :src="headImg" alt="" class="tx"></span>
+          <span v-if="isLogin"><a href="/merchant">进入商铺管理</a></span>
         </div>
       </div>
     </div>
@@ -43,15 +43,26 @@
             <div class="formData">
               <p class="spzc">商铺注册</p>
               <div class="formDataLeft">
-                <input type="text" placeholder="手机号/邮箱/会员"><br>
-                <input type="password" placeholder="密码"><br>
-                <input type="text" placeholder="商铺名"><br>
-                <input type="text" placeholder="商铺全称"><br>
+                <input type="text" placeholder="手机号/邮箱/会员" v-model="registerMsg.userName"><br>
+                <input type="password" placeholder="密码" v-model="registerMsg.password"><br>
+                <input type="text" placeholder="商铺名" v-model="registerMsg.realName"><br>
+                <input type="text" placeholder="商铺全称" v-model="registerMsg.allName"><br>
               </div>
               <div class="formDataLeft">
+                <div class="registerImg" v-if="registerMsg.logo != null">
+                  <img :src="registerMsg.logo" alt="" >
+                </div>
                 <div class="a-upload">
-                  <span>上传logo</span>
-                  <a href="javascript:;"><input type="file" id="file" value="上传文件"><i class="el-icon-plus"></i></a>
+                  <span v-if="registerLists.length === 0">上传logo</span>
+                  <el-upload
+                    v-if="registerLists.length === 0"
+                    :action="uploadUrl"
+                    :data="qiNiuToken"
+                    :on-success="uploadSuccess"
+                    list-type="picture-card">
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                  <!-- <a href="javascript:;"><input type="file" id="file" value="上传文件" @change="uploadRegisterPhoto"><i class="el-icon-plus"></i></a> -->
                 </div>
               </div>
               <div class="dl">
@@ -73,7 +84,7 @@
               <p class="spdl">商铺登录</p>
               <input type="text" placeholder="手机号/邮箱/会员" v-model="loginInfo.userName"><br>
               <input type="password" placeholder="密码" v-model="loginInfo.password"><br>
-              <a href="#" class="forgetPwd"><span>忘记密码</span></a>
+              <a href="javascript:;" class="forgetPwd"><span>忘记密码</span></a>
               <div class="zc">
                 <input type="button" name="" value="登录" v-on:click="loginSubmit">
               </div>
@@ -90,6 +101,7 @@
 
 <script>
 import global from '../global/global'
+import img from '../../images/head.png'
 import axios from 'axios'
 export default {
   props: ['args', 'projectDetailInfo'],
@@ -99,7 +111,10 @@ export default {
       registerShow: false,
       check: false,
       isLogin: false,
-      userinfo: global.getUser(),
+      // userinfo: global.getUser() || null,
+      uploadImg: null,
+      headImg: img,
+      // headImg: global.getUser().logo || img,
       loginInfo: {
         userName: null,
         password: null
@@ -107,7 +122,7 @@ export default {
       navbarLists: [
         { data: '首页', url: 'http://www.shichangbu.com/' },
         { data: '知识库', url: 'http://www.shichangbu.com/knowledge/' },
-        { data: '异业合作', url: 'javascript:showNavlists();' },
+        { data: '异业合作', url: 'javascript:;' },
         { data: '服务商', url: 'http://www.shichangbu.com/agency/' },
         { data: '学院', url: 'http://www.shichangbu.com/edu/' },
         { data: '问答', url: 'http://www.shichangbu.com/forum-52-1.html' },
@@ -127,14 +142,31 @@ export default {
           { data: '论坛', url: 'http://www.shichangbu.com/forum-44-1.html' },
           { data: '资料下载', url: 'http://www.shichangbu.com/forum-121-1.html' }
           ] }
-      ]
+      ],
+      registerMsg: {
+        userName: null,
+        password: null,
+        realName: null,
+        allName: null,
+        logo: null,
+        logoName: null,
+        type: 2
+      },
+      registerLists: [],
+      qiNiuToken: null,
+      uploadUrl: global.qiNiuUrl
     }
   },
   created () {
-    console.log(this.projectDetailInfo)
     if (global.getToken()) {
+      // console.log(123)
       this.isLogin = true
+      this.headImg = global.getUser().logo == null ? img : global.getUser().logo
     }
+    global.getQiNiuToken().then((res) => {
+      // console.log(res)
+      this.qiNiuToken = {token: res.data.data}
+    })
   },
   methods: {
     showLogin () {
@@ -159,8 +191,37 @@ export default {
         }
       })
     },
+    uploadSuccess (file, response) {
+      var obj = {
+        name: response.name,
+        url: global.qiniuShUrl + file.key
+      }
+      this.registerLists.push(obj)
+      this.registerMsg.logoName = response.name
+      this.registerMsg.logo = global.qiniuShUrl + file.key
+    },
+    removeSuccess () {
+      this.registerLists = []
+      this.registerMsg.logoName = null
+      this.registerMsg.logo = null
+    },
     register () {
-      console.log(123)
+      global.axiosPostReq('user/register', this.registerMsg)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          global.axiosPostReq('user/login', this.registerMsg)
+          .then((respone) => {
+            if (respone.data.callStatus === 'SUCCEED') {
+              global.setToken(res.data.token)
+              global.setUser(res.data.data)
+              // global.success(this, '登录成功', '/yyhz')
+              location.reload()
+            }
+          })
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
     },
     showNavlists () {
       console.log(123)
@@ -489,9 +550,20 @@ a.active{
   max-width: 20px;
   max-height: 20px;
   border-radius: 50%;
+  position: relative;
+  top: 5px;
 }
 .headerRight span{
   display: inline-block;
   vertical-align: middle;
+}
+.registerImg{
+  width: 148px;
+  height: 148px;
+  border: 1px dashed #c0ccda;
+}
+.registerImg img{
+  max-width: 100%;
+  height: 100%;
 }
 </style>

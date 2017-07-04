@@ -132,6 +132,8 @@ import global from '../../global/global'
             global.success(self, '添加成功', '')
             self.addBaseAlert = false
             self.getBaseLists(self.baseListArgs)
+          } else {
+            global.error(self, res.data.data, '')
           }
         })
       },

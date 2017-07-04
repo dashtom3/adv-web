@@ -12,12 +12,12 @@
       </el-table-column>
 			<el-table-column label="logo">
 				<template scope="scope">
-				  <img :src="scope.row.logo" alt="">
+				  <img :src="scope.row.logo" alt="" class="max100">
 				</template>
       </el-table-column>
 			<el-table-column prop="type" label="用户类型">
       </el-table-column>
-			<el-table-column prop="userGroup" label="用户群体">
+			<el-table-column prop="userGroup" label="面向用户">
       </el-table-column>
 			<el-table-column prop="region" label="合作地区">
       </el-table-column>
@@ -54,8 +54,8 @@
         <el-form-item label="全称">
           <el-input v-model="updateUserInfo.allName"></el-input>
         </el-form-item>
-				<el-form-item label="用户群体">
-					<el-select v-model="updateUserInfo.userGroup" placeholder="请选择活动区域">
+				<el-form-item label="面向用户">
+					<el-select v-model="updateUserInfo.userGroup" multiple placeholder="请选择活动区域">
 			      <el-option
 						:key="userGroup"
 						v-for="userGroup in userGroups"
@@ -83,8 +83,20 @@
         <el-form-item label="需求内容">
           <el-input type="textarea" v-model="updateUserInfo.content"></el-input>
         </el-form-item>
+        <el-form-item label="联系人">
+          <el-input v-model="updateUserInfo.contact" :maxlength="11"></el-input>
+        </el-form-item>
         <el-form-item label="联系方式">
           <el-input v-model="updateUserInfo.phone" :maxlength="11"></el-input>
+        </el-form-item>
+        <el-form-item label="部门">
+          <el-input v-model="updateUserInfo.department" :maxlength="11"></el-input>
+        </el-form-item>
+        <el-form-item label="职位">
+          <el-input v-model="updateUserInfo.position" :maxlength="11"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="updateUserInfo.email" :maxlength="11"></el-input>
         </el-form-item>
 				<el-form-item label="合作地区">
           <el-input v-model="updateUserInfo.region"></el-input>
@@ -117,7 +129,7 @@
       </el-table-column>
       <el-table-column label="图片">
         <template scope="scope">
-          <img :src="scope.row.fileSrc" alt="">
+          <img :src="scope.row.fileSrc" alt="" class="max100">
         </template>
       </el-table-column>
       <el-table-column label="上传时间">
@@ -173,10 +185,14 @@
 					intro: null,
           content: null,
 					phone: null,
-					userGroup: null,
+					userGroup: [],
 					region: null,
 					address: null,
-					type: null
+					type: null,
+          email: null,
+          position: null,
+          department: null,
+          contact: null
         },
 				userGroups: ['不限', '男性', '女性', '母婴', '青少年', '中老年', '职场白领', '大学生', '高净值白领', '企业用户', '其他'],
         fileList: [],
@@ -231,8 +247,8 @@
           url: global.qiniuShUrl + file.key
         }
         this.fileList.push(obj)
-        this.addProjectInfo.fileName = response.name
-        this.addProjectInfo.fileSrc = global.qiniuShUrl + file.key
+        this.updateUserInfo.logoName = response.name
+        this.updateUserInfo.logo = global.qiniuShUrl + file.key
       },
       successPhoto (file, response) {
         var obj = {
@@ -246,8 +262,8 @@
       // 删除文件
       handleRemove () {
         this.fileList = []
-        this.addProjectInfo.logoName = null
-        this.addProjectInfo.logo = null
+        this.updateUserInfo.logoName = null
+        this.updateUserInfo.logo = null
       },
       removePhoto () {
         this.uploadPhotoList = []
@@ -262,12 +278,17 @@
         })
         this.updateUserInfo.realName = this.userInfo[0].realName
         this.updateUserInfo.allName = this.userInfo[0].allName
-        this.updateUserInfo.userGroup = this.userInfo[0].userGroup
         this.updateUserInfo.logo = this.userInfo[0].logo
         this.updateUserInfo.logoName = this.userInfo[0].logoName
-        this.updateUserInfo.userGroup = this.userInfo[0].userGroup
+        if (this.userInfo[0].userGroup !== null) {
+          this.updateUserInfo.userGroup = this.userInfo[0].userGroup.split(',')
+        }
         this.updateUserInfo.projectId = this.userInfo[0].id
 				this.updateUserInfo.phone = this.userInfo[0].phone
+        this.updateUserInfo.department = this.userInfo[0].department
+        this.updateUserInfo.email = this.userInfo[0].email
+        this.updateUserInfo.contact = this.userInfo[0].contact
+        this.updateUserInfo.position = this.userInfo[0].position
       },
       editProjectClick () {
 				global.axiosPostReq('user/update', this.updateUserInfo)
@@ -342,7 +363,7 @@
           }
           this.uploadPhotoList = []
         }
-        console.log(this.uploadPhotoList)
+        // console.log(this.uploadPhotoList)
       }
     }
   }
@@ -363,5 +384,9 @@
   }
   .wait_word {
     margin-left: 20px;
+  }
+  .max100{
+    max-width: 100px;
+    max-height: 100px;
   }
 </style>

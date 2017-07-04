@@ -4,11 +4,18 @@
       <!-- <div class="h20"></div> -->
       <div class="bgcontent">
         <div class="bgCenter">
-          <div class="hy">
+          <div class="hy pr">
             <label for="">行&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业:</label>
             <div class="select">
-              <ul>
-                <li v-for="industryList in industryLists" :class="{ on: industry === industryList.value}"><a href="javascript:;">{{industryList.name}}</a></li>
+              <ul class="firstUl">
+                <li :class="{ on: industry === '0'}" class="firstLi"><a href="javascript:;" v-on:click="selectIndustryList('不限', '0')">不限</a></li>
+                <li v-for="(industryList, index) in industryLists" :class="{ on: industry === index}" class="firstLi"><a href="javascript:;" v-on:click="selectIndustryList(industryList, index)" class="hoverColor">{{industryList.name}}</a>
+                  <ul class="childrenUl">
+                    <li v-for="item in industryList.subIndusrty" :class="{ on: industry === index}">
+                      <a href="javascript:;" v-on:click="selectIndustryList(item, index)">{{item.name}}</a>
+                    </li>
+                  </ul>
+                </li>
               </ul>
             </div>
           </div>
@@ -16,7 +23,7 @@
             <label for="">用户群体:</label>
             <div class="select">
               <ul>
-                <li v-for="userList in userLists" :class="{on: user === userList.value}"><a href="#">{{userList.name}}</a></li>
+                <li v-for="(userList, index) in userLists" :class="{on: user === index}"><a href="javascript:;"  v-on:click="selectUserGroup(userList, index)">{{userList.name}}</a></li>
               </ul>
             </div>
           </div>
@@ -68,30 +75,7 @@ export default {
       kinds: ['项目', '公司', '资源'],
       item: 0,
       industry: '0',
-      industryLists: [
-        { name: '不限', value: '0' },
-        { name: '母婴', value: '1' },
-        { name: '金融', value: '2' },
-        { name: '地产', value: '3' },
-        { name: '零售', value: '4' },
-        { name: '物流', value: '5' },
-        { name: '企业服务', value: '6' },
-        { name: '工业制造', value: '7' },
-        { name: '农业', value: '8' },
-        { name: '3C', value: '9' },
-        { name: '广告传媒', value: '10' },
-        { name: '汽车', value: '11' },
-        { name: '医疗', value: '12' },
-        { name: '家居建材', value: '13' },
-        { name: '线下活动合作', value: '14' },
-        { name: '积分兑换', value: '15' },
-        { name: '产品置换', value: '16' },
-        { name: '媒体广告置换', value: '17' },
-        { name: '微信互推', value: '18' },
-        { name: '平台招商', value: '19' },
-        { name: 'GPS', value: '20' },
-        { name: '其他', value: '21' }
-      ],
+      industryLists: [],
       user: '0',
       userLists: [
         { name: '不限', value: '0' },
@@ -110,14 +94,37 @@ export default {
       projectArgs: {
         numberPerPage: 10,
         currentPage: 1,
-        totalPage: -1
+        totalPage: -1,
+        industryId: null,
+        userGroup: null
       }
     }
   },
   created () {
     this.getAllCompanys(this.projectArgs)
+    this.getAllindustry()
   },
   methods: {
+    selectIndustryList (obj, index) {
+      this.industry = index
+      if (obj !== '不限') {
+        this.projectArgs.industryId = obj.industryId
+      } else {
+        this.projectArgs.industryId = null
+      }
+      this.getAllCompanys(this.projectArgs)
+    },
+    // 选择用户
+    selectUserGroup (obj, index) {
+      console.log(obj, index)
+      this.user = index
+      if (obj.name !== '不限') {
+        this.projectArgs.userGroup = obj.name
+      } else {
+        this.projectArgs.userGroup = null
+      }
+      this.getAllCompanys(this.projectArgs)
+    },
     selectKind (index) {
       this.item = index
     },
@@ -133,6 +140,13 @@ export default {
         }
       })
     },
+    getAllindustry () {
+      global.axiosGetReq('exclude/getIndustryList')
+      .then((res) => {
+        this.industryLists = res.data.data
+        // console.log(res)
+      })
+    },
     changePage (value) {
       this.projectArgs.currentPage = value
     }
@@ -143,7 +157,7 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
 @import "../style.css";
 .companyLists{
   width: 1160px;
@@ -165,13 +179,13 @@ export default {
   padding: 10px;
   vertical-align: top;
 }
-.companyLists ul li a:hover .companyImg img{
+.companyLists ul li.firstLi a:hover .companyImg img{
   background-color: rgb(248, 247, 245);
   box-shadow: 0px 3px 5px 0px rgba(186, 186, 186, 0.75);
   transition: background-color .5s;
   transition: box-shadow .5s;
 }
-.companyLists ul li a:hover .fl,.companyLists ul li a:hover .fr span{
+.companyLists ul li.firstLi a:hover .fl,.companyLists ul li.firstLi a:hover .fr span{
   color: rgb(240, 141, 97);
 }
 .companyLists ul li:nth-child(6n){
@@ -183,7 +197,7 @@ export default {
   height: 12px;
   background: url('../../../images/companyeye.png');
 }
-.companyLists ul li a:hover .eye{
+.companyLists ul li.firstLi a:hover .eye{
   background: url('../../../images/companyeyeHover.png');
 }
 .fl{
@@ -202,5 +216,40 @@ export default {
 .companyw160 img{
   max-width: 160px;
   max-height: 160px;
+}
+.pr{
+  position: relative;
+}
+.childrenUl{
+  position: absolute;
+  /*left: 0;*/
+  display: none;
+  background: #e2e2e2;
+  width: 1032px;
+  /*height: 40px;*/
+  z-index: 9;
+  left:0;
+  li{
+    margin: 5px;
+  }
+}
+.firstUl{
+  position: relative;
+}
+.firstLi:hover .childrenUl{
+  display: block;
+}
+.firstLi:hover{
+  border:1px solid #e2e2e2;
+  background: #e2e2e2;
+}
+.select ul li a:hover, .select ul li.on .hoverColor{
+  color: #f6bba0!important;
+}
+.select ul li.on ul li a:hover{
+    color: #f6bba0!important;
+  }
+.select ul li.on ul li a{
+  color: #000!important;
 }
 </style>

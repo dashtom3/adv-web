@@ -6,7 +6,7 @@
 		<div class="item">
       <a href="/merchant/advlist">
         <img src="../../../images/mer-order.jpg">
-  			<p class="item_word">广告订单({{unacknowledged}})</p>
+  			<p class="item_word">现场订单({{unacknowledged}})</p>
       </a>
 		</div>
 	</div>

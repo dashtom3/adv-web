@@ -19,7 +19,7 @@
       </el-table-column>
       <el-table-column label="游戏图片">
         <template scope="scope">
-          <img :src="scope.row.smallPic" alt="">
+          <img :src="scope.row.smallPic" alt="" class="maxImg">
         </template>
       </el-table-column>
       <el-table-column label="操作" v-if="userInfo.type === 0">
@@ -258,5 +258,9 @@ import global from '../global/global'
 <style scoped>
   .el-dialog__header {
     text-align: center;
+  }
+  .maxImg{
+    max-width: 100px;
+    max-height: 100px;
   }
 </style>

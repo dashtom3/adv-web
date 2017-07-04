@@ -74,13 +74,14 @@ let routes = [
         name: '基本信息管理',
         iconCls: 'el-icon-message',//图标样式class
         hidden: 'merchant',
+        type: [0,1,2],
         children: [
-            { path: '/merchant/userinfo', component: Userinfo, name: '基本资料' },
-            { path: '/merchant/myproject', component: MyProject, name: '我的项目' },
+            { path: '/merchant/userinfo', component: Userinfo, name: '基本资料',isChildAccount: [0,1,2] },
+            { path: '/merchant/myproject', component: MyProject, name: '我的项目',isChildAccount: [0,1,2] },
             // { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
-            { path: '/merchant/myResource', component: MyResource, name: '我的资源' },
+            { path: '/merchant/myResource', component: MyResource, name: '我的资源',isChildAccount: [0,1,2] },
             // { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' }
-            { path: '/merchant/messagebox', component: MessageBox, name: '留言箱' }
+            { path: '/merchant/messagebox', component: MessageBox, name: '留言箱',isChildAccount: [0,1,2] }
         ]
     },
     {
@@ -89,13 +90,14 @@ let routes = [
         name: '广告平台管理',
         iconCls: 'fa fa-id-card-o',
         hidden: 'merchant',
+        type: [0,1,3],
         children: [
-            { path: '/merchant/employeeaccount', component: EmployeeAccount, name: '员工账号' },
-            { path: '/merchant/myadv', component: MyAdv , name: '播放广告' },
-            { path: '/merchant/shield', component: Shield, name: '屏蔽行业' },
-            { path: '/merchant/mydevice', component: MyDevice, name: '我的设备' },
-            { path: '/merchant/total', component: Total, name: '统计数据' },
-            { path: '/merchant/advlist', component: Advlist, name: '广告订单' }
+            { path: '/merchant/employeeaccount', component: EmployeeAccount, name: '员工账号', isChildAccount: [0,1,2] },
+            { path: '/merchant/myadv', component: MyAdv , name: '播放广告', isChildAccount: [0,1,2] },
+            { path: '/merchant/shield', component: Shield, name: '屏蔽行业', isChildAccount: [0,1,2] },
+            { path: '/merchant/mydevice', component: MyDevice, name: '我的设备', isChildAccount: [0,1,2] },
+            { path: '/merchant/total', component: Total, name: '统计数据', isChildAccount: [0,1,2] },
+            { path: '/merchant/advlist', component: Advlist, name: '广告订单', isChildAccount: [3] }
         ]
     },
     {

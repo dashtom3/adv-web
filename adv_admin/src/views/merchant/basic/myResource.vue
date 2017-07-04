@@ -12,15 +12,17 @@
 
 
     <el-table :data="projectLists" border style="width: 100%">
-      <el-table-column prop="id" label="项目id">
+      <el-table-column prop="id" label="资源id">
       </el-table-column>
       <el-table-column prop="userId" label="用户id">
       </el-table-column>
+      <el-table-column prop="name" label="资源名称">
+      </el-table-column>
       <el-table-column prop="content" label="内容">
       </el-table-column>
-			<el-table-column prop="type" label="项目类型">
+			<el-table-column prop="type" label="资源类型">
       </el-table-column>
-			<el-table-column prop="userGroup" label="用户群体">
+			<el-table-column prop="userGroup" label="面向用户">
       </el-table-column>
       <el-table-column label="截止时间">
 				<template scope="scope">
@@ -168,7 +170,7 @@
         that.addEmployeeAlert = true;
       },
       getProjectList (args) {
-        global.axiosGetReq('resource/getResourceList?', args)
+        global.axiosGetReq('resource/getMyResourceList?', args)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
             if (res.data.data.length > 0) {

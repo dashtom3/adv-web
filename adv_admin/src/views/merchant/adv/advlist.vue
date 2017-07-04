@@ -16,6 +16,7 @@
       </el-form>
     </el-col>
     <div class="clearfix"></div>
+
     <el-table :data="orderLists" border style="width: 100%">
       <el-table-column prop="orderNum" label="订单号">
       </el-table-column>
@@ -81,7 +82,7 @@ export default {
         label: '已确认',
         value: 1
       }],
-      orderLists: [],
+      orderLists: null,
       orderArgs: {
         currentPage: 1,
         numberPerPage: 10,

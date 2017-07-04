@@ -367,13 +367,16 @@ import global from '../../global/global'
         this.addAdverAlert = true
         this.addAdverShow = false
         this.editAdverShow = true
+        // console.log(this.allAdverLists[obj.index])
         if (obj.advertisement.userId === this.adverInfo.userId) {
-          if (this.allAdverLists[obj.index].advertisement.fileName) {
+          if (this.allAdverLists[obj.index].advertisement.fileName || this.allAdverLists[obj.index].advertisement.fileSrc) {
             var newObj = {
               name: this.allAdverLists[obj.index].advertisement.fileName,
               url: this.allAdverLists[obj.index].advertisement.fileSrc
             }
             this.fileList.push(newObj)
+            this.uploadFileType = true
+            this.addAdverMsg.time = this.allAdverLists[obj.index].advertisement.time
           }
           this.my = true
           this.other = false

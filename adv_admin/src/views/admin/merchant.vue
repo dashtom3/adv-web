@@ -25,10 +25,10 @@
           prop="realName"
           label="姓名">
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           prop="password"
           label="密码">
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column
           prop="allName"
           label="店铺名称">
@@ -37,10 +37,6 @@
           prop="allname"
           label="全称">
         </el-table-column> -->
-        <el-table-column
-          prop="parentId"
-          label="店铺主账号id">
-        </el-table-column>
         <el-table-column
           label="类型">
           <template scope="scope">
@@ -79,7 +75,7 @@
          label="操作"
          width="100">
          <template scope="scope">
-           <el-button type="danger" size="small" v-on:click.native.prevent="deleteuser(scope.row.userid)">删除</el-button>
+           <el-button type="danger" size="small" v-on:click.native.prevent="editUserType(scope.row.id)">修改类型</el-button>
          </template>
        </el-table-column>
       </el-table>
@@ -100,20 +96,20 @@
       title="添加商户"
       :visible.sync="addmerchantAlert">
       <el-form ref="addmerchantMsg" :model="addmerchantMsg" label-position="left" label-width="80px" :rules="rules">
-        <el-form-item label="商户名称" prop="username">
-          <el-input v-model="addmerchantMsg.username"></el-input>
+        <el-form-item label="商户名称" prop="userName">
+          <el-input v-model="addmerchantMsg.userName"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input type="password" v-model="addmerchantMsg.password"></el-input>
+        <el-form-item label="密码">
+          <el-input v-model="addmerchantMsg.password" readonly></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" prop="repassword">
+        <!-- <el-form-item label="确认密码" prop="repassword">
           <el-input type="password" v-model="addmerchantMsg.repassword"></el-input>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="店铺名称">
-          <el-input v-model="addmerchantMsg.realname"></el-input>
+          <el-input v-model="addmerchantMsg.realName"></el-input>
         </el-form-item>
         <el-form-item label="全称">
-          <el-input v-model="addmerchantMsg.allname"></el-input>
+          <el-input v-model="addmerchantMsg.allName"></el-input>
         </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-radio-group v-model="addmerchantMsg.type">
@@ -138,7 +134,14 @@
             </el-upload>
           </el-form-item>
         <el-form-item label="行业编号">
-          <el-input v-model="addmerchantMsg.industryId"></el-input>
+          <el-select v-model="addmerchantMsg.industryId" placeholder="请选择">
+            <el-option
+              v-for="item in allIndustryLists"
+              :key="item"
+              :label="item.name"
+              :value="item.industryId">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="简介">
           <el-input type="textarea" v-model="addmerchantMsg.intro"></el-input>
@@ -155,6 +158,23 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+    <!-- 修改类型 -->
+    <el-dialog title="修改商铺类型" :visible.sync="editUserTypeAlert">
+      <el-form :model="editUserTypeInfo">
+        <el-form-item label="商铺类型" label-width="80px">
+          <el-select v-model="editUserTypeInfo.type" placeholder="请选择商铺类型">
+            <el-option label="有设备账号" value=1></el-option>
+            <el-option label="无设备账号" value=2></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editUserTypeAlert = false">取 消</el-button>
+        <el-button type="primary" @click="editUserTypeClick">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -163,27 +183,28 @@ import global from '../global/global'
 import axios from 'axios'
 export default {
   data () {
-    var validatePass = (rule, value, callback) => {
-        if (!value) {
-          callback(new Error('请输入密码'));
-        } else {
-          if (this.addmerchantMsg.repassword !== '') {
-            this.$refs.addmerchantMsg.validateField('repassword');
-          }
-          callback();
-        }
-      };
-    var validatePass2 = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请再次输入密码'));
-      } else if (value !== this.addmerchantMsg.password) {
-        callback(new Error('两次输入密码不一致!'));
-      } else {
-        callback();
-      }
-    }
+    // var validatePass = (rule, value, callback) => {
+    //     if (!value) {
+    //       callback(new Error('请输入密码'));
+    //     } else {
+    //       if (this.addmerchantMsg.repassword !== '') {
+    //         this.$refs.addmerchantMsg.validateField('repassword');
+    //       }
+    //       callback();
+    //     }
+    //   };
+    // var validatePass2 = (rule, value, callback) => {
+    //   if (!value) {
+    //     callback(new Error('请再次输入密码'));
+    //   } else if (value !== this.addmerchantMsg.password) {
+    //     callback(new Error('两次输入密码不一致!'));
+    //   } else {
+    //     callback();
+    //   }
+    // }
     return {
       addmerchantAlert: false,
+      editUserTypeAlert: false,
       merchantArgs: {
         currentPage: 1,
         numberPerPage: 10,
@@ -192,11 +213,11 @@ export default {
       },
       fileList: [],
       addmerchantMsg: {
-        username: null,
-        password: null,
+        userName: null,
+        password: '12345',
         repassword: null,
-        realname: null,
-        allname: null,
+        realName: null,
+        allName: null,
         parentid: null,
         type: null,
         logo: null,
@@ -206,19 +227,24 @@ export default {
         content: null,
         phone: null
       },
+      editUserTypeInfo: {
+        userId: null,
+        type: null
+      },
       rules: {
-        username: [
+        userName: [
           { required: true, message: '请输入商户名称', trigger: 'blur' }
         ],
-        password: [
-          { required: true, validator: validatePass, trigger: 'blur' }
-        ],
-        repassword: [
-          { required: true, validator: validatePass2, trigger: 'blur' }
-        ],
+        // password: [
+        //   { required: true, validator: validatePass, trigger: 'blur' }
+        // ],
+        // repassword: [
+        //   { required: true, validator: validatePass2, trigger: 'blur' }
+        // ],
         type: [{ required: true, message: '请选择类型', trigger: 'blur' }]
       },
       merchantLists: [],
+      allIndustryLists: [],
       type: ['有设备账号', '无设备账号', '子账号'],
       uploadUrl: global.qiNiuUrl,
       qiNiuToken: null
@@ -226,6 +252,7 @@ export default {
   },
   created () {
     this.getmerchantList(this.merchantArgs)
+    this.getAllindustryLists()
     // 获取七牛token
     global.getQiNiuToken()
     .then((res) => {
@@ -240,6 +267,7 @@ export default {
           .then((res) => {
             if (res.data.callStatus === 'SUCCEED') {
               global.success(this, '添加成功', '')
+              this.addmerchantAlert = false
               this.getmerchantList(this.merchantArgs)
             } else {
               global.error(this, res.data.data, '')
@@ -248,6 +276,12 @@ export default {
         } else {
           return false
         }
+      })
+    },
+    getAllindustryLists () {
+      global.axiosGetReq('exclude/getIndustryList')
+      .then((res) => {
+          this.allIndustryLists = res.data.data
       })
     },
     getmerchantList (args) {
@@ -281,6 +315,35 @@ export default {
     // 选择设备
     selectEquipment () {
       this.getmerchantList(this.merchantArgs)
+    },
+    editUserType (id) {
+      var obj = {
+        userId: id
+      }
+      global.axiosGetReq('user/admin/getUserDetails?', obj)
+      .then((res) => {
+        // console.log(res)
+        if (res.data.callStatus === 'SUCCEED') {
+          this.editUserTypeAlert = true
+          this.editUserTypeInfo.userId = res.data.data.id
+          this.editUserTypeInfo.type = res.data.data.type.toString()
+          // console.log(typeof(this.editUserTypeInfo.type), typeof(2), typeof('2'))
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
+    },
+    editUserTypeClick () {
+      global.axiosPostReq('user/changeTypeByAdmin', this.editUserTypeInfo)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          global.success(this, '修改成功', '')
+          this.editUserTypeAlert = false
+          this.getmerchantList(this.merchantArgs)
+        } else {
+          global.error(this, res.data.data, '')
+        }
+      })
     },
     // 删除
     deleteuser (userid) {
@@ -322,6 +385,7 @@ export default {
         this.emptyData(this.addmerchantMsg)
         this.fileList = []
         this.$refs['addmerchantMsg'].resetFields()
+        this.addmerchantMsg.password = '12345'
       }
     }
   }

@@ -12,7 +12,7 @@
           </div>
           <div class="contentHeadRight">
             <el-input icon="search" class="inputStyle" placeholder="搜索公司"></el-input>
-            <input type="button" v-on:click="join" value="入驻异业合作" class="rz">
+            <input type="button" v-on:click="join" value="入驻异业合作" class="rz" v-if="isLogin === null">
           </div>
         </div>
         <transition name="fade">
@@ -34,12 +34,14 @@ import footer from './footer'
 import project from './project/project'
 import source from './source/source'
 import company from './company/company'
+import global from '../global/global'
 export default {
   data () {
     return {
       kinds: ['项目', '公司', '资源'],
       item: 0,
-      joinClick: false
+      joinClick: false,
+      isLogin: global.getToken()
     }
   },
   methods: {

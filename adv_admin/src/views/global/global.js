@@ -70,6 +70,6 @@ export default {
     return axios.get(this.baseUrl + url + this.getHttpData(data))
   },
   getQiNiuToken () {
-    return this.axiosGetReq('qiniu/getQiNiuToken')
+    return axios.get(this.baseUrl + 'qiniu/getQiNiuToken')
   }
 }

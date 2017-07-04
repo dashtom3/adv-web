@@ -8,7 +8,7 @@
           <div class="detailDivContent">
             <div class="detailDivContentHeader">
               <div class="headerImg borad">
-                <img :src="sourceInfo.fileSrc" alt="">
+                <img :src="sourceInfo.fileSrc" alt="" class="max100">
               </div>
               <div class="headerTitle">
                 <span class="titelName">{{sourceInfo.name}}</span><br><br><br>
@@ -50,9 +50,10 @@
           <div class="contLx" v-if="!userToken">
             <img src="../../../images/msg.png" alt="">
             <div class="">
-              <p>登录后可查看联系方式、留言</p>
-              <a href="javascript:;" class="button">登录</a>
-              <a href="javascript:;" class="button">注册</a>
+              <!-- <p>登录后可查看联系方式、留言</p> -->
+                <p class="errMsg">登录后可查看联系方式、留言</p>
+              <!-- <a href="javascript:;" class="button">登录</a>
+              <a href="javascript:;" class="button">注册</a> -->
             </div>
           </div>
           <div class="contLx msg" v-if="userToken">
@@ -108,12 +109,13 @@ export default {
       sourceDetailArgs: {
         resourceId: this.$route.params.id
       },
-      sourceInfo: null,
+      sourceInfo: {},
       userinfo: global.getUser(),
       userToken: global.getToken(),
       userMsg: global.getUser(),
       message: {
         content: null,
+        type: '3',
         projectId: this.$route.params.id
       }
     }
@@ -260,5 +262,9 @@ export default {
 }
 .fr{
   float: right;
+}
+.max100{
+  max-width: 100px;
+  max-height: 100px;
 }
 </style>

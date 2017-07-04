@@ -14,9 +14,9 @@
     <el-table :data="industry" border style="width: 100%">
       <el-table-column prop="id" label="行业id">
       </el-table-column>
-      <el-table-column prop="name" label="行业名称">
+      <el-table-column prop="kindName" label="行业">
       </el-table-column>
-      <el-table-column label="所属行业" prop="kindName">
+      <el-table-column label="行业细分" prop="name">
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
@@ -39,7 +39,7 @@
     <!-- 添加行业 -->
     <el-dialog title="添加行业" :visible.sync="addIndustryAlert">
       <el-form :model="addIndustryInfo" ref="addIndustryInfo" label-position="left">
-        <el-form-item label="分类" :label-width="formLabelWidth">
+        <el-form-item label="行业" :label-width="formLabelWidth">
           <el-select v-model="subIndustry" placeholder="请选择"
           @change="selectKind">
             <el-option
@@ -50,7 +50,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="行业" :label-width="formLabelWidth">
+        <el-form-item label="行业细分" :label-width="formLabelWidth">
           <el-select v-model="addIndustryInfo.industryId" placeholder="请选择">
             <el-option
             :key="item"

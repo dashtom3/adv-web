@@ -8,7 +8,7 @@
             <label for="">资源类型:</label>
             <div class="select">
               <ul>
-                <li v-for="(industryList, index) in industryLists" :class="{ on: industry === index}"><a href="javascript:;" v-on:click="selectIndustryList(industryList, index)">{{industryList}}</a></li>
+                <li v-for="(industryList, index) in industryLists" :class="{ on: industry === index}"><a href="javascript:;" v-on:click="selectIndustryList(industryList, index)" class="hoverColor">{{industryList}}</a></li>
               </ul>
             </div>
           </div>
