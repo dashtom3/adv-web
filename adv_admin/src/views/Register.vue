@@ -13,13 +13,13 @@
       <label for="confirmpwd">确认密码：</label>
       <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
-    <el-form-item>
+    <!-- <el-form-item>
       <label style="display:block;" for="confirmpwd">商户类型：</label>
       <el-select v-model="ruleForm2.type" placeholder="请选择">
         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
       </el-option>
     </el-select>
-  </el-form-item>
+  </el-form-item> -->
   <el-form-item style="width:100%;">
     <el-button type="primary" style="width:100%;" :loading="loading" @click="regUser">注册</el-button>
   </el-form-item>
@@ -64,7 +64,7 @@
           userName: null,
           password: null,
           checkPass: null,
-          type: null
+          type: 2
         },
         rules2: {
           userName: [

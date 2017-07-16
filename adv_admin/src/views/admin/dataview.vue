@@ -195,7 +195,7 @@
         this.tableData=this.arr
       //   console.log(this.arr.length)
       this.arr=[]
-      console.log(this.tableData.length/10)
+      // console.log(this.tableData.length/10)
       // console.log("e")
     },
     getOrderLists() {
@@ -223,12 +223,17 @@
               this.playShopLists.push(res.data.data[i].playAdv.realName)
             }
           }
-          console.log(res.data.data)
+          // console.log(res.data.data)
           this.totalLists = res.data.data
           if (res.data.data.length > 10) {
             this.tableData = res.data.data.splice(this.orderArgs.currentPage-1*10, this.orderArgs.currentPage*10)
           } else {
             this.tableData = res.data.data
+          }
+        } else {
+          global.error(this, res.data.data, '')
+          if (res.data.data == '用户未登录') {
+            this.$router.push('/admin')
           }
         }
       })

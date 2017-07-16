@@ -35,7 +35,7 @@
     <div class="list companyLists">
       <ul>
         <li v-for="project in projectLists">
-          <a :href="'/companyDetail/' + project.id">
+          <a :href="'/companyDetail/' + project.id" target="_blank">
             <div class="sourceImg companyImg">
               <div class="companyw160">
                 <img :src="project.logo" alt="">
@@ -43,8 +43,8 @@
               <p class="contentFooter source companyFooter">
                   <span class="fl">{{project.intro}}</span>
                   <span class="fr">
-                    <span class="eye"></span>
-                    <span>100</span>
+                    <!-- <span class="eye"></span>
+                    <span>100</span> -->
                 </span>
               </p>
             </div>

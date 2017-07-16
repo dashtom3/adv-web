@@ -4,9 +4,9 @@
     <el-table :data="userInfo" border style="width: 100%">
       <el-table-column prop="id" label="用户id">
       </el-table-column>
-      <el-table-column prop="userName" label="用户名">
+      <el-table-column prop="userName" label="商户账号">
       </el-table-column>
-      <el-table-column prop="realName" label="姓名">
+      <el-table-column prop="realName" label="商户简称">
       </el-table-column>
 			<el-table-column prop="allName" label="全称">
       </el-table-column>
@@ -15,15 +15,13 @@
 				  <img :src="scope.row.logo" alt="" class="max100">
 				</template>
       </el-table-column>
-			<el-table-column prop="type" label="用户类型">
-      </el-table-column>
 			<el-table-column prop="userGroup" label="面向用户">
       </el-table-column>
 			<el-table-column prop="region" label="合作地区">
       </el-table-column>
 			<el-table-column prop="intro" label="简介">
       </el-table-column>
-			<el-table-column prop="content" label="内容">
+			<el-table-column prop="content" label="需求">
       </el-table-column>
 			<el-table-column prop="address" label="地址">
       </el-table-column>
@@ -31,7 +29,7 @@
       </el-table-column>
       <el-table-column label="注册时间">
 				<template scope="scope">
-				  <span>{{scope.row.registerTime | time}}</span>
+				  <span>{{scope.row.registerTime | date}}</span>
 				</template>
       </el-table-column>
       <el-table-column label="操作">
@@ -237,6 +235,9 @@
             this.userInfo.push(res.data.data)
           } else {
             global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -299,6 +300,9 @@
 						this.getUserInfo(this.projectArgs)
 					} else {
 						global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
 					}
 				})
       },
@@ -325,6 +329,11 @@
             global.success(this, '添加成功', '')
             this.addPhotoAlert = false
             this.getPhotos(this.photosArgs)
+          } else {
+            global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -349,6 +358,11 @@
                   self.getPhotos(self.photosArgs)
                 }
               });
+            } else {
+              global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});

@@ -5,7 +5,7 @@
       <div class="header">
         <div class="logo">
           <a href="http://www.shichangbu.com/">
-            <img src="../../images/logo.png" alt="">
+            <!-- <img src="../../images/logo.png" alt=""> -->
           </a>
         </div>
         <div class="navbar">
@@ -27,7 +27,7 @@
           <a href="javascript:;" v-on:click="showRegister" :class="{active: registerShow}" v-if="!isLogin">注册</a>
           <!-- <span v-if="isLogin">我是小明</span> -->
           <span v-if="isLogin"><img :src="headImg" alt="" class="tx"></span>
-          <span v-if="isLogin"><a href="/merchant">进入商铺管理</a></span>
+          <span v-if="isLogin"><a :href="userinfo.type != 2 ? '/merchant/workdesktop' : '/merchant'" target="_blank">进入商铺管理</a></span>
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@ export default {
       registerShow: false,
       check: false,
       isLogin: false,
-      // userinfo: global.getUser() || null,
+      userinfo: global.getUser() || null,
       uploadImg: null,
       headImg: img,
       // headImg: global.getUser().logo || img,
@@ -120,28 +120,28 @@ export default {
         password: null
       },
       navbarLists: [
-        { data: '首页', url: 'http://www.shichangbu.com/' },
-        { data: '知识库', url: 'http://www.shichangbu.com/knowledge/' },
-        { data: '异业合作', url: 'javascript:;' },
-        { data: '服务商', url: 'http://www.shichangbu.com/agency/' },
-        { data: '学院', url: 'http://www.shichangbu.com/edu/' },
-        { data: '问答', url: 'http://www.shichangbu.com/forum-52-1.html' },
-        { data: '助手',
-          url: 'javascript:;',
-          secondNavLists: [
-          { data: '软文发稿', url: 'http://www.fagaoshi.com/' },
-          { data: '视频拍摄', url: 'http://www.shichangbu.com/zhuantiye/shipin/' },
-          { data: '数字广告', url: 'http://www.shumeitong.cn' },
-          { data: '短信营销', url: 'http://www.shichangbu.com/zhuantiye/edm/sms.html' },
-          { data: '邮件营销', url: 'http://www.shichangbu.com/zhuantiye/edm/email.html' }
-          ] },
-        { data: '社群',
-          url: 'javascript:;',
-          secondNavLists: [
-          { data: '活动', url: 'http://www.shichangbu.com/events/' },
-          { data: '论坛', url: 'http://www.shichangbu.com/forum-44-1.html' },
-          { data: '资料下载', url: 'http://www.shichangbu.com/forum-121-1.html' }
-          ] }
+        // { data: '首页', url: 'http://www.shichangbu.com/' },
+        // { data: '知识库', url: 'http://www.shichangbu.com/knowledge/' },
+        { data: '异业合作', url: 'javascript:;' }
+        // { data: '服务商', url: 'http://www.shichangbu.com/agency/' },
+        // { data: '学院', url: 'http://www.shichangbu.com/edu/' },
+        // { data: '问答', url: 'http://www.shichangbu.com/forum-52-1.html' },
+        // { data: '助手',
+        //   url: 'javascript:;',
+        //   secondNavLists: [
+        //   { data: '软文发稿', url: 'http://www.fagaoshi.com/' },
+        //   { data: '视频拍摄', url: 'http://www.shichangbu.com/zhuantiye/shipin/' },
+        //   { data: '数字广告', url: 'http://www.shumeitong.cn' },
+        //   { data: '短信营销', url: 'http://www.shichangbu.com/zhuantiye/edm/sms.html' },
+        //   { data: '邮件营销', url: 'http://www.shichangbu.com/zhuantiye/edm/email.html' }
+        //   ] },
+        // { data: '社群',
+        //   url: 'javascript:;',
+        //   secondNavLists: [
+        //   { data: '活动', url: 'http://www.shichangbu.com/events/' },
+        //   { data: '论坛', url: 'http://www.shichangbu.com/forum-44-1.html' },
+        //   { data: '资料下载', url: 'http://www.shichangbu.com/forum-121-1.html' }
+        //   ] }
       ],
       registerMsg: {
         userName: null,

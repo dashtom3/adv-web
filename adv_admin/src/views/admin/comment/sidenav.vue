@@ -17,6 +17,8 @@ export default {
         { url: '/admin/merchant', className: 'el-icon-menu', name: '商户管理' },
         { url: '/admin/adver', className: 'el-icon-document', name: '广告管理' },
         { url: '/admin/dataview', className: 'el-icon-message', name: '数据查看' },
+        { url: '/admin/global', className: 'el-icon-message', name: '全局变量' },
+        { url: '/admin/base', className: 'el-icon-message', name: '设备管理' },
         { url: '/admin/game', className: 'el-icon-setting', name: '游戏管理' }
       ]
     }

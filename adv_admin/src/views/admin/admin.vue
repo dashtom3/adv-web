@@ -36,9 +36,13 @@ export default {
         global.axiosPostReq('user/login', this.adminMsg)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
-            global.success(this, '登录成功', '/admin/merchant')
-            global.setToken(res.data.token)
-            global.setUser(res.data.data)
+            if (res.data.data.type != 0) {
+              global.error(this, '请登录管理员账号', '')
+            } else {
+              global.success(this, '登录成功', '/admin/merchant')
+              global.setToken(res.data.token)
+              global.setUser(res.data.data)
+            }
           } else {
             global.error(this, res.data.data, '')
           }

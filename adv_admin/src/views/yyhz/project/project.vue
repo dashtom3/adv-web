@@ -28,7 +28,7 @@
       <div class="listLeft">
         <ul>
           <li v-for="project in projectLists">
-            <a :href="'/projectDetail/' + project.id">
+            <a :href="'/projectDetail/' + project.id" target="_blank">
               <div class="img">
                 <img :src="project.src" alt="">
               </div>
@@ -79,9 +79,9 @@
             </li>
           </ul>
         </div>
-        <div class="" style="text-align:center;">
+        <!-- <div class="" style="text-align:center;">
           <img src="../../../images/code.png" alt="">
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

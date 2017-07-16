@@ -57,9 +57,17 @@
             .then((res) => {
               // this.loading = false;
               if (res.data.callStatus === 'SUCCEED') {
-                global.setToken(res.data.token)
-                global.setUser(res.data.data)
-                global.success(this, '登录成功', '/merchant', '')
+                if (res.data.data.type == 0) {
+                  global.error(this, '请输入正确的商户账号', '')
+                } else {
+                  global.setToken(res.data.token)
+                  global.setUser(res.data.data)
+                  if (res.data.data.type != 2) {
+                    global.success(this, '登录成功', '/merchant/workdesktop')
+                  } else {
+                    global.success(this, '登录成功', '/merchant')
+                  }
+                }
               } else {
                 global.error(this, res.data.data, '')
               }

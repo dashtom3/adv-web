@@ -24,13 +24,13 @@
       </div>
       <div class="h20"></div>
     </div>
-    <v-footer></v-footer>
+    <!-- <v-footer></v-footer> -->
   </div>
 </template>
 
 <script>
 import header from './header'
-import footer from './footer'
+// import footer from './footer'
 import project from './project/project'
 import source from './source/source'
 import company from './company/company'
@@ -55,7 +55,7 @@ export default {
   },
   components: {
     'v-header': header,
-    'v-footer': footer,
+    // 'v-footer': footer,
     'v-project': project,
     'v-source': source,
     'v-company': company

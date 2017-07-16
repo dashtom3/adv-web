@@ -46,15 +46,18 @@
             :key="industry"
             v-for="industry in allIndustry"
             :label="industry.name"
-            :value="industry.subIndusrty"></el-option>
+            :value="industry"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="行业细分" :label-width="formLabelWidth">
           <el-select v-model="addIndustryInfo.industryId" placeholder="请选择">
             <el-option
+            label="全部"
+            :value="subIndustry.industryId" v-if="subIndustry!=[]"></el-option>
+            <el-option
             :key="item"
-            v-for="item in subIndustry"
+            v-for="item in subIndustry.subIndusrty"
             :label="item.name"
             :value="item.industryId"></el-option>
           </el-select>
@@ -111,16 +114,25 @@
         var self = this
         // console.log('hhh')
         global.axiosGetReq('exclude/getExcludeList?', args).then((res) => {
-          // console.log(res)
+          console.log(res.data.data.length)
           if (res.data.callStatus === 'SUCCEED') {
             if (res.data.data.length) {
               self.industry = res.data.data
               self.industryArg.currentPage = res.data.currentPage
               self.industryArg.totalPage = res.data.totalPage
               self.setKind(res.data.data)
-            } else if (self.industryArg.currentPage !== 1) {
+              // console.log(self.industryArg.currentPage !== 1 && res.data.data.length != 0)
+            } else if (self.industryArg.currentPage !== 1 && res.data.data.length != 0) {
+              // console.log(123)
               self.industryArg.currentPage --
               this.getIndustryList(this.industryArg)
+            } else {
+              self.industry = []
+            }
+          } else {
+            global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
             }
           }
         })
@@ -134,6 +146,7 @@
         })
       },
       selectKind () {
+        // console.log(this.subIndustry)
         this.addIndustryInfo.industryId = null
       },
       // 添加屏蔽行业
@@ -147,6 +160,9 @@
               this.getIndustryList(this.industryArg)
             } else {
               global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         } else {
@@ -173,20 +189,31 @@
                 message: '删除成功!',
                 duration: '800'
               });
+            } else {
+              global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});
       },
       // 分类
       setKind (value) {
+        // console.log(value)
         // console.log(this.allIndustry)
         for (let i in this.allIndustry) {
           for (let j in value) {
-            for (let m in this.allIndustry[i].subIndusrty) {
-              if (this.allIndustry[i].subIndusrty[m].industryId === value[j].industryId) {
-                // console.log(value[j],this.allIndustry[i])
-                value[j].name = this.allIndustry[i].subIndusrty[m].name
-                value[j].kindName = this.allIndustry[i].name
+            if (value[j].industryId < 50) {
+              value[j].name = '全部'
+              value[j].kindName = this.allIndustry[value[j].industryId-1].name
+            } else {
+              for (let m in this.allIndustry[i].subIndusrty) {
+                if (this.allIndustry[i].subIndusrty[m].industryId === value[j].industryId) {
+                  // console.log(value[j],this.allIndustry[i])
+                  value[j].name = this.allIndustry[i].subIndusrty[m].name
+                  value[j].kindName = this.allIndustry[i].name
+                }
               }
             }
           }
@@ -202,7 +229,7 @@
 </script>
 
 <style scoped>
-@import "../../global/style.css"
+@import "../../global/style.css";
   .pop_up {
     width: 100%;
     height: 50px;

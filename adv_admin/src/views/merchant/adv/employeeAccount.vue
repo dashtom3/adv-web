@@ -10,19 +10,15 @@
     </el-col>
     <div class="clearfix"></div>
     <el-table :data="employeeLists" border style="width: 100%">
-      <el-table-column prop="userName" label="账号">
+      <el-table-column prop="userName" label="员工账号">
       </el-table-column>
-      <!-- <el-table-column prop="password" label="密码">
-      </el-table-column> -->
-      <el-table-column prop="realName" label="姓名">
+      <el-table-column prop="realName" label="真实姓名">
       </el-table-column>
-      <el-table-column label="所属行业">
-        <template scope="scope">
-          <span>{{allIndustry[scope.row.industryId-1].name}}</span>
-          <!-- <span>{{scope.row.industryId}}</span> -->
-        </template>
+      <el-table-column prop="password" label="员工密码">
       </el-table-column>
       <el-table-column prop="phone" label="联系方式">
+      </el-table-column>
+      <el-table-column label="说明" prop="content">
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
@@ -51,37 +47,8 @@
         <el-form-item label="密码" v-if="addEmployeeShow" prop="password">
           <el-input v-model="addEmployeeInfo.password" type="password" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="姓名">
+        <el-form-item label="真实姓名" prop="realName">
           <el-input v-model="addEmployeeInfo.realName" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="全称">
-          <el-input v-model="addEmployeeInfo.allName" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="上传照片">
-            <el-upload
-              class="upload-demo"
-              :action="uploadUrl"
-              :on-success="uploadSuccess"
-              :on-remove="removeFile"
-              :data="qiNiuToken"
-              :file-list="fileList"
-              :disabled="fileList.length !== 0">
-              <el-button slot="trigger" size="small" type="primary"
-              :disabled="fileList.length !== 0">选取文件</el-button>
-            </el-upload>
-          </el-form-item>
-        <el-form-item label="所属行业">
-          <el-select v-model="addEmployeeInfo.industryId" placeholder="请选择">
-            <el-option
-              v-for="item in allIndustry"
-              :key="item"
-              :label="item.name"
-              :value="item.industryId">
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="简介">
-          <el-input type="textarea" v-model="addEmployeeInfo.intro"></el-input>
         </el-form-item>
         <el-form-item label="需求内容">
           <el-input type="textarea" v-model="addEmployeeInfo.content"></el-input>
@@ -134,7 +101,8 @@
         qiNiuToken: null,
         rules: {
           userName: [{ required: 'true', message: '请输入子账号名字', trigger: 'blur' }],
-          password: [{ required: 'true', message: '请输入密码', trigger: 'blur' }]
+          password: [{ required: 'true', message: '请输入密码', trigger: 'blur' }],
+          realName: [{ required: 'true', message: '请输入真实姓名', trigger: 'blur' }]
         }
       }
     },
@@ -163,9 +131,16 @@
               this.employeeLists = res.data.data
               this.employeeArgs.currentPage = res.data.currentPage
               this.employeeArgs.totalPage = res.data.totalPage
-            } else if (this.employeeArgs.currentPage !== 1) {
+            } else if (this.employeeArgs.currentPage !== 1 && res.data.data.length != 0) {
               this.employeeArgs.currentPage --
               this.getEmployeeList(this.employeeArgs)
+            } else {
+              this.employeeLists = []
+            }
+          } else {
+            global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
             }
           }
         })
@@ -207,6 +182,9 @@
                 this.getEmployeeList(this.employeeArgs)
               } else {
                 global.error(this, res.data.data, '')
+                if (res.data.data == '用户未登录') {
+                  this.$router.push('/login')
+                }
               }
             })
           } else {
@@ -246,6 +224,9 @@
                 this.getEmployeeList(this.employeeArgs)
               } else {
                 global.error(this, res.data.data, '')
+                if (res.data.data == '用户未登录') {
+                  this.$router.push('/login')
+                }
               }
             })
           } else {
@@ -275,6 +256,11 @@
                   self.getEmployeeList(self.employeeArgs)
                 }
               });
+            } else {
+              global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});

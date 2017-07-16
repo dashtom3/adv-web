@@ -13,9 +13,9 @@
               <div class="headerTitle">
                 <span class="titelName">{{sourceInfo.name}}</span><br><br><br>
                 <div class="detailDivContentHeaderRight">
-                  <p><span class="iconsc"></span><span>收藏</span></p>
+                  <!-- <p><span class="iconsc"></span><span>收藏</span></p>
                   <p><span class="iconly"></span><span>留言</span></p>
-                  <p><input type="button" name="" value="查看联系方式"></p>
+                  <p><input type="button" name="" value="查看联系方式"></p> -->
                 </div>
               </div>
               <div class="arrow">
@@ -37,8 +37,8 @@
           <p class="contentFooter cen">
             <span class="kindLogo"></span><span>{{sourceInfo.type}}</span>
             <span class="foruser"></span><span>{{sourceInfo.userGroup}}</span>
-            <span class="contTime"></span><span>{{sourceInfo.endDate | time}}截至</span>
-            <span class="iconsc"></span><span>收藏</span>
+            <span class="contTime"></span><span>{{sourceInfo.endDate | date}}截至</span>
+            <!-- <span class="iconsc"></span><span>收藏</span> -->
           </p>
           <p>{{sourceInfo.content}}</p>
           <!-- <p class="apply">
@@ -91,14 +91,14 @@
       </div>
       <div class="h65"></div>
     </div>
-    <v-footer></v-footer>
+    <!-- <v-footer></v-footer> -->
   </div>
 </template>
 
 <script>
 import kindLogo from '../../../images/kindLogo.gif'
 import header from '../header'
-import footer from '../footer'
+// import footer from '../footer'
 import photo from '../../../images/photo.png'
 import global from '../../global/global'
 export default {
@@ -144,14 +144,12 @@ export default {
     apply () {
       if (!global.getToken()) {
         alert('请先登录')
-      } else {
-        global.axiosPostReq('')
       }
     }
   },
   components: {
-    'v-header': header,
-    'v-footer': footer
+    'v-header': header
+    // 'v-footer': footer
   }
 }
 </script>

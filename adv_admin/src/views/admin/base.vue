@@ -1,17 +1,22 @@
 <template>
   <div>
     <!--工具条-->
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+    <!-- <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true">
         <el-form-item>
           <el-button type="primary" @click="addBaseAlert = true">添加设备</el-button>
         </el-form-item>
       </el-form>
     </el-col>
-    <div class="clearfix"></div>
+    <div class="clearfix"></div> -->
 
     <el-table :data="baseLists" border style="margin-top: 20px; width: 100%">
       <el-table-column prop="id" label="设备编号">
+      </el-table-column>
+      <el-table-column label="设备所属商铺">
+        <template scope="scope">
+          <span>{{scope.row.deviceUser.userName}}</span>
+        </template>
       </el-table-column>
       <el-table-column prop="mac" label="设备mac地址">
       </el-table-column>
@@ -19,15 +24,15 @@
       </el-table-column>
       <el-table-column label="注册时间">
         <template scope="scope">
-          <span>{{scope.row.registerTime | time}}</span>
+          <span>{{scope.row.registerTime | date}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <!-- <el-table-column label="操作">
         <template scope="scope">
           <el-button size="small" @click="editBase(scope.row.id)">修改位置</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
 
     <!-- 分页 -->
@@ -58,24 +63,11 @@
     </el-dialog>
     <!-- 弹出窗结束 -->
 
-    <!-- 修改设备 -->
-    <el-dialog title="修改设备" :visible.sync="editBaseAlert">
-      <el-form :model="editBaseInfo">
-        <el-form-item label="地点" :label-width="formLabelWidth">
-          <el-input v-model="editBaseInfo.place" auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="editBaseAlert = false">取 消</el-button>
-        <el-button type="primary"
-        @click="editBasePostClick">保 存</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
-import global from '../../global/global'
+import global from '../global/global'
   export default {
     data() {
       return {
@@ -89,7 +81,6 @@ import global from '../../global/global'
           deviceId: null
         },
         baseListArgs: {
-          userId: global.getUser().id,
           numberPerPage: 10,
           currentPage: 1,
           totalPage: -1
@@ -109,7 +100,7 @@ import global from '../../global/global'
     },
     methods: {
       getBaseLists (args) {
-        global.axiosGetReq('device/getDeviceList?', args)
+        global.axiosGetReq('device/getDeviceListByAdmin?', args)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
             if (res.data.data.length > 0) {
@@ -123,7 +114,7 @@ import global from '../../global/global'
           } else {
             global.error(this, res.data.data, '')
             if (res.data.data == '用户未登录') {
-              this.$router.push('/login')
+              this.$router.push('/admin')
             }
           }
         })
@@ -140,7 +131,7 @@ import global from '../../global/global'
           } else {
             global.error(self, res.data.data, '')
             if (res.data.data == '用户未登录') {
-              this.$router.push('/login')
+              this.$router.push('/admin')
             }
           }
         })
@@ -156,7 +147,7 @@ import global from '../../global/global'
           } else {
             global.error(this, res.data.data, '')
             if (res.data.data == '用户未登录') {
-              this.$router.push('/login')
+              this.$router.push('/admin')
             }
           }
         })
@@ -172,7 +163,7 @@ import global from '../../global/global'
           } else {
             global.error(this, res.data.data, '')
             if (res.data.data == '用户未登录') {
-              this.$router.push('/login')
+              this.$router.push('/admin')
             }
           }
         })
@@ -200,7 +191,7 @@ import global from '../../global/global'
             } else {
               global.error(this, res.data.data, '')
               if (res.data.data == '用户未登录') {
-                this.$router.push('/login')
+                this.$router.push('/admin')
               }
             }
           })

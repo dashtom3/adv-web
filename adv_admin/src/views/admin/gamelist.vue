@@ -13,9 +13,16 @@
     <el-table :data="gameLists" border style="margin-top: 20px; width: 100%">
       <el-table-column prop="id" label="游戏Id">
       </el-table-column>
+      <el-table-column prop="label" label="游戏标签">
+      </el-table-column>
       <el-table-column prop="name" label="游戏名称">
       </el-table-column>
       <el-table-column prop="src" label="游戏地址">
+      </el-table-column>
+      <el-table-column label="游戏海报">
+        <template scope="scope">
+          <img :src="scope.row.bigPic" alt="" class="maxImg">
+        </template>
       </el-table-column>
       <el-table-column label="游戏图片">
         <template scope="scope">
@@ -45,6 +52,9 @@
       <el-form :model="gameInfo" label-position="left" label-width="80px">
         <el-form-item label="游戏名称">
           <el-input v-model="gameInfo.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="游戏标签">
+          <el-input v-model="gameInfo.label" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="游戏地址">
           <el-input v-model="gameInfo.src" auto-complete="off"></el-input>
@@ -179,6 +189,9 @@ import global from '../global/global'
             self.getgameLists(self.gameListArgs)
           } else {
             global.error(self, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/admin')
+            }
           }
         })
       },
@@ -189,6 +202,7 @@ import global from '../global/global'
         this.editGamePostShow = true
         this.gameInfo.gameId = this.gameLists[index].id
         this.gameInfo.name = this.gameLists[index].name
+        this.gameInfo.label = this.gameLists[index].label
         this.gameInfo.src = this.gameLists[index].src
         this.gameInfo.bigPic = this.gameLists[index].bigPic
         this.gameInfo.bigPicName = this.gameLists[index].bigPicName
@@ -208,6 +222,9 @@ import global from '../global/global'
             this.getgameLists(this.gameListArgs)
           } else {
             global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/admin')
+            }
           }
         })
       },
@@ -231,6 +248,11 @@ import global from '../global/global'
                 message: '删除成功!',
                 duration: '800'
               });
+            } else {
+              global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/admin')
+              }
             }
           })
         }).catch(() => {});

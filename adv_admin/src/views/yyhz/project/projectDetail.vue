@@ -17,9 +17,9 @@
                 <span class="address"> 详细地址：{{companyInfo.address}}</span>
               </div>
               <div class="detailDivContentHeaderRight">
-                <p><span class="iconsc"></span><span>收藏</span></p>
+                <!-- <p><span class="iconsc"></span><span>收藏</span></p>
                 <p><span class="iconly"></span><span>留言</span></p>
-                <p><input type="button" name="" value="查看联系方式"></p>
+                <p><input type="button" name="" value="查看联系方式"></p> -->
               </div>
             </div>
             <div class="detailInfo">
@@ -33,8 +33,8 @@
           <p class="contentFooter cen">
             <span class="kindLogo"></span><span>线上合作联合</span>
             <span class="foruser"></span><span>{{companyInfo.userGroup}}</span>
-            <span class="contTime"></span><span>{{companyInfo.registerTime | time}}截至</span>
-            <span class="iconsc"></span><span>收藏</span>
+            <span class="contTime"></span><span>{{companyInfo.registerTime | date}}截至</span>
+            <!-- <span class="iconsc"></span><span>收藏</span> -->
           </p>
           <p>{{companyInfo.content}}</p>
           <!-- <p class="apply">
@@ -69,14 +69,14 @@
       </div>
       <div class="h65"></div>
     </div>
-    <v-footer></v-footer>
+    <!-- <v-footer></v-footer> -->
   </div>
 </template>
 
 <script>
 import kindLogo from '../../../images/kindLogo.gif'
 import header from '../header'
-import footer from '../footer'
+// import footer from '../footer'
 import photo from '../../../images/photo.png'
 import global from '../../global/global'
 export default {
@@ -146,8 +146,8 @@ export default {
     }
   },
   components: {
-    'v-header': header,
-    'v-footer': footer
+    'v-header': header
+    // 'v-footer': footer
   }
 }
 </script>

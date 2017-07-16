@@ -11,7 +11,8 @@
 			</el-col>
 			<el-col :span="4" class="userinfo">
 				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img src="../../images/head.png" alt="img"/> {{sysUserName}}</span>
+					<!-- <span class="el-dropdown-link userinfo-inner"><img :src="../../images/head.png" alt="img"/> {{sysUserName}}</span> -->
+					<span class="el-dropdown-link userinfo-inner"><img :src="headImg" alt="img"/> {{sysUserName}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
 						<el-dropdown-item>设置</el-dropdown-item>
@@ -73,6 +74,8 @@
 
 <script>
 import global from './../global/global'
+import img from '../../images/head.png'
+import Vue from 'vue'
 	export default {
 		data() {
 			return {
@@ -81,6 +84,8 @@ import global from './../global/global'
 				sysUserName: '',
 				userType: global.getUser().type,
 				userinfo: global.getUser(),
+				headImg: global.getUser().logo || img,
+				webscoket: null,
 				// sysUserAvatar: '../images/head.png',
 				form: {
 					name: '',
@@ -117,6 +122,7 @@ import global from './../global/global'
 					//type: 'warning'
 				}).then(() => {
 					global.removeMsg()
+					this.websocket.close()
 					_this.$router.push('/');
 				}).catch(() => {
 
@@ -131,10 +137,45 @@ import global from './../global/global'
 			}
 		},
 		mounted() {
-			// console.log(global.getUser().type)
 			if (global.getUser()) {
 				this.sysUserName = global.getUser().userName || '';
-				// this.sysUserAvatar = user.avatar || '';
+			}
+			if (global.getToken()) {
+				if('WebSocket' in window){
+						this.websocket = new WebSocket("ws://123.56.220.72:8080/Advertisement/orderWithWs?token="+global.getToken())
+						// console.log(this.websocket, `连接成功`)
+				}
+				else{
+						alert('Not support websocket')
+				}
+				var self = this
+				this.websocket.onmessage = function(){
+					const msg = JSON.parse(event.data).data
+					const state = msg.state == 0 ? '已经被下单' : '已经被确认'
+						if (self.$route.path == '/merchant/advlist') {
+							self.$notify({
+								title: '成功',
+								message: msg.playAdv.advertisement.name+state,
+								duration: '10000',
+								type: 'success'
+							})
+							self.$root.eventHub.$emit('shishi', msg)
+						} else {
+							const h = self.$createElement
+							self.$notify({
+								title: '成功',
+								message: h('p', null, [
+									h('span', null, msg.playAdv.advertisement.name+state),
+									h('p', {style: 'color:#20a0ff;'} ,'点击进入广告订单页面')
+								]),
+								duration: '10000',
+								type: 'success',
+								onClick: function () {
+									self.$router.push('/merchant/advlist')
+								}
+							})
+						}
+        }
 			}
 		}
 	}

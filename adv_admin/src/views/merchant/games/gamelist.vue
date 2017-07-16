@@ -139,6 +139,11 @@ import global from '../../global/global'
             this.gameLists = res.data.data
             this.gameListArgs.currentPage = res.data.currentPage
             this.gameListArgs.totalPage = res.data.totalPage
+          } else {
+            global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -179,6 +184,9 @@ import global from '../../global/global'
             self.getgameLists(self.gameListArgs)
           } else {
             global.error(self, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -208,6 +216,9 @@ import global from '../../global/global'
             this.getgameLists(this.gameListArgs)
           } else {
             global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -231,6 +242,11 @@ import global from '../../global/global'
                 message: '删除成功!',
                 duration: '800'
               });
+            } else {
+              global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});

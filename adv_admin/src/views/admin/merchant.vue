@@ -22,8 +22,8 @@
           label="商户ID">
         </el-table-column>
         <el-table-column
-          prop="realName"
-          label="姓名">
+          prop="userName"
+          label="商户账号">
         </el-table-column>
         <!-- <el-table-column
           prop="password"
@@ -68,7 +68,7 @@
         <el-table-column
           label="注册时间">
           <template scope="scope">
-            <span>{{scope.row.registerTime | time}}</span>
+            <span>{{scope.row.registerTime | date}}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -96,7 +96,7 @@
       title="添加商户"
       :visible.sync="addmerchantAlert">
       <el-form ref="addmerchantMsg" :model="addmerchantMsg" label-position="left" label-width="80px" :rules="rules">
-        <el-form-item label="商户名称" prop="userName">
+        <el-form-item label="商户账号" prop="userName">
           <el-input v-model="addmerchantMsg.userName"></el-input>
         </el-form-item>
         <el-form-item label="密码">
@@ -105,10 +105,10 @@
         <!-- <el-form-item label="确认密码" prop="repassword">
           <el-input type="password" v-model="addmerchantMsg.repassword"></el-input>
         </el-form-item> -->
-        <el-form-item label="店铺名称">
+        <el-form-item label="店铺简称">
           <el-input v-model="addmerchantMsg.realName"></el-input>
         </el-form-item>
-        <el-form-item label="全称">
+        <el-form-item label="商铺全称">
           <el-input v-model="addmerchantMsg.allName"></el-input>
         </el-form-item>
         <el-form-item label="类型" prop="type">
@@ -271,6 +271,9 @@ export default {
               this.getmerchantList(this.merchantArgs)
             } else {
               global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/admin')
+              }
             }
           })
         } else {
@@ -293,6 +296,9 @@ export default {
           this.merchantArgs.totalPage = res.data.totalPage
         } else {
           global.error(this, res.data.data, '')
+          if (res.data.data == '用户未登录') {
+            this.$router.push('/admin')
+          }
         }
       })
     },
@@ -330,6 +336,9 @@ export default {
           // console.log(typeof(this.editUserTypeInfo.type), typeof(2), typeof('2'))
         } else {
           global.error(this, res.data.data, '')
+          if (res.data.data == '用户未登录') {
+            this.$router.push('/admin')
+          }
         }
       })
     },
@@ -342,6 +351,9 @@ export default {
           this.getmerchantList(this.merchantArgs)
         } else {
           global.error(this, res.data.data, '')
+          if (res.data.data == '用户未登录') {
+            this.$router.push('/admin')
+          }
         }
       })
     },

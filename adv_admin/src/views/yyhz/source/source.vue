@@ -28,7 +28,7 @@
     <div class="list sourceList">
       <ul>
         <li v-for="project in sourceLists">
-          <a :href="'sourceDetail/' + project.id">
+          <a :href="'sourceDetail/' + project.id" target="_blank">
             <div class="sourceImg">
               <div class="h250">
                 <img :src="project.fileSrc" alt="">

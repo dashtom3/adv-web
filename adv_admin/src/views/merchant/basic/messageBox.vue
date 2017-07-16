@@ -4,9 +4,12 @@
     <el-table :data="messageLists" border style="width: 100%">
       <el-table-column prop="id" label="id">
       </el-table-column>
-      <el-table-column prop="projectId" label="项目id">
+      <el-table-column label="留言类型">
+        <template scope="scope">
+          <span>{{types[scope.row.type-1]}}</span>
+        </template>
       </el-table-column>
-      <el-table-column prop="projectName" label="项目名称">
+      <el-table-column prop="projectName" label="名称">
       </el-table-column>
 			<el-table-column prop="fromUserId" label="留言人id">
       </el-table-column>
@@ -50,7 +53,8 @@
           currentPage: 1,
           totalPage: -1,
           numberPerPage: 10
-        }
+        },
+        types: ['公司', '项目', '资源']
       }
     },
     created: function() {
@@ -68,6 +72,9 @@
             this.messageArgs.totalPage = res.data.totalPage
           } else {
             global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -95,6 +102,9 @@
               });
             } else {
             	global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});

@@ -1,0 +1,7 @@
+html	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^<html>$/;"	function	line:2
+head	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^<head>$/;"	function	line:4
+meta	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^  <meta charset="utf-8">$/;"	function	line:5
+meta	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^  <meta name="renderer" content="webkit">$/;"	function	line:6
+title	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^  <title>智能广告服务平台<\/title>$/;"	function	line:7
+body	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^<body>$/;"	function	line:10
+div	/Users/apple/Desktop/project/adver/adv_admin/index.html	/^  <div id="app">$/;"	function	line:11

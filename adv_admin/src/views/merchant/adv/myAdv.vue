@@ -52,10 +52,11 @@
           <span>{{scope.row.advertisement.time}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="200">
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+            <el-button size="small" type="success" @click="preview(scope.row.advertisement.fileType, scope.row.advertisement.fileSrc)">预览</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -105,10 +106,12 @@
           <span>{{scope.row.advertisement.time}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="200">
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
+          <el-button size="small" type="success" @click="preview(scope.row.advertisement)">预览</el-button>
+          <!-- <el-button size="small" type="success" @click="preview(scope.row.advertisement.fileType, scope.row.advertisement.fileSrc)">预览</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -125,18 +128,22 @@
 
     <!-- 弹出窗开始 -->
     <el-dialog :title="title" :visible.sync="addAdverAlert">
-      <el-form :model="addAdverMsg" label-position="left">
+      <el-form :model="addAdverMsg" label-position="left":rules="rules" ref="addAdverMsg">
         <el-form-item label="商铺类型" :label-width="formLabelWidth" v-if="isEdit">
           <el-select v-model="addAdverMsg.selectType" placeholder="请选择商铺类型" @change="selectAdverType">
             <el-option label="自家商铺广告" value=0></el-option>
             <el-option label="其他店铺广告" value=1></el-option>
           </el-select>
         </el-form-item>
+
         <div v-if="other">
-          <el-form-item label="广告id" :label-width="formLabelWidth">
+          <el-form-item label="广告id" :label-width="formLabelWidth" prop="advertisementId">
             <el-input v-model="addAdverMsg.advertisementId" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="是否下单" :label-width="formLabelWidth">
+          <el-form-item label="广告显示名称" :label-width="formLabelWidth">
+            <el-input v-model="addAdverMsg.playAdvShowName" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="是否下单" :label-width="formLabelWidth" v-if="my" prop="isOrder">
             <el-select v-model="addAdverMsg.isOrder" placeholder="请选择">
               <el-option
               :key="orderType"
@@ -145,7 +152,7 @@
               :value="orderType.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="广告类型" :label-width="formLabelWidth">
+          <el-form-item label="广告类型" :label-width="formLabelWidth" prop="type">
             <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
               <el-option
               :key="type"
@@ -156,30 +163,33 @@
         </div>
 
         <div v-if="my">
-          <el-form-item label="名称" :label-width="formLabelWidth">
+          <el-form-item label="名称" :label-width="formLabelWidth" prop="name">
             <el-input v-model="addAdverMsg.name" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="广告显示名称" :label-width="formLabelWidth">
+            <el-input v-model="addAdverMsg.playAdvShowName" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="描述" :label-width="formLabelWidth">
             <el-input v-model="addAdverMsg.content" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="单价" :label-width="formLabelWidth">
-            <el-input v-model="addAdverMsg.price" auto-complete="off" style="width:100px;"></el-input>&nbsp;元
-          </el-form-item>
-          <el-form-item label="广告类型" :label-width="formLabelWidth">
-            <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
-              <el-option
-              :key="type"
-              v-for="type in adverType"
-              :label="type.name" :value="type.value"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="是否下单" :label-width="formLabelWidth">
+          <el-form-item label="是否下单" :label-width="formLabelWidth" prop="isOrder">
             <el-select v-model="addAdverMsg.isOrder" placeholder="请选择">
               <el-option
               :key="orderType"
               v-for="orderType in isOrder"
               :label="orderType.name"
               :value="orderType.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="单价" :label-width="formLabelWidth" v-if="advIsOrder">
+            <el-input v-model="addAdverMsg.price" auto-complete="off" style="width:100px;"></el-input>&nbsp;元
+          </el-form-item>
+          <el-form-item label="广告类型" :label-width="formLabelWidth" prop="type">
+            <el-select v-model="addAdverMsg.type" placeholder="请选择广告类型">
+              <el-option
+              :key="type"
+              v-for="type in adverType"
+              :label="type.name" :value="type.value"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="文件" :label-width="formLabelWidth">
@@ -191,20 +201,28 @@
             :file-list="fileList"
             :disabled="fileList.length !== 0">
               <el-button size="small" type="primary" :disabled="fileList.length !== 0">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟)</div>
             </el-upload>
           </el-form-item>
-          <el-form-item label="时长(仅上传文件时图片时显示)" :label-width="formLabelWidth" v-if="uploadFileType">
+          <el-form-item label="时长" :label-width="formLabelWidth" v-if="uploadFileType">
             <el-input v-model="addAdverMsg.time" auto-complete="off" style="width:100px;"></el-input>&nbsp;秒
           </el-form-item>
         </div>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-if="addAdverMsg.selectType != null">
         <el-button @click="addAdverAlert = false">取 消</el-button>
-        <el-button type="primary" @click="addAdverPost" v-if="addAdverShow">保 存</el-button>
-        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow">保 存</el-button>
+        <el-button type="primary" @click="addAdverPost" v-if="addAdverShow" :disabled="addAdverMsg.selectType==0&&fileSuccess">保 存</el-button>
+        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow" :disabled="addAdverMsg.selectType==0&&addAdverMsg.fileSrc!=null">修 改</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
+
+    <el-dialog
+      :visible.sync="previewAlert" class="w12h600">
+      <span class="leftTop">{{previewInfo.name}}</span>
+      <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200">
+      <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
+    </el-dialog>
 
   </div>
 </template>
@@ -222,6 +240,12 @@ import global from '../../global/global'
         addAdverShow: false,
         editAdverShow: false,
         formLabelWidth: '80px',
+        previewAlert: false,
+        previewInfo: {
+          type: null,
+          src: null,
+          name: null
+        },
         addAdverMsg: {
           selectType: null,
           type: null,
@@ -236,12 +260,12 @@ import global from '../../global/global'
           advertisementId: null
         },
         adverType: [
-          { name: '滚动广告', value: 1 },
-          { name: '弹出广告', value: 0 }
+          { name: '滚动广告', value: '1' },
+          { name: '弹出广告', value: '0' }
         ],
         isOrder: [
-          { name: '是', value: 1 },
-          { name: '否', value: 0 }
+          { name: '是', value: '1' },
+          { name: '否', value: '0' }
         ],
         isEdit: true,
         fileList: [],
@@ -261,7 +285,13 @@ import global from '../../global/global'
         },
         qiNiuUrl: global.qiNiuUrl,
         qiNiuToken: null,
-        editUrl: null
+        editUrl: null,
+        rules: {
+          name: [{ required: true, message: '请输入广告名称', trigger: 'blur' }],
+          isOrder: [{ required: true, message: '请选择是否下单', trigger: 'change' }],
+          type: [{ required: true, message: '请选择广告类型', trigger: 'change' }],
+          advertisementId: [{ required: true, message: '请输入广告id', trigger: 'blur' }]
+        }
       }
     },
     created () {
@@ -284,7 +314,7 @@ import global from '../../global/global'
       },
       selectAdverType () {
         // console.log(this.addAdverMsg)
-        if (this.addAdverMsg.selectType === '0') {
+        if (this.addAdverMsg.selectType == '0') {
           this.my = true
           this.other = false
           this.addAdverUrl = 'advertisement/add'
@@ -293,6 +323,7 @@ import global from '../../global/global'
           this.other = true
           this.addAdverUrl = 'playAdv/add'
         }
+        this.$refs['addAdverMsg'].resetFields()
       },
       getAdverList (args) {
         var self = this
@@ -315,9 +346,17 @@ import global from '../../global/global'
               }
               self.adverInfo.currentPage = res.data.currentPage
               self.adverInfo.totalPage = res.data.totalPage
-            } else if (this.adverInfo.currentPage !== 1) {
+            } else if (this.adverInfo.currentPage !== 1 && res.data.data.length != 0) {
               this.adverInfo.currentPage --
               this.getAdverList(this.adverInfo)
+            } else {
+              self.scrollAvder = []
+              this.addAdverLists = []
+            }
+          } else {
+            global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
             }
           }
         })
@@ -325,8 +364,10 @@ import global from '../../global/global'
       // 上传文件
       uploadFile (file, response) {
         // console.log(this.fileList, file, response)
-        if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/gif') {
+        if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/jpg') {
           this.uploadFileType = true
+          this.addAdverMsg.fileType = 0
+        } else if (response.raw.type == 'image/gif') {
           this.addAdverMsg.fileType = 0
         } else {
           this.addAdverMsg.fileType = 1
@@ -348,15 +389,24 @@ import global from '../../global/global'
       },
       // 添加广告
       addAdverPost () {
-        var self = this
-        global.axiosPostReq(this.addAdverUrl, this.addAdverMsg)
-        .then((res) => {
-          if (res.data.callStatus === 'SUCCEED') {
-            self.addAdverAlert = false
-            global.success(self, '添加成功', '')
-            self.getAdverList(self.adverInfo)
+        this.$refs['addAdverMsg'].validate((valid) => {
+          if (valid) {
+            var self = this
+            global.axiosPostReq(this.addAdverUrl, this.addAdverMsg)
+            .then((res) => {
+              if (res.data.callStatus === 'SUCCEED') {
+                self.addAdverAlert = false
+                global.success(self, '添加成功', '')
+                self.getAdverList(self.adverInfo)
+              } else {
+                global.error(self, res.data.data, '')
+                if (res.data.data == '用户未登录') {
+                  this.$router.push('/login')
+                }
+              }
+            })
           } else {
-            global.error(self, res.data.data, '')
+            return false
           }
         })
       },
@@ -367,55 +417,74 @@ import global from '../../global/global'
         this.addAdverAlert = true
         this.addAdverShow = false
         this.editAdverShow = true
+
         // console.log(this.allAdverLists[obj.index])
         if (obj.advertisement.userId === this.adverInfo.userId) {
+          this.addAdverMsg.selectType = 0
           if (this.allAdverLists[obj.index].advertisement.fileName || this.allAdverLists[obj.index].advertisement.fileSrc) {
             var newObj = {
               name: this.allAdverLists[obj.index].advertisement.fileName,
               url: this.allAdverLists[obj.index].advertisement.fileSrc
             }
+            if (newObj.name.indexOf('jpeg') > -1 || newObj.name.indexOf('png') > -1 || newObj.name.indexOf('jpg') > -1) {
+              this.uploadFileType = true
+            } else {
+              this.uploadFileType = false
+            }
             this.fileList.push(newObj)
-            this.uploadFileType = true
+            // this.uploadFileType = true
             this.addAdverMsg.time = this.allAdverLists[obj.index].advertisement.time
           }
           this.my = true
           this.other = false
-          this.addAdverMsg.selectType = null
+          // this.addAdverMsg.selectType = null
           this.addAdverMsg.name = this.allAdverLists[obj.index].advertisement.name
           this.addAdverMsg.content = this.allAdverLists[obj.index].advertisement.content
           this.addAdverMsg.price = this.allAdverLists[obj.index].advertisement.price
           // console.log(this.addAdverMsg)
           // console.log(this.fileList)
         } else {
+          this.addAdverMsg.selectType = 1
           this.other = true
           this.my = false
         }
-        this.addAdverMsg.playAdvId = this.allAdverLists[obj.index].id
-        this.addAdverMsg.isOrder = this.allAdverLists[obj.index].isOrder
-        this.addAdverMsg.type = this.allAdverLists[obj.index].type
-        this.addAdverMsg.advertisementId = this.allAdverLists[obj.index].advertisement.id
+        this.addAdverMsg.playAdvShowName = this.allAdverLists[obj.index].playAdvShowName
+        this.addAdverMsg.playAdvId = this.allAdverLists[obj.index].id.toString()
+        this.addAdverMsg.isOrder = this.allAdverLists[obj.index].isOrder.toString()
+        this.addAdverMsg.type = this.allAdverLists[obj.index].type.toString()
+        this.addAdverMsg.advertisementId = this.allAdverLists[obj.index].advertisement.id.toString()
+        // console.log(this.addAdverMsg)
       },
       editAdverPost () {
-        global.axiosPostReq('playAdv/update', this.addAdverMsg)
-        .then((res) => {
-          if (this.my) {
-            global.axiosPostReq('advertisement/update', this.addAdverMsg)
+        this.$refs['addAdverMsg'].validate((valid) => {
+          if (valid) {
+            global.axiosPostReq('playAdv/update', this.addAdverMsg)
             .then((res) => {
-              if (res.data.callStatus === 'SUCCEED') {
-                global.success(this, '修改成功', '')
-                this.getAdverList(this.adverInfo)
-                this.addAdverAlert = false
-              } else {
-                global.error(this, res.data.data, '')
-              }
+              if (this.my) {
+                global.axiosPostReq('advertisement/update', this.addAdverMsg)
+                .then((res) => {
+                  if (res.data.callStatus === 'SUCCEED') {
+                    global.success(this, '修改成功', '')
+                    this.getAdverList(this.adverInfo)
+                    this.addAdverAlert = false
+                  } else {
+                    global.error(this, res.data.data, '')
+                  }
+                })
+              } else if (res.data.callStatus === 'SUCCEED') {
+                  global.success(this, '修改成功', '')
+                  this.getAdverList(this.adverInfo)
+                  this.addAdverAlert = false
+                } else {
+                  global.error(this, res.data.data, '')
+                  if (res.data.data == '用户未登录') {
+                    this.$router.push('/login')
+                  }
+                }
             })
-          } else if (res.data.callStatus === 'SUCCEED') {
-              global.success(this, '修改成功', '')
-              this.getAdverList(this.adverInfo)
-              this.addAdverAlert = false
-            } else {
-              global.error(this, res.data.data, '')
-            }
+          } else {
+            return false
+          }
         })
       },
       // 删除广告
@@ -440,6 +509,11 @@ import global from '../../global/global'
                   self.getAdverList(self.adverInfo)
                 }
               });
+            } else {
+              global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});
@@ -448,7 +522,21 @@ import global from '../../global/global'
       changePage (value) {
         this.adverInfo.currentPage = value
         this.getAdverList(this.adverInfo)
+      },
+      // 预览
+      preview (obj) {
+        this.previewAlert = true
+        this.previewInfo = {
+            type: obj.fileType,
+            src: obj.fileSrc,
+            name: obj.name
+          }
+        // console.log(obj)
       }
+      // preview (type, src) {
+      //
+      //
+      // }
     },
     watch: {
       addAdverAlert () {
@@ -460,6 +548,33 @@ import global from '../../global/global'
           this.fileList = []
           this.my = false
           this.other = false
+          // this.$refs['addAdverMsg'].resetFields()
+        }
+      },
+      previewAlert () {
+        if (this.previewAlert == false) {
+          this.previewInfo = {
+            type: null,
+            src: null,
+            name: null
+          }
+        }
+      }
+    },
+    computed: {
+      advIsOrder () {
+        if (this.addAdverMsg.isOrder == 0 || this.addAdverMsg.isOrder == null) {
+          this.addAdverMsg.price = null
+          return false
+        } else {
+          return true
+        }
+      },
+      fileSuccess () {
+        if (!this.addAdverMsg.fileSrc) {
+          return true
+        } else {
+          return false
         }
       }
     }
@@ -483,7 +598,28 @@ import global from '../../global/global'
     max-width: 100px;
     max-height: 100px;
   }
+  .width1200{
+    width: 1200px;
+    height: 580px;
+  }
+  .maxWidth1200{
+    max-width: 1200px;
+    max-height: 600px;
+    /*display: inline-block;
+    vertical-align: middle;*/
+  }
+  .w12h600 span{
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
   .wait_word {
     margin-left: 20px;
+  }
+  .leftTop{
+    position: absolute;
+    left: 20px;
+    /*top: 20px;*/
+    z-index: 999;
   }
 </style>

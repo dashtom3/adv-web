@@ -14,8 +14,6 @@
     <el-table :data="projectLists" border style="width: 100%">
       <el-table-column prop="id" label="项目id">
       </el-table-column>
-      <el-table-column prop="userId" label="用户id">
-      </el-table-column>
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="content" label="内容">
@@ -26,7 +24,7 @@
       </el-table-column>
       <el-table-column label="截止时间">
 				<template scope="scope">
-				  <span>{{scope.row.endDate | time}}</span>
+				  <span>{{scope.row.endDate | date}}</span>
 				</template>
       </el-table-column>
       <el-table-column label="操作">
@@ -184,6 +182,11 @@
               this.projectArgs.currentPage --
               this.getProjectList(this.projectArgs)
             }
+          } else {
+            global.error(this, res.data.data, '')
+            if (res.data.data == '用户未登录') {
+              this.$router.push('/login')
+            }
           }
         })
       },
@@ -216,6 +219,9 @@
                 this.getProjectList(this.projectArgs)
               } else {
                 global.error(this, res.data.data, '')
+                if (res.data.data == '用户未登录') {
+                  this.$router.push('/login')
+                }
               }
             })
           } else {
@@ -266,6 +272,9 @@
                 this.getProjectList(this.projectArgs)
               } else {
                 global.error(this, res.data.data, '')
+                if (res.data.data == '用户未登录') {
+                  this.$router.push('/login')
+                }
               }
             })
           } else {
@@ -297,6 +306,9 @@
               });
             } else {
             	global.error(this, res.data.data, '')
+              if (res.data.data == '用户未登录') {
+                this.$router.push('/login')
+              }
             }
           })
         }).catch(() => {});

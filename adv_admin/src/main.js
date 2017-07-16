@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-default/index.css'
 import VueRouter from 'vue-router'
 import store from './vuex/store'
 import Vuex from 'vuex'
+// import VueWebsocket from 'vue-websocket'
 //import NProgress from 'nprogress'
 //import 'nprogress/nprogress.css'
 import routes from './routes'
@@ -18,6 +19,7 @@ import global from './views/global/global'
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
+// Vue.use(VueWebsocket, "'ws:'+global.baseUrl+'Advertisement/orderWithWs?token='+global.getToken()")
 Vue.filter('time', function (value) {
   if (value) {
     var month = new Date(parseInt(value)).getMonth() + 1
@@ -41,6 +43,19 @@ Vue.filter('time', function (value) {
       date = '0' + date
     }
     return new Date(parseInt(value)).getFullYear() + '-' + month + '-' + date + ' ' + hour + ':' + minutes + ':' + seconds
+  }
+})
+Vue.filter('date', function (value) {
+  if (value) {
+    var month = new Date(parseInt(value)).getMonth() + 1
+    var date = new Date(parseInt(value)).getDate()
+    if (month < 10) {
+      month = '0' + month
+    }
+    if (date < 10) {
+      date = '0' + date
+    }
+    return new Date(parseInt(value)).getFullYear() + '-' + month + '-' + date
   }
 })
 
@@ -75,5 +90,6 @@ new Vue({
   router,
   store,
   //components: { App }
-  render: h => h(App)
+  render: h => h(App),
+  data: { eventHub: new Vue() }
 }).$mount('#app')

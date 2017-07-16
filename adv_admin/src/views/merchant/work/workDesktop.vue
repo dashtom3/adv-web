@@ -24,7 +24,14 @@
     created () {
       global.axiosGetReq('advOrder/getAdvOrderList', '')
       .then((res) => {
-        this.unacknowledged = res.data.unacknowledged
+        if (res.data.callStatus === 'SUCCEED') {
+          this.unacknowledged = res.data.unacknowledged
+        } else {
+          global.error(this, res.data.data, '')
+          if (res.data.data == '用户未登录') {
+            this.$router.push('/login')
+          }
+        }
       })
     }
 	}
