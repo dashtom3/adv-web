@@ -140,17 +140,18 @@ import Vue from 'vue'
 			if (global.getUser()) {
 				this.sysUserName = global.getUser().userName || '';
 			}
-			if (global.getToken()) {
+			if (global.getToken() && this.websocket == null) {
 				if('WebSocket' in window){
 						this.websocket = new WebSocket("ws://123.56.220.72:8080/Advertisement/orderWithWs?token="+global.getToken())
-						// console.log(this.websocket, `连接成功`)
+						console.log(`websocket连接成功`)
 				}
 				else{
 						alert('Not support websocket')
 				}
 				var self = this
-				this.websocket.onmessage = function(){
+				this.websocket.onmessage = function(event){
 					const msg = JSON.parse(event.data).data
+					// console.log(msg)
 					const state = msg.state == 0 ? '已经被下单' : '已经被确认'
 						if (self.$route.path == '/merchant/advlist') {
 							self.$notify({

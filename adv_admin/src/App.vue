@@ -74,16 +74,22 @@ body {
     text-align: center !important;
 }
 .w12h600 .el-dialog{
-	width: 1200px!important;
+	width: 1024px!important;
 	height: 600px!important;
 	text-align: center;
 }
 .w12h600 .el-dialog__header,.w12h600 .el-dialog__body{
 	padding: 0!important;
+	position: absolute;
 }
-// .w12h600 .el-dialog__body{
-// 	height: 100%;
-// }
+.w12h600 .el-dialog__body{
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	overflow: hidden;
+}
 .w12h600 .el-icon-close{
 	position: relative;
 	top: 20px;

@@ -22,6 +22,13 @@
           label="ID">
         </el-table-column>
         <el-table-column
+          label="文件">
+          <template scope="scope">
+            <a :href="scope.row.appUrl" download>{{scope.row.appName}}</a>
+            <!-- <img :src="scope.row.appUrl" alt="" class="maxAndMin"> -->
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="refreshTime"
           label="每天更新时间">
         </el-table-column>
@@ -55,7 +62,7 @@
          width="150">
          <template scope="scope">
            <el-button size="small" v-on:click.native.prevent="editGlobal(scope.row.index)">修改</el-button>
-           <el-button type="danger" size="small" v-on:click.native.prevent="deleteuser(scope.row.id)">删除</el-button>
+           <!-- <el-button type="danger" size="small" v-on:click.native.prevent="deleteuser(scope.row.id)">删除</el-button> -->
          </template>
        </el-table-column>
       </el-table>
@@ -77,6 +84,18 @@
             }">
           </el-time-select>
           <!-- <el-input v-model="addGlobalMsg.refreshTime"></el-input> -->
+        </el-form-item>
+        <el-form-item label="文件">
+          <el-upload class="upload-demo"
+          :action=qiNiuUrl
+          :on-success="uploadFile"
+          :on-remove="removeFile"
+          :data="qiNiuToken"
+          :file-list="fileList"
+          :disabled="fileList.length !== 0">
+            <el-button size="small" type="primary" :disabled="fileList.length !== 0">点击上传</el-button>
+            <!-- <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟)</div> -->
+          </el-upload>
         </el-form-item>
         <el-form-item label="播放时长(s)" prop="playTime">
           <el-input v-model="addGlobalMsg.playTime"></el-input>
@@ -158,10 +177,16 @@ export default {
       merchantLists: [],
       allIndustryLists: [],
       type: ['有设备账号', '无设备账号', '子账号'],
+      qiNiuUrl: global.qiNiuUrl,
+      qiNiuToken: null,
+      fileList: []
     }
   },
   created () {
     this.getGlobalLists(this.globalInfo)
+    global.getQiNiuToken().then((res) => {
+      this.qiNiuToken = {token: res.data.data}
+    })
     // this.getAllindustryLists()
   },
   methods: {
@@ -176,6 +201,7 @@ export default {
           this.merchantLists = res.data.data
         } else {
           global.error(this, res.data.data, '')
+          this.$router.push('/admin')
         }
       })
     },
@@ -211,9 +237,11 @@ export default {
 
     // 修改全局变量
     editGlobal (index) {
+      this.fileList = []
       for (var i in this.merchantLists[index]) {
         this.addGlobalMsg[i] = this.merchantLists[index][i]
       }
+      this.fileList.push({name:this.merchantLists[index].appName,url:this.merchantLists[index].appUrl})
       this.addGlobalMsg.envId = this.merchantLists[index].id
       this.title = '修改全局变量'
       this.addGlobalClick = false
@@ -265,7 +293,21 @@ export default {
         data[i] = null
       }
       return data
-    }
+    },
+    uploadFile (file, response) {
+      var obj = {
+        name: response.name,
+        url: global.qiniuShUrl + file.key
+      }
+      this.fileList.push(obj)
+      this.addGlobalMsg.appName = response.name
+      this.addGlobalMsg.appUrl = global.qiniuShUrl + file.key
+    },
+    removeFile () {
+      this.fileList = []
+      this.addGlobalMsg.appName = null
+      this.addGlobalMsg.appUrl = null
+    },
   },
   watch: {
     addmerchantAlert () {
@@ -285,5 +327,9 @@ export default {
 }
 .m20 .equipmentRight{
   float: right;
+}
+.maxAndMin{
+  max-width: 100px;
+  max-height: 100px;
 }
 </style>

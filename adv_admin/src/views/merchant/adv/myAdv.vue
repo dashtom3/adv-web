@@ -56,7 +56,7 @@
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
-            <el-button size="small" type="success" @click="preview(scope.row.advertisement.fileType, scope.row.advertisement.fileSrc)">预览</el-button>
+          <el-button size="small" type="success" @click="preview(scope.row.advertisement)">预览</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -66,6 +66,8 @@
       <div class="wait_word">滚动广告</div>
     </div>
     <el-table :data="addAdverLists" border style="width: 100%">
+      <!-- <el-table-column  type="index">
+      </el-table-column> -->
       <el-table-column prop="id" label="广告id">
       </el-table-column>
       <el-table-column label="名称">
@@ -140,7 +142,7 @@
           <el-form-item label="广告id" :label-width="formLabelWidth" prop="advertisementId">
             <el-input v-model="addAdverMsg.advertisementId" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="广告显示名称" :label-width="formLabelWidth">
+          <el-form-item label="广告显示名称" :label-width="formLabelWidth" prop="playAdvShowName">
             <el-input v-model="addAdverMsg.playAdvShowName" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="是否下单" :label-width="formLabelWidth" v-if="my" prop="isOrder">
@@ -166,7 +168,7 @@
           <el-form-item label="名称" :label-width="formLabelWidth" prop="name">
             <el-input v-model="addAdverMsg.name" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="广告显示名称" :label-width="formLabelWidth">
+          <el-form-item label="广告显示名称" :label-width="formLabelWidth" prop="playAdvShowName">
             <el-input v-model="addAdverMsg.playAdvShowName" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="描述" :label-width="formLabelWidth">
@@ -201,7 +203,7 @@
             :file-list="fileList"
             :disabled="fileList.length !== 0">
               <el-button size="small" type="primary" :disabled="fileList.length !== 0">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟)</div>
+              <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟且不超过10M)</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="时长" :label-width="formLabelWidth" v-if="uploadFileType">
@@ -218,9 +220,9 @@
     <!-- 弹出窗结束 -->
 
     <el-dialog
-      :visible.sync="previewAlert" class="w12h600">
+      :visible.sync="previewAlert" class="w12h600" ref="imgContent">
       <span class="leftTop">{{previewInfo.name}}</span>
-      <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200">
+      <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200" ref="img">
       <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
     </el-dialog>
 
@@ -290,7 +292,8 @@ import global from '../../global/global'
           name: [{ required: true, message: '请输入广告名称', trigger: 'blur' }],
           isOrder: [{ required: true, message: '请选择是否下单', trigger: 'change' }],
           type: [{ required: true, message: '请选择广告类型', trigger: 'change' }],
-          advertisementId: [{ required: true, message: '请输入广告id', trigger: 'blur' }]
+          advertisementId: [{ required: true, message: '请输入广告id', trigger: 'blur' }],
+          playAdvShowName: [{ required: true, message: '请输入广告显示名称', trigger: 'blur' }]
         }
       }
     },
@@ -363,7 +366,11 @@ import global from '../../global/global'
       },
       // 上传文件
       uploadFile (file, response) {
-        // console.log(this.fileList, file, response)
+        if (response.size > 10000000) {
+          global.error(this, '上传文件过大', '')
+          this.fileList = []
+          return false
+        }
         if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/jpg') {
           this.uploadFileType = true
           this.addAdverMsg.fileType = 0
@@ -525,13 +532,15 @@ import global from '../../global/global'
       },
       // 预览
       preview (obj) {
+        // console.log(obj)
         this.previewAlert = true
         this.previewInfo = {
             type: obj.fileType,
             src: obj.fileSrc,
             name: obj.name
           }
-        // console.log(obj)
+          // console.log(this.$refs.imgContent.$el.childNodes[0].children[1])
+          console.log(this.$refs)
       }
       // preview (type, src) {
       //
@@ -599,14 +608,16 @@ import global from '../../global/global'
     max-height: 100px;
   }
   .width1200{
-    width: 1200px;
-    height: 580px;
+    width: 1024px;
+    height: 600px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
   }
-  .maxWidth1200{
-    max-width: 1200px;
-    max-height: 600px;
-    /*display: inline-block;
-    vertical-align: middle;*/
+  img.maxWidth1200{
+    max-width: 100%;
+    max-height: 100%;
+    height:100%;
   }
   .w12h600 span{
     display: inline-block;

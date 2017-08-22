@@ -8,12 +8,15 @@
             <el-option
             v-for="adver in adverIdLists"
             :key="adver"
-            :label="adver"
-            :value="adver"></el-option>
+            :label="adver.showName"
+            :value="adver.playAdv.advertisement.id"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item class="screen" label="所属商铺">
           <el-select v-model="searchMsg.ownShop" placeholder="请选择所属商铺"  >
+            <el-option
+            label="全部"
+            :value=null></el-option>
             <el-option
             v-for="item in ownShopLists"
             :key="item"
@@ -23,6 +26,9 @@
         </el-form-item>
         <el-form-item class="screen" label="播放商铺">
           <el-select v-model="searchMsg.playShop" placeholder="请选择播放商铺">
+            <el-option
+            label="全部"
+            :value=null></el-option>
             <el-option
             v-for="item in playShopLists"
             :key="item"
@@ -81,13 +87,14 @@
     </el-table>
 
     <!-- 分页 -->
-    <div class="block" v-if="orderArgs.totalPage > 1">
+    <div class="block" v-if="totalLists.length/10 > 1">
       <el-pagination
       layout="prev, pager, next"
       @current-change="changePage"
-      :page-count="orderArgs.totalPage">
+      :page-count="totalLists.length%10">
     </el-pagination>
   </div>
+
 </div>
 </template>
 
@@ -112,106 +119,86 @@
         searchMsg: {
           adverId: null,
           ownShop: null,
-          time: null
+          playShop: null,
+          time: []
         },
-        arr: []
+        arr: [],
+        allDate: []
       }
     },
     created () {
     this.getOrderLists()
   },
   methods: {
-    search:function(){
-      // console.log(Date.parse(this.searchMsg.time[0]))
-      if(this.searchMsg.adverId){
-        for(let i in this.totalLists){
-          if (this.totalLists[i].playAdv.advertisement.id === this.searchMsg.adverId) {
-            this.arr.push(this.totalLists[i])
+    search () {
+      this.tableData = []
+      // console.log(this.allDate)
+      this.totalLists = this.allDate
+      for (let i in this.searchMsg) {
+        if (this.searchMsg[i] != null) {
+          // console.log(i,this.searchMsg[i])
+          if (i == 'adverId') {
+            this.tableData = this.totalLists.filter((item) => {
+              return item.playAdv.advertisement.id == this.searchMsg[i]
+            })
+            // console.log(this.totalLists,this.tableData)
+          }
+          if (i == 'ownShop' && this.searchMsg[i] != 'null') {
+            if (this.tableData.length != 0) {
+              this.tableData = this.tableData.filter((item) => {
+                return item.playAdv.advertisement.realName == this.searchMsg[i]
+              })
+            } else {
+              this.tableData = this.totalLists.filter((item) => {
+                // console.log(this.searchMsg[i])
+                return item.playAdv.advertisement.realName == this.searchMsg[i]
+              })
+            }
+          }
+          if (i == 'playShop' && this.searchMsg[i] != 'null') {
+            if (this.tableData.length != 0) {
+              this.tableData = this.tableData.filter((item) => {
+                return item.playAdv.realName == this.searchMsg[i]
+              })
+            } else {
+              this.tableData = this.totalLists.filter((item) => {
+                return item.playAdv.realName == this.searchMsg[i]
+              })
+            }
+          }
+          if (i == 'time' && this.searchMsg[i][0] != null) {
+            if (this.tableData.length != 0) {
+              this.tableData = this.tableData.filter((item) => {
+                return new Date(item.playDate) > this.searchMsg[i][0] && new Date(item.playDate) < this.searchMsg[i][1]
+              })
+            } else {
+              this.tableData = this.totalLists.filter((item) => {
+                return new Date(item.playDate) > this.searchMsg[i][0] && new Date(item.playDate) < this.searchMsg[i][1]
+              })
+            }
           }
         }
       }
-
-
-      if(this.arr.length>0){
-        var newArr2 = []
-        if(this.searchMsg.ownShop){
-          for(let i in this.arr){
-            if (this.arr[i].playAdv.advertisement.realName === this.searchMsg.ownShop) {
-              newArr2.push(this.arr[i])
-            }
-          }
-          this.arr = newArr2
-        }
-      }else{
-        if(this.searchMsg.ownShop){
-          for(let i in this.totalLists){
-            if (this.totalLists[i].playAdv.advertisement.realName === this.searchMsg.ownShop) {
-              this.arr.push(this.totalLists[i])
-            }
-          }
-        }
+      if (this.searchMsg.adverId==null && this.searchMsg.ownShop==null && this.searchMsg.playShop==null && this.searchMsg.time[0] == null) {
+        this.tableData = this.totalLists
       }
-
-      if (this.arr.length > 0) {
-        if (this.searchMsg.time) {
-          console.log(1)
-          if (newArr2) {
-            console.log(2)
-            var newArr3 = []
-            for (let i in this.newArr2) {
-              if (Date.parse(this.searchMsg.time[0]) < this.totalLists[i].playAdv.advertisement.time < Date.parse(this.searchMsg.time[1])) {
-                newArr3.push(this.newArr2[i])
-              }
-            }
-            this.arr = newArr3
-          } else {
-            console.log(4)
-            var newArr4 = []
-            for (let i in this.arr) {
-              if (Date.parse(this.searchMsg.time[0]) < this.totalLists[i].playAdv.advertisement.time < Date.parse(this.searchMsg.time[1])) {
-                newArr4.push(this.arr[i])
-              }
-            }
-            this.arr = newArr4
-          }
-        }
-      } else {
-        if (this.searchMsg.time) {
-          console.log(5)
-          var newArr5 = []
-          for (let i in this.totalLists) {
-            if (Date.parse(this.searchMsg.time[0]) < this.totalLists[i].playAdv.advertisement.time && this.totalLists[i].playAdv.advertisement.time < Date.parse(this.searchMsg.time[1])) {
-              console.log(Date.parse(this.searchMsg.time[0]), this.totalLists[i].time<Date.parse(this.searchMsg.time[1]))
-              newArr5.push(this.totalLists[i])
-            }
-          }
-          this.arr = newArr5
-        }
-      }
-
-      // if (newArr2.length > 0) {
-      //   if ()
-      // }
-        this.tableData=this.arr
-      //   console.log(this.arr.length)
-      this.arr=[]
-      // console.log(this.tableData.length/10)
-      // console.log("e")
+      this.totalLists = this.tableData
     },
     getOrderLists() {
       global.axiosGetReq('record/getPlayRecordList')
       .then((res) => {
         if (res.data.callStatus === 'SUCCEED') {
+          this.allDate = res.data.data
+          let newArr = res.data.data
+          console.log(this.allDate)
           for (let i in res.data.data) {
+            res.data.data[i].showName = res.data.data[i].playAdv.advertisement.id + res.data.data[i].playAdv.advertisement.name
             res.data.data[i].time = Date.parse(new Date(res.data.data[i].playDate))
           }
           // 广告id列表
-          for (let i in res.data.data) {
-            if (this.adverIdLists.indexOf(res.data.data[i].playAdv.advertisement.id) === -1) {
-              this.adverIdLists.push(res.data.data[i].playAdv.advertisement.id)
-            }
-          }
-          // 所属商铺列表
+          this.adverIdLists = res.data.data.filter((item) => {
+            return this.adverIdLists.indexOf(item.playAdv.advertisement.id) == -1
+          })
           for (let i in res.data.data) {
             if (this.ownShopLists.indexOf(res.data.data[i].playAdv.advertisement.realName) === -1) {
               this.ownShopLists.push(res.data.data[i].playAdv.advertisement.realName)
@@ -223,17 +210,18 @@
               this.playShopLists.push(res.data.data[i].playAdv.realName)
             }
           }
-          // console.log(res.data.data)
+          // // console.log(res.data.data)
           this.totalLists = res.data.data
-          if (res.data.data.length > 10) {
-            this.tableData = res.data.data.splice(this.orderArgs.currentPage-1*10, this.orderArgs.currentPage*10)
-          } else {
-            this.tableData = res.data.data
-          }
+          this.tableData = this.totalLists
+          // if (res.data.data.length > 10) {
+          //   this.tableData = res.data.data.splice(0, 10)
+          // } else {
+          //   this.tableData = res.data.data
+          // }
         } else {
           global.error(this, res.data.data, '')
           if (res.data.data == '用户未登录') {
-            this.$router.push('/admin')
+            this.$router.push('/login')
           }
         }
       })
@@ -254,12 +242,19 @@
       for (let i in this.searchMsg) {
         this.searchMsg[i] = null
       }
+      // this.searchMsg.ownShop = 'null'
+      // this.searchMsg.playShop = 'null'
       this.getOrderLists()
     },
     // 分页
     changePage (value) {
       this.orderArgs.currentPage = value
-      this.getOrderLists(this.orderArgs)
+      if (value < this.totalLists.length%10) {
+        this.tableData = this.totalLists.slice((value-1)*10, value*10)
+      } else {
+        this.tableData = this.totalLists.slice((value-1)*10, this.totalLists.length)
+      }
+      // this.getOrderLists(this.orderArgs)
     }
   }
 }

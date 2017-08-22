@@ -3,7 +3,7 @@
       <!--工具条-->
     <el-col :span="24" class="toolbar">
       <el-form class="form">
-          <el-col :span="7">
+          <el-col :span="4">
             <el-form-item label="订单状态">
               <el-select v-model="orderArgs.state" placeholder="请选择广告类型" @change="selectState">
                 <el-option
@@ -14,7 +14,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="4">
             <el-form-item label="订单时间段">
               <el-date-picker
                 v-model="orderArgs.date"
@@ -23,7 +23,29 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="5">
+          <el-col :span="4">
+            <el-form-item label="设备ID">
+              <el-select v-model="orderArgs.deviceId" placeholder="请选择设备ID" @change="selectState">
+                <el-option
+                v-for="option in deviceList"
+                :key="option"
+                :label="option.id"
+                :value="option.id"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item label="设备地点">
+              <el-select v-model="orderArgs.place" placeholder="请选择设备地点" @change="selectState">
+                <el-option
+                v-for="option in deviceList"
+                :key="option"
+                :label="option.place"
+                :value="option.place"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
             <el-form-item label="订单排序">
               <el-select v-model="orderArgs.orderType" placeholder="请选择订单排序" @change="selectState">
                 <el-option
@@ -35,8 +57,9 @@
               </el-select>
             </el-form-item>
           </el-col>
-
-          <div class="total">订单总计：{{total}}，未确认：{{unacknowledged}}</div>
+          <el-col :span="4">
+            <div class="total">订单总计：{{total}}，未确认：{{unacknowledged}}</div>
+          </el-col>
       </el-form>
     </el-col>
     <div class="clearfix"></div>
@@ -105,6 +128,7 @@
     <div class="block" v-if="orderArgs.totalPage > 1">
       <el-pagination
         layout="prev, pager, next"
+        :current-page.sync="orderArgs.currentPage"
         @current-change="changePage"
         :page-count="orderArgs.totalPage">
       </el-pagination>
@@ -139,19 +163,26 @@ export default {
         date: [],
         startDate: null,
         endDate: null,
-        orderType: '1'
+        orderType: '1',
+        deviceId: null,
+        place: null
       },
       status: ['未确认', '已确认'],
       total: null,
-      unacknowledged: null
+      unacknowledged: null,
+      deviceInfo: {
+        userId: global.getUser().id
+      },
+      deviceList: []
     }
   },
   created () {
     this.getOrderLists(this.orderArgs)
+    this.getDeviceList(this.deviceInfo)
     // this.get()
     var self = this
     this.$root.eventHub.$on('shishi', (val) => {
-      console.log(val)
+      // console.log(val)
       if (val.state == '0') {
         // self.orderLists.pop()
         self.orderLists.unshift(val)
@@ -172,11 +203,12 @@ export default {
       .then((res) => {
         // console.log(res)
         if (res.data.callStatus === 'SUCCEED') {
+          this.orderLists = res.data.data
           if (res.data.data.length > 0) {
+            // console.log(res)
             this.orderArgs.currentPage = res.data.currentPage
             this.orderArgs.totalPage = res.data.totalPage
             this.total = res.data.totalNumber
-            this.orderLists = res.data.data
             this.unacknowledged = res.data.unacknowledged
           } else if (this.orderArgs.currentPage != 1 && res.data.data.length != 0) {
             this.orderArgs.currentPage --
@@ -268,12 +300,22 @@ export default {
         this.orderArgs.startDate = null
         this.orderArgs.endDate = null
       }
+      this.orderArgs.currentPage = 1
+      console.log(this.orderArgs)
       this.getOrderLists(this.orderArgs)
     },
     // 分页
     changePage (value) {
       this.orderArgs.currentPage = value
       this.getOrderLists(this.orderArgs)
+    },
+    // 获取设备
+    getDeviceList (args) {
+      global.axiosGetReq('device/getDeviceList?', args)
+      .then((res) => {
+        // console.log(res)
+        res.data.callStatus == 'SUCCEED' ? this.deviceList = res.data.data : global.error(this,res.data.data, '')
+      })
     }
   }
 }

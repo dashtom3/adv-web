@@ -89,7 +89,7 @@
           <el-form-item label="描述" :label-width="formLabelWidth">
             <el-input v-model="addAdverMsg.content" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="广告显示名称" :label-width="formLabelWidth">
+          <el-form-item label="广告显示名称" :label-width="formLabelWidth" prop="playAdvShowName">
             <el-input v-model="addAdverMsg.playAdvShowName" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="广告类型" :label-width="formLabelWidth" prop="type">
@@ -130,7 +130,7 @@
             :file-list="fileList"
             :disabled="fileList.length !== 0">
               <el-button size="small" type="primary" :disabled="fileList.length !== 0">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟)</div>
+              <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟且不超过10M)</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="时长" :label-width="formLabelWidth" v-if="uploadFileType">
@@ -149,7 +149,7 @@
     <el-dialog
       :visible.sync="previewAlert" class="w12h600">
       <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200">
-      <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="maxWidth1200"></video>
+      <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
     </el-dialog>
   </div>
 </template>
@@ -219,6 +219,7 @@ import global from '../global/global'
           name: [{ required: true, message: '请输入广告名称', trigger: 'blur' }],
           type: [{ required: true, message: '请选择广告类型', trigger: 'change' }],
           isOrder: [{ required: true, message: '请选择是否下单', trigger: 'change' }],
+          playAdvShowName: [{ required: true, message: '请输入广告显示名称', trigger: 'blur' }]
         }
       }
     },
@@ -289,6 +290,11 @@ import global from '../global/global'
       },
       // 上传文件
       uploadFile (file, response) {
+        if (response.size > 10000000) {
+          global.error(this, '上传文件过大', '')
+          this.fileList = []
+          return false
+        }
         // console.log(response, file)
         if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg') {
           this.uploadFileType = true
@@ -510,5 +516,10 @@ import global from '../global/global'
   .maxWidth1200{
     max-width: 100%;
     max-height: 100%;
+    height: 100%;
+  }
+  .width1200{
+    width: 1024px;
+    height: 600px;
   }
 </style>

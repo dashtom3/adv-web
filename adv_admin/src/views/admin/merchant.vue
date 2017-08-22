@@ -131,6 +131,7 @@
               :file-list="fileList"
               :disabled="fileList.length !== 0">
               <el-button slot="trigger" size="small" type="primary" :disabled="fileList.length !== 0">选取文件</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传图片文件，且不超过10000kb</div>
             </el-upload>
           </el-form-item>
         <el-form-item label="行业编号">
@@ -304,9 +305,21 @@ export default {
     },
     // 上传logo
     uploadSuccess (file, response) {
-      this.addmerchantMsg.logo = global.qiniuShUrl + file.key
-      this.addmerchantMsg.logoName = response.name
-      this.fileList.push({ name: response.name, url: global.qiniuShUrl + file.key })
+      if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/gif') {
+        if (response.size > 10000000) {
+          global.error(this, '上传文件过大', '')
+          this.fileList = []
+          return false
+        } else {
+          this.addmerchantMsg.logo = global.qiniuShUrl + file.key
+          this.addmerchantMsg.logoName = response.name
+          this.fileList.push({ name: response.name, url: global.qiniuShUrl + file.key })
+        }
+      } else {
+        global.error(this, '上传的文件必须是图片', '')
+        this.fileList = []
+        return false
+      }
     },
     handleRemove () {
       this.fileList = []
@@ -320,6 +333,7 @@ export default {
     },
     // 选择设备
     selectEquipment () {
+      this.merchantArgs.currentPage = 1
       this.getmerchantList(this.merchantArgs)
     },
     editUserType (id) {
