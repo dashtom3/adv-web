@@ -20,6 +20,11 @@
           <span>{{scope.row.advertisement.name}}</span>
         </template>
       </el-table-column>
+      <el-table-column label="广告显示名称">
+        <template scope="scope">
+          <span>{{scope.row.playAdvShowName}}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="描述">
         <template scope="scope">
           <span>{{scope.row.advertisement.content}}</span>
@@ -56,7 +61,7 @@
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
-          <el-button size="small" type="success" @click="preview(scope.row.advertisement)">预览</el-button>
+          <el-button size="small" type="success" @click="preview(scope.row)">预览</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -73,6 +78,11 @@
       <el-table-column label="名称">
         <template scope="scope">
           <span>{{scope.row.advertisement.name}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="广告显示名称">
+        <template scope="scope">
+          <span>{{scope.row.playAdvShowName}}</span>
         </template>
       </el-table-column>
       <el-table-column label="描述">
@@ -112,7 +122,7 @@
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
-          <el-button size="small" type="success" @click="preview(scope.row.advertisement)">预览</el-button>
+          <el-button size="small" type="success" @click="preview(scope.row)">预览</el-button>
           <!-- <el-button size="small" type="success" @click="preview(scope.row.advertisement.fileType, scope.row.advertisement.fileSrc)">预览</el-button> -->
         </template>
       </el-table-column>
@@ -214,14 +224,14 @@
       <div slot="footer" class="dialog-footer" v-if="addAdverMsg.selectType != null">
         <el-button @click="addAdverAlert = false">取 消</el-button>
         <el-button type="primary" @click="addAdverPost" v-if="addAdverShow" :disabled="addAdverMsg.selectType==0&&fileSuccess">保 存</el-button>
-        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow" :disabled="addAdverMsg.selectType==0&&addAdverMsg.fileSrc!=null">修 改</el-button>
+        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow" :disabled="addAdverMsg.fileSrc!=null">修 改</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
 
     <el-dialog
-      :visible.sync="previewAlert" class="w12h600" ref="imgContent">
-      <span class="leftTop">{{previewInfo.name}}</span>
+      :visible.sync="previewAlert" class="w12h600" ref="imgContent" :class="{'background_opacity': previewInfo.type == 1}">
+      <span class="leftTop">{{previewInfo.playAdvShowName}}</span>
       <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200" ref="img">
       <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
     </el-dialog>
@@ -246,7 +256,7 @@ import global from '../../global/global'
         previewInfo: {
           type: null,
           src: null,
-          name: null
+          playAdvShowName: null
         },
         addAdverMsg: {
           selectType: null,
@@ -334,6 +344,8 @@ import global from '../../global/global'
         .then((res) => {
           // console.log(res)
           if (res.data.callStatus === 'SUCCEED') {
+            self.adverInfo.currentPage = res.data.currentPage
+            self.adverInfo.totalPage = res.data.totalPage
             if (res.data.data.length > 0) {
               self.allAdverLists = res.data.data
               self.scrollAvder = []
@@ -347,8 +359,6 @@ import global from '../../global/global'
                   self.addAdverLists.push(res.data.data[i])
                 }
               }
-              self.adverInfo.currentPage = res.data.currentPage
-              self.adverInfo.totalPage = res.data.totalPage
             } else if (this.adverInfo.currentPage !== 1 && res.data.data.length != 0) {
               this.adverInfo.currentPage --
               this.getAdverList(this.adverInfo)
@@ -535,12 +545,12 @@ import global from '../../global/global'
         // console.log(obj)
         this.previewAlert = true
         this.previewInfo = {
-            type: obj.fileType,
-            src: obj.fileSrc,
-            name: obj.name
+            type: obj.advertisement.fileType,
+            src: obj.advertisement.fileSrc,
+            playAdvShowName: obj.playAdvShowName
           }
           // console.log(this.$refs.imgContent.$el.childNodes[0].children[1])
-          console.log(this.$refs)
+          // console.log(this.$refs)
       }
       // preview (type, src) {
       //

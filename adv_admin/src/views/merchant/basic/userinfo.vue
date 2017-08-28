@@ -32,9 +32,10 @@
 				  <span>{{scope.row.registerTime | date}}</span>
 				</template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" width="230">
         <template scope="scope">
           <el-button size="small" @click="editChildren">修改信息</el-button>
+          <el-button size="small" @click="editPasswordAlert = true">修改密码</el-button>
           <!-- <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button> -->
         </template>
       </el-table-column>
@@ -108,9 +109,33 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
     <!-- 弹出窗结束 -->
 
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+    <!-- 修改密码 -->
+    <el-dialog
+      title="修改密码"
+      :visible.sync="editPasswordAlert"
+      size="tiny"
+      :before-close="handleCloseEditPassword">
+      <el-form :model="editPassword" label-width="80px" :rules="rules2" ref="editPassword">
+        <el-form-item label="旧密码" prop="oldPWD">
+          <el-input v-model="editPassword.oldPWD" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPWD">
+          <el-input v-model="editPassword.newPWD" type="password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="checkPass">
+          <el-input v-model="editPassword.checkPass" type="password" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editPasswordAlert = false">取 消</el-button>
+        <el-button type="primary" @click="editPasswordClick">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true">
         <el-form-item>
           <el-button type="primary" v-on:click="addPhotoAlert = true">添加图片</el-button>
@@ -138,7 +163,6 @@
       <el-table-column label="操作">
         <template scope="scope">
           <el-button size="small" v-on:click="deletePhoto(scope.row.id)">删除</el-button>
-          <!-- <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button> -->
         </template>
       </el-table-column>
     </el-table>
@@ -163,7 +187,7 @@
           <el-button v-on:click="addPhotoAlert = false">取消</el-button>
         </el-form-item>
       </el-form>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -172,6 +196,25 @@
   import global from '../../global/global'
   export default {
     data() {
+      var validatePass = (rule, value, callback) => {
+        if (value == null) {
+          callback(new Error('请输入密码'));
+        } else {
+          if (this.editPassword.checkPass != null) {
+            this.$refs.editPassword.validateField('checkPass');
+          }
+          callback();
+        }
+      };
+      var validatePass2 = (rule, value, callback) => {
+        if (value == null) {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.editPassword.newPWD) {
+          callback(new Error('两次输入密码不一致!'));
+        } else {
+          callback();
+        }
+      };
       return {
         addEmployeeAlert: false,
         addPhotoAlert: false,
@@ -204,6 +247,17 @@
 					userGroup: [{ required: 'true', message: '请选择用户群体', trigger: 'change' }],
 					endDateStr: [{ required: 'true', type: 'date', message: '请选择截止日期', trigger: 'change' }]
         },
+        editPasswordAlert: false,
+        editPassword: {
+          oldPWD: null,
+          newPWD: null,
+          checkPass: null
+        },
+        rules2: {
+          oldPWD: [{ required: 'true', message: '请输入旧密码', trigger: 'blur' }],
+          newPWD: [{ validator: validatePass, trigger: 'blur' }],
+          checkPass: [{ validator: validatePass2, trigger: 'blur' }]
+        },
         photos: [],
         photosArgs: {
           userId: global.getUser().id,
@@ -227,6 +281,33 @@
       })
     },
     methods: {
+      handleCloseEditPassword () {
+        this.$refs['editPassword'].resetFields()
+        this.editPassword = {
+          oldPWD: null,
+          newPWD: null,
+          checkPass: null
+        }
+        this.editPasswordAlert = false
+      },
+      // 修改密码
+      editPasswordClick () {
+        this.$refs.editPassword.validate((valid) => {
+          if (valid) {
+            global.axiosPostReq('user/changePWD', this.editPassword)
+            .then((res) => {
+              if (res.data.callStatus === 'SUCCEED') {
+                global.success(this, '修改成功', '')
+                this.editPasswordAlert = false
+              } else {
+                global.error(this, res.data.data, '')
+              }
+            })
+          } else {
+            return false
+          }
+        })
+      },
       getUserInfo (args) {
         global.axiosGetReq('user/getUserDetails')
         .then((res) => {

@@ -115,7 +115,7 @@
           <el-radio-group v-model="addmerchantMsg.type">
             <!-- <el-radio label="0">管理员</el-radio> -->
             <el-radio label="1">有设备商铺</el-radio>
-            <el-radio label="2">有设备商铺</el-radio>
+            <el-radio label="2">无设备商铺</el-radio>
             <!-- <el-radio label="3">子账号</el-radio> -->
           </el-radio-group>
         </el-form-item>

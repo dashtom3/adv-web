@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="advOrder">
+  <div class="advOrder" v-loading="loading">
       <!--工具条-->
     <el-col :span="24" class="toolbar">
       <el-form class="form">
@@ -23,7 +23,7 @@
               </el-date-picker>
             </el-form-item>
           </el-col>
-          <el-col :span="4">
+          <!-- <el-col :span="4">
             <el-form-item label="设备ID">
               <el-select v-model="orderArgs.deviceId" placeholder="请选择设备ID" @change="selectState">
                 <el-option
@@ -33,15 +33,20 @@
                 :value="option.id"></el-option>
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
           <el-col :span="4">
             <el-form-item label="设备地点">
-              <el-select v-model="orderArgs.place" placeholder="请选择设备地点" @change="selectState">
+              <el-select v-model="orderArgs.deviceId" placeholder="请选择设备地点" @change="selectState">
+                <el-option
+                label="全部"
+                :value=null
+                >
+                </el-option>
                 <el-option
                 v-for="option in deviceList"
                 :key="option"
-                :label="option.place"
-                :value="option.place"></el-option>
+                :label="option.id+option.place"
+                :value="option.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -143,6 +148,7 @@ export default {
   data () {
     return {
       hah: '',
+      loading: false,
       value: '',
       options: [{
         label: '全部',
@@ -198,16 +204,18 @@ export default {
   },
   methods: {
     getOrderLists(args) {
+      this.loading = true
       // var self = this
       global.axiosGetReq('advOrder/getAdvOrderList?', args)
       .then((res) => {
+        this.loading = false
         // console.log(res)
         if (res.data.callStatus === 'SUCCEED') {
           this.orderLists = res.data.data
+          this.orderArgs.currentPage = res.data.currentPage
+          this.orderArgs.totalPage = res.data.totalPage
           if (res.data.data.length > 0) {
             // console.log(res)
-            this.orderArgs.currentPage = res.data.currentPage
-            this.orderArgs.totalPage = res.data.totalPage
             this.total = res.data.totalNumber
             this.unacknowledged = res.data.unacknowledged
           } else if (this.orderArgs.currentPage != 1 && res.data.data.length != 0) {

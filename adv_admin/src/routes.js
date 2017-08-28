@@ -3,7 +3,7 @@ import Register from './views/Register.vue'
 import NotFound from './views/404.vue'
 import Home from './views/merchant/main_mer.vue'
 import Main from './views/Main.vue'
-// import Userinfo from './views/merchant/basic/userinfo.vue'
+import Userinfo from './views/merchant/basic/userinfo.vue'
 // import MyProject from './views/merchant/basic/myProject.vue'
 // import PublishProject from './views/merchant/basic/publishProject.vue'
 // import MyResource from './views/merchant/basic/MyResource.vue'
@@ -70,22 +70,22 @@ let routes = [
             { path: '/merchant/workdesktop', component: WorkDesktop, name: '工作桌面' }
         ]
     },
-    // {
-    //     path: '/merchant',
-    //     component: Home,
-    //     name: '基本信息管理',
-    //     iconCls: 'el-icon-message',//图标样式class
-    //     hidden: 'merchant',
-    //     type: [0,1,2],
-    //     children: [
-    //         { path: '/merchant/userinfo', component: Userinfo, name: '基本资料',isChildAccount: [0,1,2] },
-    //         { path: '/merchant/myproject', component: MyProject, name: '我的项目',isChildAccount: [0,1,2] },
-    //         // { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
-    //         { path: '/merchant/myResource', component: MyResource, name: '我的资源',isChildAccount: [0,1,2] },
-    //         // { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' }
-    //         { path: '/merchant/messagebox', component: MessageBox, name: '留言箱',isChildAccount: [0,1,2] }
-    //     ]
-    // },
+    {
+        path: '/merchant',
+        component: Home,
+        name: '基本信息管理',
+        iconCls: 'el-icon-message',//图标样式class
+        hidden: 'merchant',
+        type: [0,1,2],
+        children: [
+            { path: '/merchant/userinfo', component: Userinfo, name: '基本资料',isChildAccount: [0,1,2] }
+            // { path: '/merchant/myproject', component: MyProject, name: '我的项目',isChildAccount: [0,1,2] },
+            // // { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
+            // { path: '/merchant/myResource', component: MyResource, name: '我的资源',isChildAccount: [0,1,2] },
+            // // { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' }
+            // { path: '/merchant/messagebox', component: MessageBox, name: '留言箱',isChildAccount: [0,1,2] }
+        ]
+    },
     {
         path: '/merchant',
         component: Home,

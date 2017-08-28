@@ -95,4 +95,7 @@ body {
 	top: 20px;
 	right: 20px;
 }
+.background_opacity .el-dialog{
+	background-color: rgba(0,0,0,0)!important;
+}
 </style>
