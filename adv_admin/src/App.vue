@@ -92,8 +92,9 @@ body {
 }
 .w12h600 .el-icon-close{
 	position: relative;
-	top: 20px;
-	right: 20px;
+	top: 10px;
+	left: 1000px;
+	z-index: 9999;
 }
 .background_opacity .el-dialog{
 	background-color: rgba(0,0,0,0)!important;

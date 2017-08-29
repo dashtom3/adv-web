@@ -224,14 +224,14 @@
       <div slot="footer" class="dialog-footer" v-if="addAdverMsg.selectType != null">
         <el-button @click="addAdverAlert = false">取 消</el-button>
         <el-button type="primary" @click="addAdverPost" v-if="addAdverShow" :disabled="addAdverMsg.selectType==0&&fileSuccess">保 存</el-button>
-        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow" :disabled="addAdverMsg.fileSrc!=null">修 改</el-button>
+        <el-button type="primary" @click="editAdverPost" v-if="editAdverShow">修 改</el-button>
       </div>
     </el-dialog>
     <!-- 弹出窗结束 -->
 
     <el-dialog
       :visible.sync="previewAlert" class="w12h600" ref="imgContent" :class="{'background_opacity': previewInfo.type == 1}">
-      <span class="leftTop">{{previewInfo.playAdvShowName}}</span>
+      <span class="leftTop" :class="{'top20':previewInfo.type == 1}">{{previewInfo.playAdvShowName}}</span>
       <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200" ref="img">
       <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
     </el-dialog>
@@ -629,18 +629,22 @@ import global from '../../global/global'
     max-height: 100%;
     height:100%;
   }
-  .w12h600 span{
+  /*.w12h600 span{
     display: inline-block;
     height: 100%;
     vertical-align: middle;
-  }
+  }*/
   .wait_word {
     margin-left: 20px;
   }
   .leftTop{
     position: absolute;
-    left: 20px;
-    /*top: 20px;*/
+    left: 10px;
+    top: 10px;
     z-index: 999;
+    font-size: 18px;
+  }
+  .top20{
+    top: 20px;
   }
 </style>

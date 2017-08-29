@@ -354,6 +354,7 @@
       },
       editChildren () {
         this.addEmployeeAlert = true
+        this.fileList = []
         this.fileList.push({
           name: this.userInfo[0].logoName,
           url: this.userInfo[0].logo
