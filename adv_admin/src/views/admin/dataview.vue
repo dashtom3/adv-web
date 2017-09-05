@@ -91,7 +91,7 @@
       <el-pagination
       layout="prev, pager, next"
       @current-change="changePage"
-      :page-count="totalLists.length%10">
+      :page-count="Math.ceil(totalLists.length/10)">
     </el-pagination>
   </div>
 
@@ -101,6 +101,7 @@
 <script>
   import axios from 'axios'
   import global from '../global/global'
+  import _ from 'lodash'
   export default {
     data () {
       return {
@@ -190,15 +191,23 @@
         if (res.data.callStatus === 'SUCCEED') {
           this.allDate = res.data.data
           let newArr = res.data.data
-          console.log(this.allDate)
+          // console.log(this.allDate)
           for (let i in res.data.data) {
             res.data.data[i].showName = res.data.data[i].playAdv.advertisement.id + res.data.data[i].playAdv.advertisement.name
             res.data.data[i].time = Date.parse(new Date(res.data.data[i].playDate))
           }
           // 广告id列表
-          this.adverIdLists = res.data.data.filter((item) => {
-            return this.adverIdLists.indexOf(item.playAdv.advertisement.id) == -1
-          })
+          var arr = []
+          for (let i in res.data.data) {
+            if (arr.indexOf(res.data.data[i].showName) === -1) {
+              arr.push(res.data.data[i].showName)
+            }
+          }
+          for (let i in arr) {
+            this.adverIdLists.push(_.find(res.data.data,{'showName':arr[i]}))
+          }
+
+
           for (let i in res.data.data) {
             if (this.ownShopLists.indexOf(res.data.data[i].playAdv.advertisement.realName) === -1) {
               this.ownShopLists.push(res.data.data[i].playAdv.advertisement.realName)
@@ -212,7 +221,8 @@
           }
           // // console.log(res.data.data)
           this.totalLists = res.data.data
-          this.tableData = this.totalLists
+          this.changePage(1)
+          // this.tableData = this.totalLists
           // if (res.data.data.length > 10) {
           //   this.tableData = res.data.data.splice(0, 10)
           // } else {
@@ -221,7 +231,7 @@
         } else {
           global.error(this, res.data.data, '')
           if (res.data.data == '用户未登录') {
-            this.$router.push('/login')
+            this.$router.push('/admin')
           }
         }
       })

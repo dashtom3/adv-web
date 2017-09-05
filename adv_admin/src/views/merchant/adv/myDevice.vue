@@ -31,7 +31,7 @@
     </el-table>
 
     <!-- 分页 -->
-    <div class="block" v-if="baseListArgs.totalPag > 1">
+    <div class="block" v-if="baseListArgs.totalPage > 1">
       <el-pagination
         layout="prev, pager, next"
         :current-page.sync="baseListArgs.currentPage"
@@ -112,10 +112,10 @@ import global from '../../global/global'
         global.axiosGetReq('device/getDeviceList?', args)
         .then((res) => {
           if (res.data.callStatus === 'SUCCEED') {
+            this.baseListArgs.currentPage = res.data.currentPage
+            this.baseListArgs.totalPage = res.data.totalPage
             if (res.data.data.length > 0) {
               this.baseLists = res.data.data
-              this.baseListArgs.currentPage = res.data.currentPage
-              this.baseListArgs.totalPage = res.data.totalPage
             } else if(this.baseListArgs.currentPage !== 1){
               this.baseListArgs.currentPage --
               this.getBaseLists(this.baseListArgs)

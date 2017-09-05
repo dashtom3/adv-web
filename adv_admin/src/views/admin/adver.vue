@@ -64,7 +64,7 @@
         <template scope="scope">
           <el-button size="small" @click="handleEdit(scope.row.index)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
-          <el-button size="small" type="success" @click="preview(scope.row.advertisement.fileType, scope.row.advertisement.fileSrc)">预览</el-button>
+          <el-button size="small" type="success" @click="preview(scope.row)">预览</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -147,10 +147,17 @@
     <!-- 弹出窗结束 -->
 
     <el-dialog
+      :visible.sync="previewAlert" class="w12h600" ref="imgContent" :class="{'background_opacity': previewInfo.type == 1}">
+      <span class="leftTop" :class="{'top20':previewInfo.type == 1}">{{previewInfo.playAdvShowName}}</span>
+      <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200" ref="img">
+      <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
+    </el-dialog>
+
+    <!-- <el-dialog
       :visible.sync="previewAlert" class="w12h600">
       <img :src="previewInfo.src" alt="" v-if="previewInfo.type == 0" class="maxWidth1200">
       <video :src="previewInfo.src" v-if="previewInfo.type == 1" autoplay class="width1200"></video>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -170,7 +177,8 @@ import global from '../global/global'
         formLabelWidth: '80px',
         previewInfo: {
           type: null,
-          src: null
+          src: null,
+          playAdvShowName: null
         },
         addAdverMsg: {
           selectType: null,
@@ -326,6 +334,7 @@ import global from '../global/global'
             if (this.addAdverMsg.isOrder == 0) {
               this.addAdverMsg.price = null
             }
+            this.addAdverMsg.fileType == 1 ? this.addAdverMsg.time = null : this.addAdverMsg.time = this.addAdverMsg.time
             var self = this
             global.axiosPostReq('advertisement/add', this.addAdverMsg)
             .then((res) => {
@@ -381,6 +390,7 @@ import global from '../global/global'
       editAdverPost () {
         this.$refs['addAdverMsg'].validate((valid) => {
           if (valid) {
+            this.addAdverMsg.fileType == 1 ? this.addAdverMsg.time = null : this.addAdverMsg.time = this.addAdverMsg.time
             global.axiosPostReq('playAdv/update', this.addAdverMsg)
             .then((response) => {
               if (response.data.callStatus === 'SUCCEED') {
@@ -443,10 +453,11 @@ import global from '../global/global'
         this.getAdverList(this.adverInfo)
       },
       // 预览
-      preview (type, src) {
+      preview (obj) {
         this.previewInfo = {
-          type: type,
-          src: src
+          type: obj.advertisement.fileType,
+          src: obj.advertisement.fileSrc,
+          playAdvShowName: obj.playAdvShowName
         },
         this.previewAlert = true
       }
@@ -479,6 +490,15 @@ import global from '../global/global'
           this.my = false
           this.other = false
           this.$refs['addAdverMsg'].resetFields()
+        }
+      },
+      previewAlert () {
+        if (this.previewAlert == false) {
+          this.previewInfo = {
+            type: null,
+            src: null,
+            playAdvShowName: null
+          }
         }
       }
       // previewAlert () {
@@ -521,5 +541,15 @@ import global from '../global/global'
   .width1200{
     width: 1024px;
     height: 600px;
+  }
+  .leftTop{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    z-index: 999;
+    font-size: 18px;
+  }
+  .top20{
+    top: 20px;
   }
 </style>

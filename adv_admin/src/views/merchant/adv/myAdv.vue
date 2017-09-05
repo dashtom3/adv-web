@@ -396,6 +396,7 @@ import global from '../../global/global'
         this.fileList.push(obj)
         this.addAdverMsg.fileName = response.name
         this.addAdverMsg.fileSrc = global.qiniuShUrl + file.key
+        console.log(this.addAdverMsg)
       },
       removeFile () {
         this.fileList = []
@@ -408,6 +409,7 @@ import global from '../../global/global'
       addAdverPost () {
         this.$refs['addAdverMsg'].validate((valid) => {
           if (valid) {
+            this.addAdverMsg.fileType == 1 ? this.addAdverMsg.time = null : this.addAdverMsg.time = this.addAdverMsg.time
             var self = this
             global.axiosPostReq(this.addAdverUrl, this.addAdverMsg)
             .then((res) => {
@@ -475,6 +477,7 @@ import global from '../../global/global'
       editAdverPost () {
         this.$refs['addAdverMsg'].validate((valid) => {
           if (valid) {
+            this.addAdverMsg.fileType == 1 ? this.addAdverMsg.time = null : this.addAdverMsg.time = this.addAdverMsg.time
             global.axiosPostReq('playAdv/update', this.addAdverMsg)
             .then((res) => {
               if (this.my) {
@@ -575,7 +578,7 @@ import global from '../../global/global'
           this.previewInfo = {
             type: null,
             src: null,
-            name: null
+            playAdvShowName: null
           }
         }
       }
