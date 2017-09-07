@@ -35,7 +35,7 @@
             </el-form-item>
           </el-col> -->
           <el-col :span="4">
-            <el-form-item label="设备地点">
+            <el-form-item label="设备信息">
               <el-select v-model="orderArgs.deviceId" placeholder="请选择设备地点" @change="selectState">
                 <el-option
                 label="全部"
@@ -45,7 +45,7 @@
                 <el-option
                 v-for="option in deviceList"
                 :key="option"
-                :label="option.id+option.place"
+                :label="'编号:'+option.id+'-位置:'+option.place"
                 :value="option.id"></el-option>
               </el-select>
             </el-form-item>
