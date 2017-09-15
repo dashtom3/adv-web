@@ -89,7 +89,7 @@
           <el-form-item label="描述" :label-width="formLabelWidth">
             <el-input v-model="addAdverMsg.content" auto-complete="off"></el-input>
           </el-form-item>
-          <el-form-item label="广告显示名称" :label-width="formLabelWidth" prop="playAdvShowName">
+          <el-form-item label="广告显示名称" :label-width="formLabelWidth">
             <el-input v-model="addAdverMsg.playAdvShowName" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="广告类型" :label-width="formLabelWidth" prop="type">
@@ -226,8 +226,7 @@ import global from '../global/global'
         rules:{
           name: [{ required: true, message: '请输入广告名称', trigger: 'blur' }],
           type: [{ required: true, message: '请选择广告类型', trigger: 'change' }],
-          isOrder: [{ required: true, message: '请选择是否下单', trigger: 'change' }],
-          playAdvShowName: [{ required: true, message: '请输入广告显示名称', trigger: 'blur' }]
+          isOrder: [{ required: true, message: '请选择是否下单', trigger: 'change' }]
         }
       }
     },
