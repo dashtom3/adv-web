@@ -297,7 +297,7 @@ import global from '../global/global'
       },
       // 上传文件
       uploadFile (file, response) {
-        if (response.size > 10000000) {
+        if (response.size > 20000000) {
           global.error(this, '上传文件过大', '')
           this.fileList = []
           return false
