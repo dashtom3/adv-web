@@ -2,6 +2,8 @@ import Login from './views/Login.vue'
 import Register from './views/Register.vue'
 import NotFound from './views/404.vue'
 import Home from './views/merchant/main_mer.vue'
+import luck from './views/merchant/luck.vue'
+import welfare from './views/merchant/welfare.vue'
 import Main from './views/Main.vue'
 import Userinfo from './views/merchant/basic/userinfo.vue'
 // import MyProject from './views/merchant/basic/myProject.vue'
@@ -99,7 +101,9 @@ let routes = [
             { path: '/merchant/shield', component: Shield, name: '屏蔽行业', isChildAccount: [0,1,2] },
             { path: '/merchant/mydevice', component: MyDevice, name: '我的设备', isChildAccount: [0,1,2] },
             { path: '/merchant/total', component: Total, name: '统计数据', isChildAccount: [0,1,2] },
-            { path: '/merchant/advlist', component: Advlist, name: '订单管理', isChildAccount: [0,1,2,3] }
+            { path: '/merchant/advlist', component: Advlist, name: '订单管理', isChildAccount: [0,1,2,3] },
+            { path: '/merchant/luck', component: luck, name: '抽奖管理', isChildAccount: [0,1,2] },
+            { path: '/merchant/welfare', component: welfare, name: '二维码福利管理', isChildAccount: [0,1,2] }
         ]
     },
     {

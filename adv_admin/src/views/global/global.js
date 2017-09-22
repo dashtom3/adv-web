@@ -71,5 +71,13 @@ export default {
   },
   getQiNiuToken () {
     return axios.get(this.baseUrl + 'qiniu/getQiNiuToken')
+  },
+  timeFilter (d) {
+    if (d !== null && d != '' && d != undefined) {
+      // d = new Date(d)
+      var month = (d.getMonth()+1) < 10 ? '0' + (d.getMonth()+1) : (d.getMonth()+1)
+      var day = d.getDate() > 10 ? d.getDate() : '0' + d.getDate()
+      return `${d.getFullYear()}-` + month + '-' + day
+    }
   }
 }
