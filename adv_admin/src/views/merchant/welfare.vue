@@ -72,7 +72,7 @@
             <el-input v-model="addAdverMsg.description" auto-complete="off"></el-input>
           </el-form-item>
           <el-form-item label="链接地址" :label-width="formLabelWidth" prop="webUrl">
-            <el-input v-model="addAdverMsg.webUrl" auto-complete="off"></el-input>
+            <el-input v-model="addAdverMsg.webUrl" type="url" auto-complete="off"></el-input>
           </el-form-item>
            <el-form-item label="有效开始日期" :label-width="formLabelWidth" prop="validStartDateStr">
              <el-date-picker type="date" placeholder="选择日期" v-model="addAdverMsg.validStartDateStr" ></el-date-picker>
@@ -126,6 +126,18 @@ import global from '../global/global'
 import axios from 'axios'
   export default {
     data() {
+      var urlReg = (rule, value, callback) => {
+        var reg = /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$/
+        if (value == null) {
+          callback(new Error('请输入链接地址'))
+        } else {
+          if (!reg.test(value)) {
+            callback(new Error('请输入正确的地址'))
+          } else {
+            callback()
+          }
+        }
+      }
       return {
         my: false,
         other: false,
@@ -173,7 +185,7 @@ import axios from 'axios'
         allSubject: [],
         rules:{
           name: [{ required: true, message: '请输入广告名称', trigger: 'blur' }],
-          webUrl: [{ required: true, message: '请输入链接地址', trigger: 'blur' }],
+          webUrl: [{ required: true, validator: urlReg, trigger: 'blur' }],
           validStartDateStr: [{ type: 'date', required: true, message: '请选择有效开始日期', trigger: 'change' }],
           validEndDateStr: [{ type: 'date', required: true, message: '请选择有效结束日期', trigger: 'change' }],
           isOrder: [{ required: true, message: '请选择是否下单', trigger: 'change' }],

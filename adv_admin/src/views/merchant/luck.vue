@@ -86,7 +86,8 @@ export default {
       userInfo: global.getUser(), // 用户信息
       fucklist: [],
       tableDate: [],
-      luckId: null
+      luckId: null,
+      url: null
     }
   },
   created () {
@@ -119,7 +120,14 @@ export default {
       .then((res) => {
         if (res.data.callStatus == 'SUCCEED') {
           this.luckId = res.data.data.id
-          this.fucklist = res.data.data == null ? [] : this.filterDate(res.data.data.content)
+          if (res.data.data == null) {
+            this.fucklist = []
+            this.url = 'draw/add'
+          } else {
+            this.fucklist = this.filterDate(res.data.data.content)
+            this.luckId = res.data.data.id
+            this.url = 'draw/update'
+          }
         } else {
           global.error(this, res.data.data)
           return false
@@ -150,12 +158,14 @@ export default {
         return false
       }
       var form = {
+        drawId: this.luckId,
         content: this.reverseData(this.tableDate)
       }
-      global.axiosPostReq('draw/add', form)
+      global.axiosPostReq(this.url, form)
       .then((res) => {
         if (res.data.callStatus == 'SUCCEED') {
-          this.fucklist = this.filterDate(res.data.data.content)
+          // this.fucklist = this.filterDate(res.data.data.content
+          this.getFuckList()
           this.addFuckAlert = false
         } else {
           global.error(this, res.data.data)
@@ -198,13 +208,24 @@ export default {
           this.tableDate.push(item)
         })
       }
+    },
+    isOpen () {
+      if (this.luckId == null) {
+        global.error(this, '请先添加奖项')
+        this.isOpen = false
+        return false
+      } else {
+        var form = {
+          drawId: this.luckId,
+          state: this.isOpen == true ? 1 : 0
+        }
+        global.axiosPostReq('draw/changeState', form)
+        .then((res) => {
+          res.data.callStatus == 'SUCCEED' ? global.success(this, '操作成功') : global.error(this, res.data.data)
+        })
+      }
     }
   }
-  // computed: {
-  //   tableDate () {
-  //     return this.fucklist
-  //   }
-  // }
 }
 </script>
 

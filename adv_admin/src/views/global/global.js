@@ -1,6 +1,6 @@
 import axios from 'axios'
 export default {
-  baseUrl: 'http://123.56.220.72:8080/Advertisement/api/',
+  baseUrl: 'http://116.62.228.3:8080/Advertisement/api/',
   qiNiuUrl: 'http://up-z0.qiniu.com/',
   qiniuShUrl: 'http://oqhy88nu6.bkt.clouddn.com/',
   success (obj, msg, url) {
