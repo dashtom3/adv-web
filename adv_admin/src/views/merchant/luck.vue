@@ -119,7 +119,6 @@ export default {
       axios.get(global.baseUrl + 'draw/getByUserId?userId=' + this.userInfo.id)
       .then((res) => {
         if (res.data.callStatus == 'SUCCEED') {
-          this.luckId = res.data.data.id
           if (res.data.data == null) {
             this.fucklist = []
             this.url = 'draw/add'
@@ -127,6 +126,7 @@ export default {
             this.fucklist = this.filterDate(res.data.data.content)
             this.luckId = res.data.data.id
             this.url = 'draw/update'
+            this.isOpen = res.data.data.state == 1 ? true : false
           }
         } else {
           global.error(this, res.data.data)
