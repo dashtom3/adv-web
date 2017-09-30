@@ -217,7 +217,7 @@
             </el-upload>
           </el-form-item>
           <el-form-item label="时长" :label-width="formLabelWidth" v-if="uploadFileType">
-            <el-input v-model="addAdverMsg.time" auto-complete="off" style="width:100px;"></el-input>&nbsp;秒
+            <el-input v-model="addAdverMsg.time" type="number" auto-complete="off" style="width:100px;"></el-input>&nbsp;秒
           </el-form-item>
         </div>
       </el-form>
@@ -381,10 +381,8 @@ import global from '../../global/global'
           this.fileList = []
           return false
         }
-        if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/jpg') {
+        if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/jpg' || response.raw.type == 'image/gif') {
           this.uploadFileType = true
-          this.addAdverMsg.fileType = 0
-        } else if (response.raw.type == 'image/gif') {
           this.addAdverMsg.fileType = 0
         } else {
           this.addAdverMsg.fileType = 1
@@ -411,6 +409,12 @@ import global from '../../global/global'
           if (valid) {
             this.addAdverMsg.fileType == 1 ? this.addAdverMsg.time = null : this.addAdverMsg.time = this.addAdverMsg.time
             var self = this
+            if (this.uploadFileType) {
+              if (this.addAdverMsg.time <= 0) {
+                global.error(this, '播放广告要大于0')
+                return false
+              }
+            }
             global.axiosPostReq(this.addAdverUrl, this.addAdverMsg)
             .then((res) => {
               if (res.data.callStatus === 'SUCCEED') {
@@ -481,6 +485,12 @@ import global from '../../global/global'
             global.axiosPostReq('playAdv/update', this.addAdverMsg)
             .then((res) => {
               if (this.my) {
+                if (this.uploadFileType) {
+                  if (this.addAdverMsg.time <= 0) {
+                    global.error(this, '播放广告要大于0')
+                    return false
+                  }
+                }
                 global.axiosPostReq('advertisement/update', this.addAdverMsg)
                 .then((res) => {
                   if (res.data.callStatus === 'SUCCEED') {
@@ -492,6 +502,12 @@ import global from '../../global/global'
                   }
                 })
               } else if (res.data.callStatus === 'SUCCEED') {
+                if (this.uploadFileType) {
+                  if (this.addAdverMsg.time <= 0) {
+                    global.error(this, '播放广告要大于0')
+                    return false
+                  }
+                }
                   global.success(this, '修改成功', '')
                   this.getAdverList(this.adverInfo)
                   this.addAdverAlert = false
