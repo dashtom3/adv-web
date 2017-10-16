@@ -6,11 +6,11 @@ import luck from './views/merchant/luck.vue'
 import welfare from './views/merchant/welfare.vue'
 import Main from './views/Main.vue'
 import Userinfo from './views/merchant/basic/userinfo.vue'
-// import MyProject from './views/merchant/basic/myProject.vue'
-// import PublishProject from './views/merchant/basic/publishProject.vue'
-// import MyResource from './views/merchant/basic/MyResource.vue'
-// import PublishResource from './views/merchant/basic/PublishResource.vue'
-// import MessageBox from './views/merchant/basic/messageBox.vue'
+import MyProject from './views/merchant/basic/myProject.vue'
+import PublishProject from './views/merchant/basic/publishProject.vue'
+import MyResource from './views/merchant/basic/MyResource.vue'
+import PublishResource from './views/merchant/basic/PublishResource.vue'
+import MessageBox from './views/merchant/basic/messageBox.vue'
 import Table from './views/merchant/basic/Table.vue'
 import Form from './views/merchant/basic/Form.vue'
 import user from './views/merchant/basic/user.vue'
@@ -80,12 +80,12 @@ let routes = [
         hidden: 'merchant',
         type: [0,1,2],
         children: [
-            { path: '/merchant/userinfo', component: Userinfo, name: '基本资料',isChildAccount: [0,1,2] }
-            // { path: '/merchant/myproject', component: MyProject, name: '我的项目',isChildAccount: [0,1,2] },
-            // // { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
-            // { path: '/merchant/myResource', component: MyResource, name: '我的资源',isChildAccount: [0,1,2] },
-            // // { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' }
-            // { path: '/merchant/messagebox', component: MessageBox, name: '留言箱',isChildAccount: [0,1,2] }
+            { path: '/merchant/userinfo', component: Userinfo, name: '基本资料',isChildAccount: [0,1,2] },
+            { path: '/merchant/myproject', component: MyProject, name: '我的项目',isChildAccount: [0,1,2] },
+            // { path: '/merchant/publishproject', component: PublishProject, name: '发布项目' },
+            { path: '/merchant/myResource', component: MyResource, name: '我的资源',isChildAccount: [0,1,2] },
+            // { path: '/merchant/publishResource', component: PublishResource , name: '发布资源' }
+            { path: '/merchant/messagebox', component: MessageBox, name: '留言箱',isChildAccount: [0,1,2] }
         ]
     },
     {
