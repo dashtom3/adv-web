@@ -69,6 +69,7 @@
 				</div>
 			</section>
 		</el-col>
+		<audio src="../../../static/audio.wav" autoplay v-if="showAudio"> 你的游览器不支持</audio>
 	</el-row>
 </template>
 
@@ -86,6 +87,7 @@ import Vue from 'vue'
 				userinfo: global.getUser(),
 				headImg: global.getUser().logo || img,
 				webscoket: null,
+				showAudio: false,
 				// sysUserAvatar: '../images/head.png',
 				form: {
 					name: '',
@@ -140,10 +142,10 @@ import Vue from 'vue'
 			if (global.getUser()) {
 				this.sysUserName = global.getUser().userName || '';
 			}
-			if (global.getToken() && this.websocket == null) {
+			if (global.getToken() && this.websocket == undefined) {
 				if('WebSocket' in window){
-						this.websocket = new WebSocket("ws://123.56.220.72:8080/Advertisement/orderWithWs?token="+global.getToken())
-						console.log(`websocket连接成功`)
+						this.websocket = new WebSocket("ws://116.62.228.3:8080/Advertisement/orderWithWs?token="+global.getToken())
+						// console.log(`websocket连接成功`)
 				}
 				else{
 						alert('Not support websocket')
@@ -151,7 +153,6 @@ import Vue from 'vue'
 				var self = this
 				this.websocket.onmessage = function(event){
 					const msg = JSON.parse(event.data).data
-					// console.log(msg)
 					const state = msg.state == 0 ? '已经被下单' : '已经被确认'
 						if (self.$route.path == '/merchant/advlist') {
 							self.$notify({
@@ -176,6 +177,8 @@ import Vue from 'vue'
 								}
 							})
 						}
+						self.showAudio = true
+						setTimeout(() => {self.showAudio = false}, 2000)
         }
 			}
 		}
