@@ -52,6 +52,13 @@ export default {
     localStorage.removeItem('adverToken')
     localStorage.removeItem('adverUser')
   },
+  setWebsocket(data){
+    console.log(JSON.stringify(data))
+    localStorage.setItem('adverWeb', data)
+  },
+  getWebsocket(data){
+    return localStorage.getItem('adverWeb')
+  },
   getToken () {
     return localStorage.getItem('adverToken')
   },

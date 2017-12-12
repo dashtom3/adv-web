@@ -10,7 +10,10 @@
     </el-col>
     <div class="clearfix"></div>
     <el-table :data="allAdverLists" border style="width: 100%">
-      <el-table-column prop="id" label="广告id">
+      <el-table-column label="广告id">
+        <template scope="scope">
+          <span>{{scope.row.advertisement.id}}</span>
+        </template>
       </el-table-column>
       <el-table-column label="名称">
         <template scope="scope">
@@ -53,6 +56,7 @@
         <template scope="scope">
           <img :src="scope.row.advertisement.fileSrc" v-if="scope.row.advertisement.fileType === 0" alt="" class="maxAndMin">
           <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video>
+          <!-- <img :src="scope.row.advertisement.imgSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"> -->
         </template>
       </el-table-column>
       <el-table-column label="时长(s)">
@@ -499,6 +503,7 @@ import global from '../global/global'
           this.fileList = []
           this.my = false
           this.other = false
+          this.addAdverMsg.isOrder = 0
           this.$refs['addAdverMsg'].resetFields()
         }
       },

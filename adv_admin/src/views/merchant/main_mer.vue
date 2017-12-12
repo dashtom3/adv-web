@@ -69,7 +69,8 @@
 				</div>
 			</section>
 		</el-col>
-		<audio src="../../../static/audio.wav" autoplay v-if="showAudio"> 你的游览器不支持</audio>
+		<!-- <audio src="../../../static/audio.wav" autoplay v-if="showAudio" > 你的游览器不支持</audio> -->
+		<audio src="../../../static/audio.wav" class="audioPlay" v-model="audio"> 你的游览器不支持</audio>
 	</el-row>
 </template>
 
@@ -83,6 +84,7 @@ import Vue from 'vue'
 				sysName:'商户账号后台',
 				collapsed:false,
 				sysUserName: '',
+				audio:null,
 				userType: global.getUser().type,
 				userinfo: global.getUser(),
 				headImg: global.getUser().logo || img,
@@ -146,6 +148,9 @@ import Vue from 'vue'
 				if('WebSocket' in window){
 						this.websocket = new WebSocket("ws://116.62.228.3:8080/Advertisement/orderWithWs?token="+global.getToken())
 						// console.log(`websocket连接成功`)
+						console.log(this.websocket)
+						global.setWebsocket(this.websocket)
+
 				}
 				else{
 						alert('Not support websocket')
@@ -177,9 +182,15 @@ import Vue from 'vue'
 								}
 							})
 						}
-						self.showAudio = true
-						setTimeout(() => {self.showAudio = false}, 2000)
+						if(msg.state == 0){
+							// self.showAudio = true
+							var audio = document.getElementsByClassName('audioPlay')[0];
+							console.log(audio)
+							audio.play();
+							// setTimeout(() => {self.showAudio = false}, 2000)
+						}
         }
+
 			}
 		}
 	}

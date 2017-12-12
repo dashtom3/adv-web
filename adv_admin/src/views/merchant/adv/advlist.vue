@@ -188,13 +188,13 @@ export default {
     // this.get()
     var self = this
     this.$root.eventHub.$on('shishi', (val) => {
-      // console.log(val)
+      console.log(val)
       if (val.state == '0') {
         // self.orderLists.pop()
         self.orderLists.unshift(val)
       } else {
         for (let i in self.orderLists) {
-          if (self.orderLists[i].orderNum = val.orderNum) {
+          if (self.orderLists[i].orderNum == val.orderNum) {
             self.orderLists[i] = val
           }
         }
@@ -218,9 +218,6 @@ export default {
             // console.log(res)
             this.total = res.data.totalNumber
             this.unacknowledged = res.data.unacknowledged
-          } else if (this.orderArgs.currentPage != 1 && res.data.data.length != 0) {
-            this.orderArgs.currentPage --
-            this.getOrderLists(this.orderArgs)
           }
         }
         else if (res.data.data == '用户未登录') {

@@ -175,13 +175,11 @@
               for (let i in res.data.data) {
                 res.data.data[i].index = i
               }
+            }
               this.projectLists = res.data.data
               this.projectArgs.currentPage = res.data.currentPage
               this.projectArgs.totalPage = res.data.totalPage
-            } else if (this.projectArgs.currentPage !==1 ) {
-              this.projectArgs.currentPage --
-              this.getProjectList(this.projectArgs)
-            }
+            
           } else {
             global.error(this, res.data.data, '')
             if (res.data.data == '用户未登录') {

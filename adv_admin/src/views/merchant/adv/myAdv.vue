@@ -49,7 +49,8 @@
       <el-table-column label="文件">
         <template scope="scope">
           <img :src="scope.row.advertisement.fileSrc" v-if="scope.row.advertisement.fileType === 0" alt="" class="maxAndMin">
-          <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video>
+          <!-- <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video> -->
+          <img :src="scope.row.advertisement.imgSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin">
         </template>
       </el-table-column>
       <el-table-column label="时长">
@@ -73,7 +74,11 @@
     <el-table :data="addAdverLists" border style="width: 100%">
       <!-- <el-table-column  type="index">
       </el-table-column> -->
-      <el-table-column prop="id" label="广告id">
+      <!-- <el-table-column prop="id" label="广告id"> -->
+      <el-table-column label="广告id">
+        <template scope="scope">
+          <span>{{scope.row.advertisement.id}}</span>
+        </template>
       </el-table-column>
       <el-table-column label="名称">
         <template scope="scope">
@@ -109,7 +114,8 @@
       <el-table-column label="文件">
         <template scope="scope">
           <img :src="scope.row.advertisement.fileSrc" v-if="scope.row.advertisement.fileType === 0" alt="" class="maxAndMin">
-          <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video>
+          <!-- <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video> -->
+          <img :src="scope.row.advertisement.imgSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin">
           <!-- <span>{{scope.row.advertisement.fileSrc}}</span> -->
         </template>
       </el-table-column>
@@ -204,6 +210,18 @@
               :label="type.name" :value="type.value"></el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="封面图片" :label-width="formLabelWidth">
+            <el-upload class="upload-demo"
+            :action=qiNiuUrl
+            :on-success="uploadPic"
+            :on-remove="removePic"
+            :data="qiNiuToken"
+            :file-list="picList"
+            :disabled="picList.length !== 0">
+              <el-button size="small" type="primary" :disabled="picList.length !== 0">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">(请上传封面图片)</div>
+            </el-upload>
+          </el-form-item>
           <el-form-item label="文件" :label-width="formLabelWidth">
             <el-upload class="upload-demo"
             :action=qiNiuUrl
@@ -266,9 +284,11 @@ import global from '../../global/global'
           price: null,
           fileSrc: null,
           fileName: null,
+          imgSrc:null,
+          imgName:null,
           fileType: null,
           time: null,
-          isOrder: null,
+          isOrder: 0,
           advertisementId: null
         },
         adverType: [
@@ -281,6 +301,7 @@ import global from '../../global/global'
         ],
         isEdit: true,
         fileList: [],
+        picList:[],
         addAdverLists: [],
         scrollAvder: [],
         allAdverLists: [],
@@ -403,8 +424,36 @@ import global from '../../global/global'
         this.uploadFileType = false
         this.addAdverMsg.time = null
       },
+      // 上传封面
+      uploadPic (file, response) {
+        if (response.size > 20000000) {
+          global.error(this, '上传文件过大', '')
+          this.picList = []
+          return false
+        }
+        if (response.raw.type == 'image/png' || response.raw.type === 'image/jpeg' || response.raw.type == 'image/jpg' || response.raw.type == 'image/gif') {
+          var obj = {
+            name: response.name,
+            url: global.qiniuShUrl + file.key
+          }
+          this.picList.push(obj)
+          this.addAdverMsg.imgName = response.name
+          this.addAdverMsg.imgSrc = global.qiniuShUrl + file.key
+          console.log(this.addAdverMsg)
+        } else {
+          global.error(this, '请上传图片格式', '')
+          this.picList = []
+          return false
+        }
+      },
+      removePic () {
+        this.picList = []
+        this.addAdverMsg.imgName = null
+        this.addAdverMsg.imgSrc = null
+      },
       // 添加广告
       addAdverPost () {
+        console.log(this.addAdverMsg)
         this.$refs['addAdverMsg'].validate((valid) => {
           if (valid) {
             this.addAdverMsg.fileType == 1 ? this.addAdverMsg.time = null : this.addAdverMsg.time = this.addAdverMsg.time
@@ -457,6 +506,13 @@ import global from '../../global/global'
             this.fileList.push(newObj)
             // this.uploadFileType = true
             this.addAdverMsg.time = this.allAdverLists[obj.index].advertisement.time
+          }
+          if (this.allAdverLists[obj.index].advertisement.imgName || this.allAdverLists[obj.index].advertisement.imgSrc) {
+            var newObj = {
+              name: this.allAdverLists[obj.index].advertisement.imgName,
+              url: this.allAdverLists[obj.index].advertisement.imgSrc
+            }
+            this.picList.push(newObj)
           }
           this.my = true
           this.other = false
@@ -561,13 +617,21 @@ import global from '../../global/global'
       },
       // 预览
       preview (obj) {
-        // console.log(obj)
-        this.previewAlert = true
-        this.previewInfo = {
-            type: obj.advertisement.fileType,
-            src: obj.advertisement.fileSrc,
-            playAdvShowName: obj.playAdvShowName
-          }
+        console.log(obj)
+        // if(obj.advertisement.fileName.indexOf('.mp4')>0){
+        //   this.$message({
+        //     type: 'success',
+        //     message: '暂不支持该格式视频播放!',
+        //     duration: '1200'
+        //   });
+        // } else {
+          this.previewAlert = true
+          this.previewInfo = {
+              type: obj.advertisement.fileType,
+              src: obj.advertisement.fileSrc,
+              playAdvShowName: obj.playAdvShowName
+            }
+        // }
           // console.log(this.$refs.imgContent.$el.childNodes[0].children[1])
           // console.log(this.$refs)
       }
@@ -584,8 +648,10 @@ import global from '../../global/global'
           }
           this.uploadFileType = false
           this.fileList = []
+          this.picList = []
           this.my = false
           this.other = false
+          this.addAdverMsg.isOrder = 0
           // this.$refs['addAdverMsg'].resetFields()
         }
       },
@@ -642,6 +708,7 @@ import global from '../../global/global'
     position: absolute;
     left: 0px;
     top: 0px;
+    background-color: white;
   }
   img.maxWidth1200{
     max-width: 100%;

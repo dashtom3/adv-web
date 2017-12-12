@@ -6,6 +6,9 @@
         <el-form-item class="screen" label="广告">
           <el-select v-model="searchMsg.adverId" placeholder="请选择" >
             <el-option
+            label="全部"
+            :value=null></el-option>
+            <el-option
             v-for="adver in adverIdLists"
             :key="adver"
             :label="adver.showName"
@@ -37,11 +40,11 @@
           </el-select>
         </el-form-item>
         <el-form-item class="screen" label="时间">
-    </el-date-picker>
+    <!-- </el-date-picker> -->
           <el-date-picker v-model="searchMsg.time" type="daterange" placeholder="选择时间范围">
           </el-date-picker>
         </el-form-item>
-        <el-button class="search_btn" type="primary" v-on:click="search">查找</el-button>
+        <el-button class="search_btn" type="primary" v-on:click="searchData">查找</el-button>
         <el-button class="search_btn" type="primary" v-on:click="qx">取消</el-button>
       </el-form>
     </el-col>
@@ -87,7 +90,7 @@
     </el-table>
 
     <!-- 分页 -->
-    <div class="block" v-if="totalLists.length/10 > 1">
+    <div class="block">
       <el-pagination
       layout="prev, pager, next"
       @current-change="changePage"
@@ -123,88 +126,72 @@
           playShop: null,
           time: []
         },
-        arr: [],
+        timeDate:[],
         allDate: []
       }
     },
     created () {
-    this.getOrderLists()
-  },
+      console.log(parseInt(1.0),parseInt(1.1),parseInt(1.5))
+      this.init()
+    },
   methods: {
-    search () {
+    filterData(){
       this.tableData = []
       // console.log(this.allDate)
-      this.totalLists = this.allDate
-      for (let i in this.searchMsg) {
-        if (this.searchMsg[i] != null) {
-          // console.log(i,this.searchMsg[i])
-          if (i == 'adverId') {
-            this.tableData = this.totalLists.filter((item) => {
-              return item.playAdv.advertisement.id == this.searchMsg[i]
-            })
-            // console.log(this.totalLists,this.tableData)
-          }
-          if (i == 'ownShop' && this.searchMsg[i] != 'null') {
-            if (this.tableData.length != 0) {
-              this.tableData = this.tableData.filter((item) => {
-                return item.playAdv.advertisement.realName == this.searchMsg[i]
-              })
-            } else {
-              this.tableData = this.totalLists.filter((item) => {
-                // console.log(this.searchMsg[i])
-                return item.playAdv.advertisement.realName == this.searchMsg[i]
-              })
-            }
-          }
-          if (i == 'playShop' && this.searchMsg[i] != 'null') {
-            if (this.tableData.length != 0) {
-              this.tableData = this.tableData.filter((item) => {
-                return item.playAdv.realName == this.searchMsg[i]
-              })
-            } else {
-              this.tableData = this.totalLists.filter((item) => {
-                return item.playAdv.realName == this.searchMsg[i]
-              })
-            }
-          }
-          if (i == 'time' && this.searchMsg[i][0] != null) {
-            if (this.tableData.length != 0) {
-              this.tableData = this.tableData.filter((item) => {
-                return new Date(item.playDate) > this.searchMsg[i][0] && new Date(item.playDate) < this.searchMsg[i][1]
-              })
-            } else {
-              this.tableData = this.totalLists.filter((item) => {
-                return new Date(item.playDate) > this.searchMsg[i][0] && new Date(item.playDate) < this.searchMsg[i][1]
-              })
+      this.totalLists = []
+      for(let i in this.allDate) {
+        if(this.searchMsg.adverId == null || this.searchMsg.adverId == this.allDate[i].playAdv.advertisement.id) {
+          if(this.searchMsg.ownShop == null || this.searchMsg.ownShop == this.allDate[i].playAdv.advertisement.realName) {
+            if(this.searchMsg.playShop == null || this.searchMsg.playShop == this.allDate[i].playAdv.realName) {
+              this.totalLists.push(this.allDate[i])
             }
           }
         }
       }
-      if (this.searchMsg.adverId==null && this.searchMsg.ownShop==null && this.searchMsg.playShop==null && this.searchMsg.time[0] == null) {
-        this.tableData = this.totalLists
+      // this.orderArgs.totalPage = parseInt(this.totalLists.length/10);
+      this.orderArgs.current = 1;
+      this.tableData = this.totalLists.splice(0, 10);
+    },
+    init(){
+      for (let i in this.searchMsg) {
+        this.searchMsg[i] = null
       }
-      this.totalLists = this.tableData
+      this.searchMsg.time = [new Date(new Date().getTime() - 60*60*1000*24*30),new Date()]
+      console.log(this.searchMsg.time)
+      this.getOrderLists()
+    },
+    searchData () {
+      // new Date()
+      if(this.timeDate != this.searchMsg.time) {
+        this.getOrderLists()
+      } else {
+        this.filterData()
+      }
+
+
+      
     },
     getOrderLists() {
-      global.axiosGetReq('record/getPlayRecordList')
+      var self = this
+      this.timeDate = this.searchMsg.time
+      global.axiosGetReq('record/getPlayRecordList?startDate='+global.timeFilter(this.searchMsg.time[0])+'&endDate='+global.timeFilter(this.searchMsg.time[1]))
       .then((res) => {
         if (res.data.callStatus === 'SUCCEED') {
           this.allDate = res.data.data
           let newArr = res.data.data
-          // console.log(this.allDate)
+          console.log(this.allDate)
           for (let i in res.data.data) {
-            res.data.data[i].showName = res.data.data[i].playAdv.advertisement.id + res.data.data[i].playAdv.advertisement.name
-            res.data.data[i].time = Date.parse(new Date(res.data.data[i].playDate))
+            res.data.data[i].showName = res.data.data[i].playAdv.advertisement.id +" " +res.data.data[i].playAdv.advertisement.name
+            // res.data.data[i].time = Date.parse(new Date(res.data.data[i].playDate))
           }
-          // 广告id列表
+          //广告id列表
           var arr = []
+          this.adverIdLists = []
           for (let i in res.data.data) {
             if (arr.indexOf(res.data.data[i].showName) === -1) {
               arr.push(res.data.data[i].showName)
+              this.adverIdLists.push(res.data.data[i])
             }
-          }
-          for (let i in arr) {
-            this.adverIdLists.push(_.find(res.data.data,{'showName':arr[i]}))
           }
 
           for (let i in res.data.data) {
@@ -212,15 +199,16 @@
               this.ownShopLists.push(res.data.data[i].playAdv.advertisement.realName)
             }
           }
-          // 播放商铺列表
+          // // 播放商铺列表
           for (let i in res.data.data) {
             if (this.playShopLists.indexOf(res.data.data[i].playAdv.realName) === -1) {
               this.playShopLists.push(res.data.data[i].playAdv.realName)
             }
           }
-          // // console.log(res.data.data)
-          this.totalLists = res.data.data
-          this.tableData = this.totalLists.splice(0,10)
+          self.filterData()
+          // console.log(res.data.data)
+          // this.totalLists = res.data.data
+          // this.tableData = this.totalLists.splice(0,10)
           // if (res.data.data.length > 10) {
           //   this.tableData = res.data.data.splice(0, 10)
           // } else {
@@ -234,33 +222,17 @@
         }
       })
     },
-    // 过滤
-    filterData () {
-      this.tableData = []
-      if (this.searchMsg.adverId !== null) {
-        for (let i in this.totalLists) {
-          if (this.totalLists[i].playAdv.advertisement.id === this.searchMsg.adverId) {
-            this.tableData.push(this.totalLists[i])
-          }
-        }
-      }
 
-    },
     qx () {
-      for (let i in this.searchMsg) {
-        this.searchMsg[i] = null
-      }
-      // this.searchMsg.ownShop = 'null'
-      // this.searchMsg.playShop = 'null'
-      this.getOrderLists()
+      this.init()
     },
     // 分页
     changePage (value) {
       this.orderArgs.currentPage = value
-      if (value < this.totalLists.length%10) {
+      if (value < Math.ceil(this.totalLists.length/10)) {
         this.tableData = this.totalLists.slice((value-1)*10, value*10)
       } else {
-        this.tableData = this.totalLists.slice((value-1)*10, this.totalLists.length)
+        this.tableData = this.totalLists.slice((value-1)*10, (value-1)*10+this.totalLists.length%10)
       }
       // this.getOrderLists(this.orderArgs)
     }
