@@ -146,7 +146,8 @@ import Vue from 'vue'
 			}
 			if (global.getToken() && this.websocket == undefined) {
 				if('WebSocket' in window){
-						this.websocket = new WebSocket("ws://116.62.228.3:8080/Advertisement/orderWithWs?token="+global.getToken())
+						// this.websocket = new WebSocket("ws://116.62.228.3:8080/Advertisement_proc/orderWithWs?token="+global.getToken())
+						this.websocket = new WebSocket("ws://139.219.11.152:8080/Advertisement/orderWithWs?token="+global.getToken())
 						// console.log(`websocket连接成功`)
 						console.log(this.websocket)
 						global.setWebsocket(this.websocket)

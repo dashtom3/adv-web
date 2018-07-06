@@ -1,6 +1,7 @@
 import axios from 'axios'
 export default {
-  baseUrl: 'http://116.62.228.3:8080/Advertisement/api/',
+  // baseUrl: 'http://116.62.228.3:8080/Advertisement_proc/api/',
+  baseUrl:'http://139.219.11.152:8080/Advertisement/api/',
   qiNiuUrl: 'http://up-z0.qiniu.com/',
   qiniuShUrl: 'http://oqhy88nu6.bkt.clouddn.com/',
   success (obj, msg, url) {
@@ -71,6 +72,10 @@ export default {
   axiosPostReq (url, data) {
     axios.defaults.headers['token'] = this.getToken()
     return axios.post(this.baseUrl + url, this.postHttpData(data))
+  },
+  axiosPostReqWithoutToken (url, data) {
+    axios.defaults.headers['token'] = this.getToken()
+    return axios.post(this.baseUrl + url, data)
   },
   axiosGetReq (url, data) {
     axios.defaults.headers['token'] = this.getToken()

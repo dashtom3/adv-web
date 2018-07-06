@@ -38,7 +38,7 @@
     </el-table>
 
     <!-- 分页 -->
-    <div class="block" v-if="gameListArgs.totalPag > 1">
+    <div class="block" v-if="gameListArgs.totalPage > 1">
       <el-pagination
         layout="prev, pager, next"
         :current-page.sync="gameListArgs.currentPage"

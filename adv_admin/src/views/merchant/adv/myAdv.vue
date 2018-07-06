@@ -111,12 +111,19 @@
           <span>{{scope.row.advertisement.price}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="文件">
+      <el-table-column label="广告视频图片">
         <template scope="scope">
           <img :src="scope.row.advertisement.fileSrc" v-if="scope.row.advertisement.fileType === 0" alt="" class="maxAndMin">
           <!-- <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video> -->
           <img :src="scope.row.advertisement.imgSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin">
           <!-- <span>{{scope.row.advertisement.fileSrc}}</span> -->
+        </template>
+      </el-table-column>
+      <el-table-column label="封面图片">
+        <template scope="scope">
+          <img :src="scope.row.advertisement.imgSrc" alt="" class="maxAndMin">
+          <!-- <video :src="scope.row.advertisement.imgSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video> -->
+          <!-- <img :src="scope.row.advertisement.imgSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"> -->
         </template>
       </el-table-column>
       <el-table-column label="时长">
@@ -288,7 +295,7 @@ import global from '../../global/global'
           imgName:null,
           fileType: null,
           time: null,
-          isOrder: 0,
+          isOrder: '0',
           advertisementId: null
         },
         adverType: [

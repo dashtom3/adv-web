@@ -82,12 +82,13 @@
           <span>{{scope.row.playAdv.advertisement.content}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="文件">
+      <el-table-column label="广告图片视频">
         <template scope="scope">
           <img :src="scope.row.playAdv.advertisement.fileSrc" v-if="scope.row.playAdv.advertisement.fileType === 0" alt="" class="maxAndMin">
           <video :src="scope.row.playAdv.advertisement.fileSrc" controls v-if="scope.row.playAdv.advertisement.fileType === 1" class="maxAndMin"></video>
         </template>
       </el-table-column>
+      
       <el-table-column prop="num" label="订单数量">
       </el-table-column>
       <el-table-column label="单价">

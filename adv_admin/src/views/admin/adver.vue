@@ -52,7 +52,7 @@
           <span>{{allSubject[scope.row.advertisement.industryId-1].name}}</span>
         </template>
       </el-table-column>
-      <el-table-column label="文件">
+      <el-table-column label="广告文件">
         <template scope="scope">
           <img :src="scope.row.advertisement.fileSrc" v-if="scope.row.advertisement.fileType === 0" alt="" class="maxAndMin">
           <video :src="scope.row.advertisement.fileSrc" controls v-if="scope.row.advertisement.fileType === 1" class="maxAndMin"></video>
@@ -66,7 +66,7 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.row.index)">修改</el-button>
+          <el-button size="small" @click="handleEdit(scope.$index)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           <el-button size="small" type="success" @click="preview(scope.row)">预览</el-button>
         </template>
@@ -186,7 +186,7 @@ import global from '../global/global'
         },
         addAdverMsg: {
           selectType: null,
-          type: null,
+          type: '1',
           name: null,
           content: null,
           price: null,
@@ -194,17 +194,17 @@ import global from '../global/global'
           fileName: null,
           fileType: null,
           time: null,
-          isOrder: null,
+          isOrder: '0',
           advertisementId: null,
           industryId: null,
           playAdvShowName: null
         },
         adverType: [
-          { name: '滚动广告', value: '1' },
-          { name: '弹出广告', value: '0' }
+          { name: '滚动广告', value: '1' }
+          // { name: '弹出广告', value: '0' }
         ],
         isOrder: [
-          { name: '是', value: '1' },
+          // { name: '是', value: '1' },
           { name: '否', value: '0' }
         ],
         isEdit: true,
@@ -281,17 +281,12 @@ import global from '../global/global'
         .then((res) => {
           // console.log(res)
           if (res.data.callStatus === 'SUCCEED') {
-            if (res.data.data.length > 0) {
-              for (var i in res.data.data) {
-                res.data.data[i].index = i
-              }
+              // for (var i in res.data.data) {
+              //   res.data.data[i].index = i
+              // }
               self.allAdverLists = res.data.data
               self.adverInfo.currentPage = res.data.currentPage
               self.adverInfo.totalPage = res.data.totalPage
-            } else if (this.adverInfo.currentPage !== 1) {
-              this.adverInfo.currentPage --
-              this.getAdverList(this.adverInfo)
-            }
           } else {
             global.error(this, res.data.data, '')
             if (res.data.data == '用户未登录') {

@@ -150,7 +150,7 @@
       }
       // this.orderArgs.totalPage = parseInt(this.totalLists.length/10);
       this.orderArgs.current = 1;
-      this.tableData = this.totalLists.splice(0, 10);
+      this.tableData = this.totalLists.slice(0, 10);
     },
     init(){
       for (let i in this.searchMsg) {
@@ -168,8 +168,6 @@
         this.filterData()
       }
 
-
-      
     },
     getOrderLists() {
       var self = this
@@ -229,11 +227,13 @@
     // 分页
     changePage (value) {
       this.orderArgs.currentPage = value
+      console.log(value)
       if (value < Math.ceil(this.totalLists.length/10)) {
         this.tableData = this.totalLists.slice((value-1)*10, value*10)
       } else {
         this.tableData = this.totalLists.slice((value-1)*10, (value-1)*10+this.totalLists.length%10)
       }
+      console.log(this.totalLists,this.tableData)
       // this.getOrderLists(this.orderArgs)
     }
   }

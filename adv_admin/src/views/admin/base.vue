@@ -36,7 +36,7 @@
     </el-table>
 
     <!-- 分页 -->
-    <div class="block" v-if="baseListArgs.totalPag > 1">
+    <div class="block" v-if="baseListArgs.totalPage > 1">
       <el-pagination
         layout="prev, pager, next"
         :current-page.sync="baseListArgs.currentPage"

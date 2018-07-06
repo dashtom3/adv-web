@@ -72,6 +72,16 @@
           </template>
         </el-table-column>
         <el-table-column
+         label="红外线"
+         width="120">
+         <template scope="scope">
+           <el-select v-model="scope.row.infraredState" size="mini" placeholder="请选择" @change="changeInfrare(scope.row)">
+             <el-option label="开启" :value=1></el-option>
+             <el-option label="关闭" :value=0></el-option>
+           </el-select>
+         </template>
+        </el-table-column>
+        <el-table-column
          label="操作"
          width="100">
          <template scope="scope">
@@ -280,6 +290,18 @@ export default {
         } else {
           return false
         }
+      })
+    },
+    changeInfrare(item){
+      console.log(item)
+      var temp = {state:item.infraredState,userId:item.id}
+      global.axiosPostReq('infrared/control?', temp)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+
+        }
+      }).catch((res)=>{
+        global.error(this, '修改失败', '')
       })
     },
     getAllindustryLists () {

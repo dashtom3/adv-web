@@ -40,8 +40,15 @@ import yyhz from './views/yyhz/yyhz.vue'
 import companyDetail from './views/yyhz/company/companyDetail.vue'
 import projectDetail from './views/yyhz/project/projectDetail.vue'
 import sourceDetail from './views/yyhz/source/sourceDetail.vue'
-
+// demo
+import demo from './views/admin/demo.vue'
 let routes = [
+  {
+      path: '/demo',
+      component: demo,
+      name: 'demo',
+      hidden: true
+  },
     {
         path: '/login',
         component: Login,
@@ -77,7 +84,7 @@ let routes = [
         component: Home,
         name: '基本信息管理',
         iconCls: 'el-icon-message',//图标样式class
-        hidden: 'merchant',
+        hidden: '',
         type: [0,1,2],
         children: [
             { path: '/merchant/userinfo', component: Userinfo, name: '基本资料',isChildAccount: [0,1,2] },
@@ -98,9 +105,9 @@ let routes = [
         children: [
             { path: '/merchant/employeeaccount', component: EmployeeAccount, name: '员工账号', isChildAccount: [0,1,2] },
             { path: '/merchant/myadv', component: MyAdv , name: '播放广告', isChildAccount: [0,1,2] },
-            { path: '/merchant/shield', component: Shield, name: '屏蔽行业', isChildAccount: [0,1,2] },
+            // { path: '/merchant/shield', component: Shield, name: '屏蔽行业', isChildAccount: [0,1,2] },
             { path: '/merchant/mydevice', component: MyDevice, name: '我的设备', isChildAccount: [0,1,2] },
-            { path: '/merchant/total', component: Total, name: '统计数据', isChildAccount: [0,1,2] },
+            // { path: '/merchant/total', component: Total, name: '统计数据', isChildAccount: [0,1,2] },
             { path: '/merchant/advlist', component: Advlist, name: '订单管理', isChildAccount: [0,1,2,3] },
             { path: '/merchant/luck', component: luck, name: '抽奖管理', isChildAccount: [0,1,2] },
             { path: '/merchant/welfare', component: welfare, name: '二维码福利管理', isChildAccount: [0,1,2] }
