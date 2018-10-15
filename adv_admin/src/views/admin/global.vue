@@ -92,7 +92,7 @@
           :on-remove="removeFile"
           :data="qiNiuToken"
           :file-list="fileList"
-          :disabled="fileList.length !== 0">
+          >
             <el-button size="small" type="primary" :disabled="fileList.length !== 0">点击上传</el-button>
             <!-- <div slot="tip" class="el-upload__tip">(上传视频的最大播放时长为2分钟)</div> -->
           </el-upload>
