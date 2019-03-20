@@ -76,7 +76,7 @@ let routes = [
         hidden: 'merchant',
         leaf: true,//只有一个节点
         children: [
-            { path: '/merchant/workdesktop', component: WorkDesktop, name: '工作桌面' }
+            // { path: '/merchant/workdesktop', component: WorkDesktop, name: '工作桌面' }
         ]
     },
     {
@@ -103,13 +103,13 @@ let routes = [
         hidden: 'merchant',
         type: [0,1,3],
         children: [
-            { path: '/merchant/employeeaccount', component: EmployeeAccount, name: '员工账号', isChildAccount: [0,1,2] },
+            // { path: '/merchant/employeeaccount', component: EmployeeAccount, name: '员工账号', isChildAccount: [0,1,2] },
             { path: '/merchant/myadv', component: MyAdv , name: '播放广告', isChildAccount: [0,1,2] },
             // { path: '/merchant/shield', component: Shield, name: '屏蔽行业', isChildAccount: [0,1,2] },
-            { path: '/merchant/mydevice', component: MyDevice, name: '我的设备', isChildAccount: [0,1,2] },
+            // { path: '/merchant/mydevice', component: MyDevice, name: '我的设备', isChildAccount: [0,1,2] },
             // { path: '/merchant/total', component: Total, name: '统计数据', isChildAccount: [0,1,2] },
-            { path: '/merchant/advlist', component: Advlist, name: '订单管理', isChildAccount: [0,1,2,3] },
-            { path: '/merchant/luck', component: luck, name: '抽奖管理', isChildAccount: [0,1,2] },
+            // { path: '/merchant/advlist', component: Advlist, name: '订单管理', isChildAccount: [0,1,2,3] },
+            // { path: '/merchant/luck', component: luck, name: '抽奖管理', isChildAccount: [0,1,2] },
             { path: '/merchant/welfare', component: welfare, name: '二维码福利管理', isChildAccount: [0,1,2] }
         ]
     },

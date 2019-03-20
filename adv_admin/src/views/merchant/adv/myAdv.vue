@@ -156,8 +156,8 @@
       <el-form :model="addAdverMsg" label-position="left":rules="rules" ref="addAdverMsg">
         <el-form-item label="商铺类型" :label-width="formLabelWidth" v-if="isEdit">
           <el-select v-model="addAdverMsg.selectType" placeholder="请选择商铺类型" @change="selectAdverType">
-            <el-option label="自家商铺广告" value=0></el-option>
-            <el-option label="其他店铺广告" value=1></el-option>
+            <el-option label="我的广告" value=0></el-option>
+            <!-- <el-option label="其他店铺广告" value=1></el-option> -->
           </el-select>
         </el-form-item>
 
@@ -295,7 +295,7 @@ import global from '../../global/global'
           imgName:null,
           fileType: null,
           time: null,
-          isOrder: '0',
+          isOrder: null,
           advertisementId: null
         },
         adverType: [
@@ -303,7 +303,7 @@ import global from '../../global/global'
           { name: '弹出广告', value: '0' }
         ],
         isOrder: [
-          { name: '是', value: '1' },
+          // { name: '是', value: '1' },
           { name: '否', value: '0' }
         ],
         isEdit: true,
@@ -344,14 +344,20 @@ import global from '../../global/global'
     },
     methods: {
       addAdv() {
+        
         var that = this;
         that.addAdverAlert = true;
         this.isEdit = true
         this.title = '添加广告'
         this.addAdverShow = true
         this.editAdverShow = false
-        this.my = false
-        this.other = false
+        this.my = true
+         this.other = false
+
+        this.addAdverMsg.selectType = '0'
+        this.addAdverMsg.isOrder = '0'
+        this.addAdverMsg.type = '1'
+        this.addAdverUrl = 'advertisement/add'
       },
       selectAdverType () {
         // console.log(this.addAdverMsg)

@@ -63,7 +63,7 @@
                   global.setToken(res.data.token)
                   global.setUser(res.data.data)
                   if (res.data.data.type != 2) {
-                    global.success(this, '登录成功', '/merchant/workdesktop')
+                    global.success(this, '登录成功', '/merchant/myadv')
                   } else {
                     global.success(this, '登录成功', '/merchant')
                   }

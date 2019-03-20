@@ -82,6 +82,36 @@
          </template>
         </el-table-column>
         <el-table-column
+         label="清单按钮"
+         width="120">
+         <template scope="scope">
+           <el-select v-model="scope.row.inventoryState" size="mini" placeholder="请选择" @change="changemenu(scope.row)">
+             <el-option label="开启" :value=1></el-option>
+             <el-option label="关闭" :value=0></el-option>
+           </el-select>
+         </template>
+        </el-table-column>
+        <el-table-column
+         label="备选控制1"
+         width="120">
+         <template scope="scope">
+           <el-select v-model="scope.row.switch1" size="mini" placeholder="请选择" @change="changecontrol1(scope.row)">
+             <el-option label="开启" :value=1></el-option>
+             <el-option label="关闭" :value=0></el-option>
+           </el-select>
+         </template>
+        </el-table-column>
+        <el-table-column
+         label="备选控制2"
+         width="120">
+         <template scope="scope">
+           <el-select v-model="scope.row.switch2" size="mini" placeholder="请选择" @change="changecontrol2(scope.row)">
+             <el-option label="开启" :value=1></el-option>
+             <el-option label="关闭" :value=0></el-option>
+           </el-select>
+         </template>
+        </el-table-column>
+        <el-table-column
          label="操作"
          width="100">
          <template scope="scope">
@@ -299,6 +329,42 @@ export default {
       .then((res) => {
         if (res.data.callStatus === 'SUCCEED') {
 
+        }
+      }).catch((res)=>{
+        global.error(this, '修改失败', '')
+      })
+    },
+    changemenu(item){
+      console.log(item,'清单')
+      var param = {state:item.inventoryState,userId:item.id}
+      global.axiosPostReq('inventory/control?', param)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          console.log(param)
+        }
+      }).catch((res)=>{
+        global.error(this, '修改失败', '')
+      })
+    },
+    //备选控制1
+    changecontrol1(item){
+        var param1 = {state:item.switch1,userId:item.id}
+      global.axiosPostReq('switch/controlSwitch1?', param1)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          console.log(param1)
+        }
+      }).catch((res)=>{
+        global.error(this, '修改失败', '')
+      })
+    },
+    //备选控制2
+    changecontrol2(item){
+        var param2 = {state:item.switch2,userId:item.id}
+      global.axiosPostReq('switch/controlSwitch2?', param2)
+      .then((res) => {
+        if (res.data.callStatus === 'SUCCEED') {
+          console.log(param2)
         }
       }).catch((res)=>{
         global.error(this, '修改失败', '')
